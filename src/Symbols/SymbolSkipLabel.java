@@ -17,4 +17,9 @@ public class SymbolSkipLabel extends SymbolBase{
         super("SymbolSkipLabel", 0);
         this.idLabel = idLabel;
     }
+       
+    public SymbolSkipLabel() {
+        super("SymbolSkipLabel", 0);
+        this.idLabel = "";
+    }
 }

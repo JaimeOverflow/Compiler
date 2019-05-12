@@ -15,9 +15,7 @@ import SymbolsTable.TypeDescription;
 import SymbolsTable.TypeDescription.CONTENT_DESCRIPTION;
 import SymbolsTable.TypeDescription.BASIC_SUBJACENT_TYPE;
 import digraph.*;
-import IntermediateCode.Quadruple;
-import IntermediateCode.Quadruple.*;
-import IntermediateCode.VariablesTable;
+import BackendCompiler.Quadruple.*;
 import java.util.UUID;
 import java.util.Stack;
 import java_cup.runtime.XMLElement;
@@ -437,8 +435,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     private boolean hasToGenerateDigraph;
     private SymbolsTable symbolsTable;
     private Digraph digraph;
-    private ArrayList<Quadruple> quadruples;
-    private VariablesTable variablesTable;
+    //private ArrayList<Quadruple> quadruples;
 
     private Stack<String> stackTrueCond;
     private Stack<String> stackFalseCond;
@@ -449,8 +446,7 @@ public class Parser extends java_cup.runtime.lr_parser {
         this.hasToGenerateDigraph = hasToGenerateDigraph;
         this.symbolsTable = new SymbolsTable();
         this.digraph = new Digraph();
-        this.quadruples = new ArrayList<Quadruple>();
-        this.variablesTable = new VariablesTable();
+        //this.quadruples = new ArrayList<Quadruple>();
         this.stackTrueCond = new Stack<String>();
         this.stackFalseCond = new Stack<String>();
     }
@@ -600,6 +596,7 @@ class CUP$Parser$actions {
                 // ===================================================
 
                 symbolsTable.closeFile(); 
+                /*
                 System.out.println("QUADRUPLES: ");
                 for (int i = 0; i < quadruples.size(); i++) {
                     System.out.println(quadruples.get(i));
@@ -607,6 +604,8 @@ class CUP$Parser$actions {
 
                 System.out.println("\nVARIABLE'S TABLE:");
                 variablesTable.showInfo();
+                */
+
 
                 boolean hasFinished = true;
                 RESULT = new SymbolRoot(hasFinished);
@@ -896,10 +895,10 @@ class CUP$Parser$actions {
                 symbolsTable.add(id_variable, typeDescription);
 
                 // ================ INTERMEDIATE CODE ======================
-                variablesTable.addVariable(id_variable);
-                Quadruple quadruple = new Quadruple(OP_CODE.assignRef, decls.idVariable, "", id_variable);
-                quadruples.add(quadruple);
-                symbolDecls.idVariable = id_variable;
+                //variablesTable.addVariable(id_variable);
+                //Quadruple quadruple = new Quadruple(OP_CODE.assignRef, decls.idVariable, "", id_variable);
+                //quadruples.add(quadruple);
+                //symbolDecls.idVariable = id_variable;
                 // =========================================================
 
                 RESULT = symbolDecls;
@@ -1020,11 +1019,11 @@ class CUP$Parser$actions {
                 symbolsTable.add(id_variable, typeDescriptionForNewVariables);
                 SymbolDecls symbolDecls = new SymbolDecls(typeDescriptionForNewVariables);
                 // ================ INTERMEDIATE CODE ======================
-                variablesTable.addVariable(id_variable);
-                Quadruple quadruple = new Quadruple(OP_CODE.assignRef, symbol_value.idVariable, "", id_variable);
-                quadruples.add(quadruple);
+                //variablesTable.addVariable(id_variable);
+                //Quadruple quadruple = new Quadruple(OP_CODE.assignRef, symbol_value.idVariable, "", id_variable);
+                //quadruples.add(quadruple);
 
-                symbolDecls.idVariable = symbolValue.idVariable;
+                //symbolDecls.idVariable = symbolValue.idVariable;
                 // =======================================================
 
                 RESULT = symbolDecls;
@@ -1137,8 +1136,8 @@ class CUP$Parser$actions {
 
                                         // =====================================================================
 
-                                        Quadruple quadruple = new Quadruple(OP_CODE.assignRef, symbolValue.idVariable, "", id_variable);
-                                        quadruples.add(quadruple);
+                                        //Quadruple quadruple = new Quadruple(OP_CODE.assignRef, symbolValue.idVariable, "", id_variable);
+                                        //quadruples.add(quadruple);
 
                                         RESULT = new SymbolAssign();
                                     
@@ -1208,22 +1207,22 @@ class CUP$Parser$actions {
 
                         SymbolOpArithmetic symbolOpArithmetic = new SymbolOpArithmetic();
 
-                        OP_CODE opCode = OP_CODE.sum;
+                        OpCode opCode = OpCode.sum;
                         switch(op_arithmetic) {
                             case "+": 
-                                    opCode = OP_CODE.sum;
+                                    opCode = OpCode.sum;
                                     break;
                             case "-": 
-                                    opCode = OP_CODE.sub;
+                                    opCode = OpCode.sub;
                                     break;
                             case "*": 
-                                    opCode = OP_CODE.mult;
+                                    opCode = OpCode.mult;
                                     break;
                             case "/": 
-                                    opCode = OP_CODE.div;
+                                    opCode = OpCode.div;
                                     break;
                             case "%":  
-                                    opCode = OP_CODE.mod;
+                                    opCode = OpCode.mod;
                                     break;
                         }
                         // We can calculate the value if all operands are constant
@@ -1250,13 +1249,14 @@ class CUP$Parser$actions {
                             symbolOpArithmetic.valueType = newValue;
 
                         }
+                        /*
                         String uuidVariable = variablesTable.generateVariable();
 
                         Quadruple quadruple = new Quadruple(opCode, symbolOpArithmeticVal.idVariable, symbolOpArithValue.idVariable, uuidVariable);
                         quadruples.add(quadruple);
 
                         symbolOpArithmetic.idVariable = uuidVariable;
-
+                        */
                         RESULT = symbolOpArithmetic;
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_ARITHMETIC",5, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1292,22 +1292,22 @@ class CUP$Parser$actions {
 
                         SymbolOpArithmetic symbolOpArithmetic = new SymbolOpArithmetic();
 
-                        OP_CODE opCode = OP_CODE.sum;
+                        OpCode opCode = OpCode.sum;
                         switch(op_arithmetic) {
                                 case "+":
-                                        opCode = OP_CODE.sum;
+                                        opCode = OpCode.sum;
                                         break;
                                 case "-":
-                                        opCode = OP_CODE.sub;
+                                        opCode = OpCode.sub;
                                         break;
                                 case "*":
-                                        opCode = OP_CODE.mult;
+                                        opCode = OpCode.mult;
                                         break;
                                 case "/":
-                                        opCode = OP_CODE.div;
+                                        opCode = OpCode.div;
                                         break;
                                 case "%": 
-                                        opCode = OP_CODE.mod;
+                                        opCode = OpCode.mod;
                                         break;
 
                             }
@@ -1334,14 +1334,14 @@ class CUP$Parser$actions {
                             }
                             symbolOpArithmetic.valueType = newValue;
                         }
-
+                        /*
                         String uuidVariable = variablesTable.generateVariable();
 
                         Quadruple quadruple = new Quadruple(opCode, symbolOpArithValue1.idVariable, symbolOpArithValue2.idVariable, uuidVariable);
                         quadruples.add(quadruple);
 
                         symbolOpArithmetic.idVariable = uuidVariable;
-
+                        */
                         RESULT = symbolOpArithmetic; 
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_ARITHMETIC",5, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1408,13 +1408,14 @@ class CUP$Parser$actions {
                         }
 
                         SymbolOpArithValue symbolOpArithValue = new SymbolOpArithValue(number);
-
+                        /*
                         String uuidVariable = variablesTable.generateVariable();
 
                         Quadruple quadruple = new Quadruple(OP_CODE.assignVal, String.valueOf(number_val), "", uuidVariable);
                         quadruples.add(quadruple);
 
                         symbolOpArithValue.idVariable = uuidVariable;
+                        */
                         RESULT = symbolOpArithValue;
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_ARITH_VALUE",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1616,14 +1617,15 @@ class CUP$Parser$actions {
                     if (symbolSign != null) {
                         value = (symbolSign.hasSign && symbolSign.isNegative) ? -value : value;
                     }
-
+                    /*
                     String uuidVariable = variablesTable.generateVariable();
 
                     Quadruple quadruple = new Quadruple(OP_CODE.assignVal, String.valueOf(value), "", uuidVariable);
                     quadruples.add(quadruple);
-
+                    */
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_integer, value);
-                    symbolValue.idVariable = uuidVariable;
+                    //symbolValue.idVariable = uuidVariable;
+
                     RESULT = symbolValue;
                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("VALUE",27, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1645,13 +1647,14 @@ class CUP$Parser$actions {
                     digraph.addNode(nodeGraph);
                     // =======================================================
                     String value = new String(text_value.replace("\"", "")); // Delete double quote from lexeme
-                    
+                    /*
                     String uuidVariable = variablesTable.generateVariable();
                     Quadruple quadruple = new Quadruple(OP_CODE.assignVal, value, "", uuidVariable);
                     quadruples.add(quadruple);
+                    */
 
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_string, value);
-                    symbolValue.idVariable = uuidVariable;
+                    //symbolValue.idVariable = uuidVariable;
                     RESULT = symbolValue;
                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("VALUE",27, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1673,13 +1676,13 @@ class CUP$Parser$actions {
                     digraph.addNode(nodeGraph);
                     // =======================================================
                     Boolean value = new Boolean(bool_value);
-
+                    /*
                     String uuidVariable = variablesTable.generateVariable();
                     Quadruple quadruple = new Quadruple(OP_CODE.assignVal, Boolean.toString(value) , "", uuidVariable);
                     quadruples.add(quadruple);
-
+                    */
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_boolean, value);
-                    symbolValue.idVariable = uuidVariable;
+                    //symbolValue.idVariable = uuidVariable;
                     RESULT = symbolValue;  
                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("VALUE",27, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1823,8 +1826,8 @@ class CUP$Parser$actions {
                 }
                 // ====================================================================================
 
-                Quadruple quadruple = new Quadruple(OP_CODE.output, "", "", symbolValue.idVariable);
-                quadruples.add(quadruple);
+                //Quadruple quadruple = new Quadruple(OP_CODE.output, "", "", symbolValue.idVariable);
+                //quadruples.add(quadruple);
 
                 RESULT = new SymbolOutput();
             
@@ -1857,11 +1860,12 @@ class CUP$Parser$actions {
                             symbolInitOpBool.isConstant = true;
                             symbolInitOpBool.valueType = symbolOpBoolean.valueType;
                         }
-
+                        /*
                         if (!symbolOpBoolean.isSingleBoolean) {
                             Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", symbolOpBoolean.idLabel);
                             quadruples.add(quadruple);
                         }
+                        */
                         
                         symbolInitOpBool.idVariable = symbolOpBoolean.idVariable;
 
@@ -1920,20 +1924,20 @@ class CUP$Parser$actions {
 
                         }
 
-                        OP_CODE opCodeVariable = OP_CODE.and;
-                        OP_CODE opCodeConditional = OP_CODE.condTrue;
+                        OpCode opCodeVariable = OpCode.and;
+                        OpCode opCodeConditional = OpCode.condTrue;
 
                         switch(op_logic) {
                             case "&&": 
-                                opCodeVariable = OP_CODE.and;
-                                opCodeConditional = OP_CODE.condFalse;
+                                opCodeVariable = OpCode.and;
+                                opCodeConditional = OpCode.condFalse;
                             break;
                             case "||":
-                                opCodeVariable = OP_CODE.or;
-                                opCodeConditional = OP_CODE.condTrue;
+                                opCodeVariable = OpCode.or;
+                                opCodeConditional = OpCode.condTrue;
                             break;
                         }
-
+                        /*
                         Quadruple quadruple = new Quadruple(opCodeConditional, symbolOpBooleanVal1.idVariable, "" , symbolOpBooleanVal1.idLabel);
                         quadruples.add(symbolOpBooleanVal1.indexQuadruples, quadruple);
 
@@ -1944,6 +1948,7 @@ class CUP$Parser$actions {
                         symbolOpBoolean.idVariable = symbolOpBooleanVal1.idVariable;
                         symbolOpBoolean.indexQuadruples = quadruples.size();
                         symbolOpBoolean.isSingleBoolean = false;
+                        */
                         RESULT = symbolOpBoolean;
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_BOOLEAN",22, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1975,13 +1980,14 @@ class CUP$Parser$actions {
                             symbolOpBoolean.isConstant = true;
                             symbolOpBoolean.valueType = symbolOpBoolValue.valueType;
                         }
-
+                        /*
                         String uuidLabel = UUID.randomUUID().toString();
 
                         symbolOpBoolean.idVariable = symbolOpBoolValue.idVariable;
                         symbolOpBoolean.idLabel = uuidLabel;
                         symbolOpBoolean.indexQuadruples = quadruples.size();
                         symbolOpBoolean.isSingleBoolean = true;
+                        */
                         RESULT = symbolOpBoolean;
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_BOOLEAN",22, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2005,14 +2011,14 @@ class CUP$Parser$actions {
                         Boolean boolVal = new Boolean(bool_val);
                          
                         SymbolOpBoolValue symbolOpBoolValue = new SymbolOpBoolValue(boolVal);
-
+                        /*
                         String uuidVariable = variablesTable.generateVariable();
 
                         Quadruple quadruple = new Quadruple(OP_CODE.assignVal, Boolean.toString(boolVal), "", uuidVariable);
                         quadruples.add(quadruple);
 
                         symbolOpBoolValue.idVariable = uuidVariable;
-
+                        */
                         RESULT = symbolOpBoolValue;
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_BOOL_VALUE",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2044,11 +2050,12 @@ class CUP$Parser$actions {
                             symbolOpBoolValue.isConstant = true;
                             symbolOpBoolValue.valueType = symbolOpBoolean.valueType;
                         }
-
+                        /*
                         Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", symbolOpBoolean.idLabel);
                         quadruples.add(quadruple);
 
                         symbolOpBoolValue.idVariable = symbolOpBoolean.idVariable;
+                        */
                         RESULT = symbolOpBoolValue;
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_BOOL_VALUE",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2329,13 +2336,13 @@ class CUP$Parser$actions {
                 stackFalseCond.push(uuidFalseCondLabel);
 
                 SymbolInitOpBool symbolInitOpBool = init_op_bool;
-
+                /*
                 Quadruple quadrupleTrueCond = new Quadruple(OP_CODE.condTrue, symbolInitOpBool.idVariable, "" , uuidTrueCondLabel);
                 quadruples.add(quadrupleTrueCond);
                 
                 Quadruple quadrupleFalseCond = new Quadruple(OP_CODE.condFalse, symbolInitOpBool.idVariable, "" , uuidFalseCondLabel);
                 quadruples.add(quadrupleFalseCond);
-
+                */
                 RESULT = new SymbolCond();
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("COND",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2353,11 +2360,11 @@ class CUP$Parser$actions {
                         NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_TRUE_MASK);
                         digraph.addNode(nodeGraph);
                         // =======================================================
-
+                        /*
                         String trueCondLabel = stackTrueCond.pop();
                         Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", trueCondLabel);
                         quadruples.add(quadruple);
-
+                        */
                         RESULT = new SymbolCondTrueMask();
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("COND_TRUE_MASK",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2375,10 +2382,11 @@ class CUP$Parser$actions {
                         NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_FALSE_MASK);
                         digraph.addNode(nodeGraph);
                         // =======================================================
+                        /*
                         String falseCondLabel = stackFalseCond.pop();
                         Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", falseCondLabel);
                         quadruples.add(quadruple);
-
+                        */
                         RESULT = new SymbolCondFalseMask();
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("COND_FALSE_MASK",10, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2390,11 +2398,13 @@ class CUP$Parser$actions {
             {
               SymbolJumpLabel RESULT =null;
 		
+            /*
             String uuidLabel = UUID.randomUUID().toString();
             Quadruple quadruple = new Quadruple(OP_CODE.jump, "", "", uuidLabel);
             quadruples.add(quadruple);
-
             RESULT = new SymbolJumpLabel(uuidLabel);
+            */
+            RESULT = new SymbolJumpLabel();
         
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("JUMP_LABEL",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2405,11 +2415,13 @@ class CUP$Parser$actions {
             {
               SymbolSkipLabel RESULT =null;
 		
+            /*
             String uuidLabel = UUID.randomUUID().toString();
             Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", uuidLabel);
             quadruples.add(quadruple);
-
             RESULT = new SymbolSkipLabel(uuidLabel);
+            */
+            RESULT = new SymbolSkipLabel();
         
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("SKIP_LABEL",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2464,10 +2476,10 @@ class CUP$Parser$actions {
                     NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_ELIF);
                     digraph.addNode(nodeGraph, childs);
                     // =======================================================
-
+                    /*
                     Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", jump_label.idLabel);
                     quadruples.add(quadruple);
-
+                    */
                     RESULT = new SymbolCondElif();
                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("COND_ELIF",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-10)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2512,10 +2524,10 @@ class CUP$Parser$actions {
                     NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_ELSE);
                     digraph.addNode(nodeGraph, childs);
                     // =======================================================
-
+                    /*
                     Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", jump_label.idLabel);
                     quadruples.add(quadruple);
-
+                    */
                     RESULT = new SymbolCondElse();
                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("COND_ELSE",15, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2725,14 +2737,14 @@ class CUP$Parser$actions {
                 NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.WHILE);
                 digraph.addNode(nodeGraph, childs);
                 // =======================================================
-
+                /*
                 Quadruple quadrupleJump = new Quadruple(OP_CODE.jump, "", "", skip_label.idLabel);
                 quadruples.add(quadrupleJump);
 
                 String falseCondLabel = stackFalseCond.pop();
                 Quadruple quadrupleSkip = new Quadruple(OP_CODE.skip, "", "", falseCondLabel);
                 quadruples.add(quadrupleSkip);
-
+                */
                 RESULT = new SymbolWhile();
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("WHILE",38, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-8)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

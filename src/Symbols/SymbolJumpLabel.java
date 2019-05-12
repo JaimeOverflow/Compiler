@@ -13,6 +13,11 @@ public class SymbolJumpLabel extends SymbolBase{
         this.idLabel = idLabel;
     }
     
+    public SymbolJumpLabel() {
+        super("SymbolJumpLabel", 0);
+        this.idLabel = "";
+    }
+    
     @Override
     public String toString(){
         return "Label: " + this.idLabel;

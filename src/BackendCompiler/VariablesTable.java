@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package IntermediateCode;
+package BackendCompiler;
 
 import SymbolsTable.Description;
 import java.util.HashMap;
