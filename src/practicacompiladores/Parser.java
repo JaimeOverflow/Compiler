@@ -1858,7 +1858,6 @@ class CUP$Parser$actions {
                             symbolInitOpBool.valueType = symbolOpBoolean.valueType;
                         }
 
-                        System.out.println(symbolOpBoolean.isSingleBoolean);
                         if (!symbolOpBoolean.isSingleBoolean) {
                             Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", symbolOpBoolean.idLabel);
                             quadruples.add(quadruple);
