@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolOpArithmetic.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/IntermediateCode/VariablesTable.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolFuncBody.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/practicacompiladores/Main.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolOpBoolean.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/IntermediateCode/Quadruple.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolOpArithValue.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolInstrs.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolInitType.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolCondTrueMask.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolBase.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolFunction.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/practicacompiladores/Parser.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolCondFalseMask.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolOutput.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/practicacompiladores/ScannerLex.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolJumpLabel.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolParams.java</file>
+        </group>
+    </open-files>
+</project-private>

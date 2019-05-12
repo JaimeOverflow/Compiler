@@ -1,0 +1,6 @@
+WIDTH  const : int = 1000.
+height : int = 500.
+
+// SEMANTIC ERROR: Declaration of a constant variable without constant values.
+BOARD  const : string = (WIDTH * height).
+

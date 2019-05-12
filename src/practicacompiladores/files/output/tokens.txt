@@ -1,0 +1,30 @@
+========================= INFO =========================
+DATE: 24/04/2019 14:15:36
+NUMBER OF TOKENS: 10========================================================
+======================== TOKENS ========================
+TOKEN: [ID]
+LEXEME: [b]
+LINE: [0] - COLUMN: [0]
+TOKEN: [TWO_POINTS]
+LINE: [0] - COLUMN: [2]
+TOKEN: [ID]
+LEXEME: [boolean]
+LINE: [0] - COLUMN: [4]
+TOKEN: [OP_ASSIGN]
+LINE: [0] - COLUMN: [12]
+TOKEN: [LPAREN]
+LINE: [0] - COLUMN: [14]
+TOKEN: [BOOL]
+LEXEME: [true]
+LINE: [0] - COLUMN: [15]
+TOKEN: [OP_LOGIC]
+LEXEME: [&&]
+LINE: [0] - COLUMN: [20]
+TOKEN: [BOOL]
+LEXEME: [false]
+LINE: [0] - COLUMN: [23]
+TOKEN: [RPAREN]
+LINE: [0] - COLUMN: [28]
+TOKEN: [FINAL_SENTENCE]
+LINE: [0] - COLUMN: [29]
+========================================================

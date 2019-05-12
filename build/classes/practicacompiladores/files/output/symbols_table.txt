@@ -1,0 +1,101 @@
+********************************************************
+Method: add.
+Info: Add a new variable 'int'.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+===========================================
+ACTUAL SCOPE LEVEL: 0
+Scope table
+scope: 0, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: add.
+Info: Add a new variable 'boolean'.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+===========================================
+ACTUAL SCOPE LEVEL: 0
+Scope table
+scope: 0, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: add.
+Info: Add a new variable 'string'.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+===========================================
+ACTUAL SCOPE LEVEL: 0
+Scope table
+scope: 0, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: add.
+Info: Add a new variable 'none'.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+===========================================
+ACTUAL SCOPE LEVEL: 0
+Scope table
+scope: 0, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: add.
+Info: Add a new variable 'b'.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: b, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: boolean}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+===========================================
+ACTUAL SCOPE LEVEL: 0
+Scope table
+scope: 0, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+

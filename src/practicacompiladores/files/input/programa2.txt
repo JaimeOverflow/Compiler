@@ -1,0 +1,33 @@
+WIDTH  const : int = 1000.
+
+// Negate a number
+HEIGHT const : int = -500.
+
+// Operations with constants
+BOARD  const : int = (WIDTH * HEIGHT).
+
+function int getMaxValue() {return 3000.}
+
+function string getWeather(date : string, hour : int, minute : int, inCelsius : boolean){
+	weather : string = "sun".
+
+	time : int = (hour * minute).
+
+	return weather.
+}
+
+switch (BOARD) {
+	case (WIDTH): 
+		maxValue : int = call(getMaxValue).  
+		break.
+
+	case (50): 
+		// Call function with parameters
+		weather : string = call(getWeather, "05/02/2019", 23, WIDTH, true).
+
+		break.
+
+	default:
+		output("default").
+		break.
+}

@@ -1,0 +1,31 @@
+// Constant
+hasMeat const : boolean = false.
+
+// Function without parameters and return type
+function none main() {
+
+	fruits, vegetables : int = 10.
+
+	favoriteFruit : string = "Apple".
+
+	// Conditional if + logic op + relational op
+	if (hasMeat && {vegetables == 0}) { 
+		output("We have to eat meat.").
+	
+	} elif ({favoriteFruit == "Apple"} || {fruits > 10}) {
+		output("We have to eat fruits").
+
+	} else {
+
+		// Loop while
+		while ({fruits > 0}) {
+
+			// Assignation + Arithmetic op
+			vegetables = ((10 * fruits) + vegetables). 
+			fruits = (fruits - 1).
+		}
+	}
+}
+
+// Call a function
+call(main)

@@ -1,0 +1,2339 @@
+package practicacompiladores;
+
+import java_cup.runtime.*;
+import Symbols.*;
+import SymbolsTable.*;
+import Exceptions.*;
+import java.io.FileReader;
+import java.util.ArrayList;
+import SymbolsTable.TypeDescription;
+import SymbolsTable.TypeDescription.CONTENT_DESCRIPTION;
+import SymbolsTable.TypeDescription.BASIC_SUBJACENT_TYPE;
+import digraph.*;
+import IntermediateCode.Quadruple;
+import IntermediateCode.Quadruple.*;
+import IntermediateCode.VariablesTable;
+import java.util.UUID;
+import java.util.Stack;
+
+class Parser;
+
+parser code {:
+    private ScannerLex scanner;
+    private boolean hasToGenerateDigraph;
+    private SymbolsTable symbolsTable;
+    private Digraph digraph;
+    private ArrayList<Quadruple> quadruples;
+    private VariablesTable variablesTable;
+
+    private Stack<String> stackTrueCond;
+    private Stack<String> stackFalseCond;
+
+    public Parser(ScannerLex scanner, SymbolFactory sf, boolean hasToGenerateDigraph) {
+        super(scanner);
+        this.scanner = scanner;
+        this.hasToGenerateDigraph = hasToGenerateDigraph;
+        this.symbolsTable = new SymbolsTable();
+        this.digraph = new Digraph();
+        this.quadruples = new ArrayList<Quadruple>();
+        this.variablesTable = new VariablesTable();
+        this.stackTrueCond = new Stack<String>();
+        this.stackFalseCond = new Stack<String>();
+    }
+
+    // In case of syntactic error
+    public void report_fatal_error(String message, Object info) {
+        String msgError = "Syntactic error";
+        if (info instanceof java_cup.runtime.Symbol) {
+            java_cup.runtime.Symbol symbol = ((java_cup.runtime.Symbol) info );
+
+        if (symbol.left >= 0) {
+            msgError += " in line "+(symbol.left+1);
+            if (symbol.right>=0)
+                msgError += ", column "+(symbol.right+1);
+            }
+        }
+
+        msgError += ". Error message: " + message;
+        System.err.println(msgError);
+
+        try {
+            throw new MalformedStructureException(
+                 CompilerException.CompilerErrorType.syntactic,
+                 msgError
+            );
+         } catch (MalformedStructureException ex) {
+             System.err.println("ERROR: " + ex.getMessage());
+         }
+
+        report_error(message, info);
+        System.exit(1);
+    }
+
+    private void initializeTypeInt() {
+        String keywordType = "int";
+        TypeDescription typeDescription = new TypeDescription(
+            TypeDescription.CONTENT_DESCRIPTION.dtype,
+            TypeDescription.BASIC_SUBJACENT_TYPE.ts_integer,
+            4, // bytes
+            Integer.MIN_VALUE,
+            Integer.MAX_VALUE
+        );
+
+        this.symbolsTable.add(keywordType, typeDescription);
+    }
+
+    private void initializeTypeBoolean() {
+        String keywordType = "boolean";
+        TypeDescription typeDescription = new TypeDescription(
+            TypeDescription.CONTENT_DESCRIPTION.dtype,
+            TypeDescription.BASIC_SUBJACENT_TYPE.ts_boolean,
+            1, // bytes
+            0,
+            1
+            );
+
+        this.symbolsTable.add(keywordType, typeDescription);
+        
+    }
+
+    private void initializeTypeString() {
+        String keywordType = "string";
+        TypeDescription typeDescription = new TypeDescription(
+            TypeDescription.CONTENT_DESCRIPTION.dtype,
+            TypeDescription.BASIC_SUBJACENT_TYPE.ts_string,
+            0, // bytes
+            0,
+            0
+            );
+
+        this.symbolsTable.add(keywordType, typeDescription);
+    }
+
+    private void initializeTypeNone() {
+        String keywordType = "none";
+        TypeDescription typeDescription = new TypeDescription(
+            TypeDescription.CONTENT_DESCRIPTION.dtype,
+            TypeDescription.BASIC_SUBJACENT_TYPE.ts_none,
+            0, // bytes
+            0,
+            0
+            );
+
+        this.symbolsTable.add(keywordType, typeDescription);
+    }
+
+:};
+
+terminal                         two_points, inst_if, inst_elif, inst_else, inst_switch, inst_case, inst_break, inst_default, inst_while, inst_for, inst_function, inst_return, inst_call, inst_input, inst_output, lparen, rparen, lbracket, rbracket, separator, final_sentence, op_assign, constant;
+terminal      String             op_relational, op_logic, op_arithmetic, id, number, text, bool; 
+
+non terminal  SymbolRoot            ROOT;
+
+// Initialize types (int, boolean, string)
+non terminal  SymbolInitType        INIT_TYPES;
+
+// Instructions
+non terminal  SymbolInstrs          INSTRS;
+non terminal  SymbolInstr           INSTR;
+
+// Arithmetic operations
+non terminal  SymbolInitOpArith     INIT_OP_ARITH;
+non terminal  SymbolOpArithmetic    OP_ARITHMETIC;
+non terminal  SymbolOpArithValue    OP_ARITH_VALUE;
+non terminal  SymbolSign            SIGN;
+
+// All conditionals
+non terminal SymbolCond             COND;
+non terminal SymbolCondTrueMask     COND_TRUE_MASK;
+non terminal SymbolCondFalseMask    COND_FALSE_MASK;
+non terminal SymbolJumpLabel        JUMP_LABEL;
+non terminal SymbolSkipLabel        SKIP_LABEL;
+
+// Conditional IF
+non terminal  SymbolCondIf          COND_IF;
+non terminal  SymbolCondElif        COND_ELIF;
+non terminal  SymbolCondElse        COND_ELSE;
+
+// Conditional SWITCH
+non terminal  SymbolSwitch          SWITCH;
+non terminal  SymbolSwitchBegin     SWITCH_BEGIN;
+non terminal  SymbolSwitchEnd       SWITCH_END;
+
+// Code block with a new scopes
+non terminal  SymbolCodeBlockIn     CODE_BLOCK_IN;
+non terminal  SymbolCodeBlockOut    CODE_BLOCK_OUT;
+
+// Boolean operations
+non terminal  SymbolInitOpBool      INIT_OP_BOOL;
+non terminal  SymbolOpBoolean       OP_BOOLEAN;
+non terminal  SymbolOpBoolValue     OP_BOOL_VALUE;
+non terminal  SymbolRelationalComp  RELATIONAL_COMP;
+
+// Declaration of variables
+non terminal  SymbolDecls           DECLS;
+non terminal  SymbolConstant        CONSTANT;
+
+// Values that our system can provide
+// Include variables, constants, literals, standard input, etc
+non terminal  SymbolValue           VALUE;
+
+// Assignament of a variable
+non terminal  SymbolAssign          ASSIGN;
+
+// Standard Output
+non terminal  SymbolOutput          OUTPUT;
+
+// Functions
+non terminal  SymbolFunction        FUNCTION;
+non terminal  SymbolFuncHead        FUNC_HEAD;
+non terminal  SymbolParams          PARAMS;
+non terminal  SymbolHasParams       HAS_PARAMS;
+non terminal  SymbolFuncBody        FUNC_BODY;
+non terminal  SymbolReturn          RETURN;
+
+// Call functions
+non terminal  SymbolCall            CALL;
+non terminal  SymbolCallBody        CALL_BODY;
+
+// Loops
+non terminal  SymbolWhile           WHILE;
+non terminal  SymbolFor             FOR;
+
+non terminal  SymbolUseless         USELESS;
+
+start with ROOT;
+
+ROOT    ::= INIT_TYPES INSTRS 
+            {: 
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[ROOT => INIT_TYPES INSTRS]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.INIT_TYPES);
+                childs.add(NodeGraph.VARIABLES.INSTRS);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.ROOT);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                // ============== GENERATE DIGRAPH FILE ==============
+                if (hasToGenerateDigraph) {
+                    digraph.generateDotFile();
+                }
+                // ===================================================
+
+                symbolsTable.closeFile(); 
+                System.out.println("QUADRUPLES: ");
+                for (int i = 0; i < quadruples.size(); i++) {
+                    System.out.println(quadruples.get(i));
+                }
+
+                System.out.println("\nVARIABLE'S TABLE:");
+                variablesTable.showInfo();
+
+                boolean hasFinished = true;
+                RESULT = new SymbolRoot(hasFinished);
+            :}
+        ;
+
+INIT_TYPES  ::= 
+                {:  
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description = "[INIT_TYPES => lambda]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INIT_TYPES);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+
+                    initializeTypeInt();
+                    initializeTypeBoolean();
+                    initializeTypeString();
+                    initializeTypeNone(); 
+                    RESULT = new SymbolInitType();
+                :}
+            ;
+
+INSTRS  ::= INSTRS INSTR
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTRS => INSTRS INSTR]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.INSTRS);
+                childs.add(NodeGraph.VARIABLES.INSTR);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTRS);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstrs();
+            :}
+        | INSTR
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTRS => INSTR]";
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.INSTR);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTRS);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstrs();
+            :}
+        ;
+
+INSTR   ::= DECLS
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTR => DECLS]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.DECLS);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstr();
+            :}
+
+        | COND_IF
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTR => COND_IF]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.COND_IF);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstr();
+            :}
+
+        | SWITCH
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTR => SWITCH]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.SWITCH);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstr();
+            :}
+
+        | WHILE
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTR => WHILE]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.WHILE);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstr();
+            :}
+
+        | FOR
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTR => FOR]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.FOR);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstr();
+            :}
+
+        | ASSIGN
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTR => ASSIGN]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.ASSIGN);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstr();
+            :}
+
+        | OUTPUT
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTR => OUTPUT]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.OUTPUT);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstr();
+            :}
+
+        | FUNCTION
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTR => FUNCTION]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.FUNCTION);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstr();
+            :}
+
+        | CALL
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[INSTR => CALL]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.CALL);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolInstr();
+            :}
+        ;
+
+DECLS   ::= id:id_variable separator DECLS:decls           
+            {: 
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description = "[DECLS => id separator DECLS]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.DECLS);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.DECLS);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                SymbolDecls symbolDecls = decls;
+
+                TypeDescription typeDescription = symbolDecls.typeDescription;
+
+                symbolsTable.add(id_variable, typeDescription);
+
+                // ================ INTERMEDIATE CODE ======================
+                variablesTable.addVariable(id_variable);
+                Quadruple quadruple = new Quadruple(OP_CODE.assignRef, decls.idVariable, "", id_variable);
+                quadruples.add(quadruple);
+                symbolDecls.idVariable = id_variable;
+                // =========================================================
+
+                RESULT = symbolDecls;
+            :}
+
+        | id:id_variable CONSTANT:symbol_constant two_points id:type_variable op_assign VALUE:symbol_value final_sentence 
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description = "[DECLS => id CONSTANT two_points id op_assign VALUE final_sentence ]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.CONSTANT);
+                childs.add(NodeGraph.VARIABLES.VALUE);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.DECLS);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                // ================ CHECK IF TYPE IS CORRECT ===========================
+                TypeDescription typeDescription = symbolsTable.query((String) type_variable);
+
+                if (typeDescription.contentDescription != TypeDescription.CONTENT_DESCRIPTION.dtype) {
+                    throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error to declarate variable '" + id_variable + "'. You content description must be '" + TypeDescription.CONTENT_DESCRIPTION.dtype + "' but it's '" + typeDescription.contentDescription + "'"
+                        );
+                }
+
+                if (!   (typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_integer
+                            || typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_boolean
+                            || typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_string
+                        )
+                    ) { 
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error to declarate variable '" + id_variable + "'. Type of variable must have a correct subjacent type. Your basic subjacent type is '" + typeDescription.basicSubjacentType + "'"
+                        ); 
+                }
+                // =====================================================================
+                
+                // ================ COMPARE TYPE AND VALUE OF VARIABLE ==================
+                SymbolValue    symbolValue = symbol_value;
+                SymbolConstant symbolConstant = symbol_constant;
+
+                boolean isConstant = false;
+
+                if (symbolConstant != null) {
+                    isConstant = symbolConstant.isConstant;
+                }
+
+                if (isConstant && !symbolValue.isConstant) {
+                    throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error to declarate variable '" + id_variable + "'. Value of variable isn't a constant."
+                        );
+                }
+
+                if (symbolValue.contentDescription == CONTENT_DESCRIPTION.idnull) {
+                    if (symbolValue.basicSubjacentType != typeDescription.basicSubjacentType){
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error to declarate variable '" + id_variable + "'. Type of variable and it's value must have the same subjacent type."
+                            + " Subjacent type of type: " + typeDescription.basicSubjacentType + ". "
+                            + "Subjacent type of value: " + symbolValue.basicSubjacentType + "."
+                            ); 
+                    }
+
+                } else if (symbolValue.contentDescription == CONTENT_DESCRIPTION.dconst
+                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.dvar
+                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.darg
+                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.dfunc
+                    ) {
+
+                    if (!type_variable.equals(symbolValue.nameType)) {
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error to declarate variable '" + id_variable + "'. The type of variable and his value must be the same."
+                            + "Type of variable: " + type_variable + ". "
+                            + "Type of value: " + symbolValue.nameType + "."
+                            );
+                    }
+                }
+
+                TypeDescription typeDescriptionForNewVariables;
+
+                if (isConstant && symbolValue.isConstant) {
+                    typeDescriptionForNewVariables = new TypeDescription(
+                    CONTENT_DESCRIPTION.dconst,
+                    type_variable,
+                    symbolValue.valueType
+                    );
+
+                } else {
+                    typeDescriptionForNewVariables = new TypeDescription(
+                    CONTENT_DESCRIPTION.dvar,
+                    type_variable
+                    );
+                }
+
+                symbolsTable.add(id_variable, typeDescriptionForNewVariables);
+                SymbolDecls symbolDecls = new SymbolDecls(typeDescriptionForNewVariables);
+                // ================ INTERMEDIATE CODE ======================
+                variablesTable.addVariable(id_variable);
+                Quadruple quadruple = new Quadruple(OP_CODE.assignRef, symbol_value.idVariable, "", id_variable);
+                quadruples.add(quadruple);
+
+                symbolDecls.idVariable = symbolValue.idVariable;
+                // =======================================================
+
+                RESULT = symbolDecls;
+            :} 
+        ;
+
+CONSTANT  ::= constant 
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description = "[CONSTANT => constant]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.CONSTANT);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+                    boolean isConstant = true;
+                    RESULT = new SymbolConstant(isConstant);
+                :}
+            |   
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description = "[CONSTANT => lambda]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.CONSTANT);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+
+                    boolean isConstant = false;
+                    RESULT = new SymbolConstant(isConstant);
+
+                :}
+            ;
+
+ASSIGN  ::= id:id_variable op_assign VALUE:symbol_value final_sentence
+                                    {:
+                                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                                        String description = "[ASSIGN => id op_assign VALUE final_sentence]";
+
+                                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                                        childs.add(NodeGraph.VARIABLES.VALUE);
+
+                                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.ASSIGN);
+                                        digraph.addNode(nodeGraph, childs);
+                                        // =======================================================
+
+                                       // ================ COMPARE TYPE AND VALUE OF VARIABLE ==================
+                                        TypeDescription variableTypeDescription = symbolsTable.query(id_variable);
+                                        SymbolValue symbolValue = symbol_value;
+
+                                        if (variableTypeDescription.contentDescription == CONTENT_DESCRIPTION.dconst) {
+                                            throw new IncorrectTypeException(
+                                                CompilerException.CompilerErrorType.semantic,
+                                                "Operation assignment. We can't assign a value to a constant"
+                                            ); 
+                                        }
+
+                                        if (symbolValue.contentDescription == CONTENT_DESCRIPTION.idnull) {
+                                            TypeDescription typeDescriptionParent = symbolsTable.query(variableTypeDescription.nameType);
+
+                                            if (symbolValue.basicSubjacentType != typeDescriptionParent.basicSubjacentType){
+                                                throw new IncorrectTypeException(
+                                                    CompilerException.CompilerErrorType.semantic,
+                                                    "Operation assignment. Type of variable and it's value must have the same subjacent type."
+                                                    + " Subjacent type of type: " + typeDescriptionParent.basicSubjacentType + ". "
+                                                    + "Subjacent type of value: " + symbolValue.basicSubjacentType + "."
+                                                    ); 
+                                            }
+
+                                        }else if (symbolValue.contentDescription == CONTENT_DESCRIPTION.dvar
+                                                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.darg
+                                                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.dfunc
+                                                ) {
+
+                                            if (!variableTypeDescription.nameType.equals(symbolValue.nameType)) {
+                                                throw new IncorrectTypeException(
+                                                    CompilerException.CompilerErrorType.semantic,
+                                                    "Operation assignment. The type of variable and his value must be the same."
+                                                    + "Type of variable: " + variableTypeDescription.nameType + ". "
+                                                    + "Type of value: " + symbolValue.nameType + "."
+                                                    );
+                                            }
+                                        } else {
+                                            throw new IncorrectTypeException(
+                                                    CompilerException.CompilerErrorType.semantic,
+                                                    "The value has an incorrect type: " + symbolValue.contentDescription + "."
+                                            );
+                                        }
+
+                                        // =====================================================================
+
+                                        Quadruple quadruple = new Quadruple(OP_CODE.assignRef, symbolValue.idVariable, "", id_variable);
+                                        quadruples.add(quadruple);
+
+                                        RESULT = new SymbolAssign();
+                                    :}
+        ;
+
+INIT_OP_ARITH   ::= lparen OP_ARITHMETIC:op_arith rparen
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[INIT_OP_ARITH => lparen OP_ARITHMETIC rparen]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.OP_ARITHMETIC);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INIT_OP_ARITH);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolOpArithmetic symbolOpArithmetic = op_arith;
+                        SymbolInitOpArith symbolInitOpArith = new SymbolInitOpArith();
+
+                        symbolInitOpArith.isConstant = symbolOpArithmetic.isConstant;
+
+                        if (symbolOpArithmetic.isConstant) {
+                            symbolInitOpArith.valueType = symbolOpArithmetic.valueType;
+                        }
+
+                        symbolInitOpArith.idVariable = symbolOpArithmetic.idVariable;
+                        RESULT = symbolInitOpArith;
+                    :}
+                ; 
+
+OP_ARITHMETIC   ::= OP_ARITHMETIC:op_arithmetic_val op_arithmetic:op_arithmetic OP_ARITH_VALUE:op_arith_value
+                    {: 
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description = "[OP_ARITHMETIC => OP_ARITHMETIC op_arithmetic OP_ARITH_VALUE]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.OP_ARITHMETIC);
+                        childs.add(NodeGraph.VARIABLES.OP_ARITH_VALUE);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_ARITHMETIC);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolOpArithmetic symbolOpArithmeticVal = op_arithmetic_val;
+                        SymbolOpArithValue symbolOpArithValue = op_arith_value;
+
+                        SymbolOpArithmetic symbolOpArithmetic = new SymbolOpArithmetic();
+
+                        OP_CODE opCode = OP_CODE.sum;
+                        switch(op_arithmetic) {
+                            case "+": 
+                                    opCode = OP_CODE.sum;
+                                    break;
+                            case "-": 
+                                    opCode = OP_CODE.sub;
+                                    break;
+                            case "*": 
+                                    opCode = OP_CODE.mult;
+                                    break;
+                            case "/": 
+                                    opCode = OP_CODE.div;
+                                    break;
+                            case "%":  
+                                    opCode = OP_CODE.mod;
+                                    break;
+                        }
+                        // We can calculate the value if all operands are constant
+                        if (symbolOpArithmetic.isConstant && symbolOpArithValue.isConstant) {
+                            symbolOpArithmetic.isConstant = true;
+
+                            Integer newValue = -1;
+                            Integer value1 = (Integer) symbolOpArithmeticVal.valueType;
+                            Integer value2 = (Integer) symbolOpArithValue.valueType;
+
+                            switch(op_arithmetic) {
+                                case "+": newValue = value1 + value2; 
+                                        break;
+                                case "-": newValue = value1 - value2; 
+                                        break;
+                                case "*": newValue = value1 * value2;
+                                        break;
+                                case "/": newValue = value1 / value2;
+                                        break;
+                                case "%": newValue = value1 % value2; 
+                                        break;
+                            }
+
+                            symbolOpArithmetic.valueType = newValue;
+
+                        }
+                        String uuidVariable = variablesTable.generateVariable();
+
+                        Quadruple quadruple = new Quadruple(opCode, symbolOpArithmeticVal.idVariable, symbolOpArithValue.idVariable, uuidVariable);
+                        quadruples.add(quadruple);
+
+                        symbolOpArithmetic.idVariable = uuidVariable;
+
+                        RESULT = symbolOpArithmetic;
+                    :}
+
+                | OP_ARITH_VALUE:op_arith_value1 op_arithmetic:op_arithmetic OP_ARITH_VALUE:op_arith_value2
+                    {: 
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description = "[OP_ARITHMETIC => OP_ARITH_VALUE op_arithmetic OP_ARITH_VALUE]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.OP_ARITH_VALUE);
+                        childs.add(NodeGraph.VARIABLES.OP_ARITH_VALUE);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_ARITHMETIC);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolOpArithValue symbolOpArithValue1 = op_arith_value1;
+                        SymbolOpArithValue symbolOpArithValue2 = op_arith_value2;
+
+                        SymbolOpArithmetic symbolOpArithmetic = new SymbolOpArithmetic();
+
+                        OP_CODE opCode = OP_CODE.sum;
+                        switch(op_arithmetic) {
+                                case "+":
+                                        opCode = OP_CODE.sum;
+                                        break;
+                                case "-":
+                                        opCode = OP_CODE.sub;
+                                        break;
+                                case "*":
+                                        opCode = OP_CODE.mult;
+                                        break;
+                                case "/":
+                                        opCode = OP_CODE.div;
+                                        break;
+                                case "%": 
+                                        opCode = OP_CODE.mod;
+                                        break;
+
+                            }
+                        // We can calculate the value if all operands are constant
+                        if (symbolOpArithValue1.isConstant && symbolOpArithValue2.isConstant) {
+                            symbolOpArithmetic.isConstant = true;
+
+                            Integer newValue = -1;
+                            Integer value1 = (Integer) symbolOpArithValue1.valueType;
+                            Integer value2 = (Integer) symbolOpArithValue2.valueType;
+
+                            switch(op_arithmetic) {
+                                case "+": newValue = value1 + value2;
+                                        break;
+                                case "-": newValue = value1 - value2;
+                                        break;
+                                case "*": newValue = value1 * value2;
+                                        break;
+                                case "/": newValue = value1 / value2;
+                                        break;
+                                case "%": newValue = value1 % value2;
+                                        break;
+
+                            }
+                            symbolOpArithmetic.valueType = newValue;
+                        }
+
+                        String uuidVariable = variablesTable.generateVariable();
+
+                        Quadruple quadruple = new Quadruple(opCode, symbolOpArithValue1.idVariable, symbolOpArithValue2.idVariable, uuidVariable);
+                        quadruples.add(quadruple);
+
+                        symbolOpArithmetic.idVariable = uuidVariable;
+
+                        RESULT = symbolOpArithmetic; 
+                    :}
+                ;
+
+OP_ARITH_VALUE  ::= lparen OP_ARITHMETIC:op_arit rparen 
+                    {: 
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description = "[OP_ARITH_VALUE => lparen OP_ARITHMETIC rparen]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.OP_ARITHMETIC);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_ARITH_VALUE);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolOpArithmetic symbolOpArithmetic = op_arit;
+                        SymbolOpArithValue symbolOpArithValue = new SymbolOpArithValue();
+                        symbolOpArithValue.isConstant = symbolOpArithmetic.isConstant;
+
+                        if (symbolOpArithmetic.isConstant) {
+                            symbolOpArithValue.valueType = symbolOpArithmetic.valueType;
+                        }
+
+                        symbolOpArithValue.idVariable = symbolOpArithmetic.idVariable;
+                        RESULT = symbolOpArithValue; 
+                    :}
+
+                | SIGN:sign number:number_val
+                    {: 
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description = "[OP_ARITH_VALUE => SIGN number]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.SIGN);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_ARITH_VALUE);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+
+                        Integer number = new Integer(number_val);
+                        SymbolSign symbolSign = sign;
+                        if (symbolSign != null && symbolSign.isNegative) {
+                            number = -number;
+                        }
+
+                        SymbolOpArithValue symbolOpArithValue = new SymbolOpArithValue(number);
+
+                        String uuidVariable = variablesTable.generateVariable();
+
+                        Quadruple quadruple = new Quadruple(OP_CODE.assignVal, String.valueOf(number_val), "", uuidVariable);
+                        quadruples.add(quadruple);
+
+                        symbolOpArithValue.idVariable = uuidVariable;
+                        RESULT = symbolOpArithValue;
+                    :}
+
+                | id:id
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description = "[OP_ARITH_VALUE => id]";
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_ARITH_VALUE);
+                        digraph.addNode(nodeGraph);
+                        // =======================================================
+
+                        TypeDescription typeDescription = symbolsTable.query(id);
+                        if (typeDescription.contentDescription != CONTENT_DESCRIPTION.dvar 
+                            && typeDescription.contentDescription != CONTENT_DESCRIPTION.dconst
+                            && typeDescription.contentDescription != CONTENT_DESCRIPTION.darg) {
+                                throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Arithmetic operation with id '" + id + "'. The value has an incorrect content description: " + typeDescription.contentDescription + "."
+                                );
+                        }
+                        TypeDescription typeDescriptionType = symbolsTable.query(typeDescription.nameType);
+                        if (typeDescriptionType.basicSubjacentType != BASIC_SUBJACENT_TYPE.ts_integer) {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Arithmetic operation with id '" + id + "'. The value has an incorrect subjacent type: " + typeDescriptionType.basicSubjacentType + "."
+                            );
+                        }
+
+                        SymbolOpArithValue symbolOpArithValue = new SymbolOpArithValue();
+
+                        // We pass the value to the node above when it's a constant
+                        if (typeDescription.contentDescription == CONTENT_DESCRIPTION.dconst) {
+                            Integer number = (Integer) typeDescription.value;
+
+                            symbolOpArithValue.isConstant = true;
+                            symbolOpArithValue.valueType = number;
+                        }  
+
+                        symbolOpArithValue.idVariable = id;
+                        
+                        RESULT = symbolOpArithValue; 
+                    :}
+                ;
+
+SIGN    ::= op_arithmetic:op_arit
+            {: 
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description = "[SIGN => op_arithmetic]";
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.SIGN);
+                digraph.addNode(nodeGraph);
+                // =======================================================
+
+                boolean isNegative = false;
+
+                if (!(op_arit.equals("+") || op_arit.equals("-"))) {
+                   throw new IncorrectOperatorException(
+                        CompilerException.CompilerErrorType.semantic,
+                        "Sign must be '+' or '-'."
+                    ); 
+                }
+
+                if (op_arit.equals("-")) {
+                    isNegative = true;
+                }
+
+                RESULT = new SymbolSign(isNegative); 
+            :}
+        |   
+            {: 
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description = "[SIGN => lambda]";
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.SIGN);
+                digraph.addNode(nodeGraph);
+                // =======================================================
+
+                RESULT = new SymbolSign(); 
+            :}
+        ;
+
+VALUE       ::= INIT_OP_ARITH:init_op_arith    
+                {: 
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[VALUE => INIT_OP_ARITH]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.INIT_OP_ARITH);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.VALUE);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+
+                    SymbolInitOpArith symbolInitOpArith = init_op_arith;
+                    SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_integer);
+
+                    symbolValue.isConstant = symbolInitOpArith.isConstant;
+                    // If it is a constant, then we pass the value to the higher node
+                    if (symbolInitOpArith.isConstant) {
+                        symbolValue.valueType = symbolInitOpArith.valueType;
+                    }
+
+                    symbolValue.idVariable = symbolInitOpArith.idVariable;
+                    RESULT = symbolValue;
+                :}
+            | INIT_OP_BOOL:init_op_bool
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[VALUE => INIT_OP_BOOL]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.INIT_OP_BOOL);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.VALUE);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+                    SymbolInitOpBool symbolInitOpBool = init_op_bool;
+                    SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_boolean);
+
+                    // If it is a constant, then we pass the value to the higher node
+                    if (symbolInitOpBool.isConstant) {
+                        symbolValue.isConstant = true;
+                        symbolValue.valueType = symbolInitOpBool.valueType;
+                    }
+                    symbolValue.idVariable = symbolInitOpBool.idVariable;
+                    RESULT = symbolValue;
+                :}
+
+            | SIGN:sign number:number_value
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[VALUE => SIGN number]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.SIGN);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.VALUE);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+
+                    Integer value = new Integer(number_value);
+                    SymbolSign symbolSign = sign;
+
+                    if (symbolSign != null) {
+                        value = (symbolSign.hasSign && symbolSign.isNegative) ? -value : value;
+                    }
+
+                    String uuidVariable = variablesTable.generateVariable();
+
+                    Quadruple quadruple = new Quadruple(OP_CODE.assignVal, String.valueOf(value), "", uuidVariable);
+                    quadruples.add(quadruple);
+
+                    SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_integer, value);
+                    symbolValue.idVariable = uuidVariable;
+                    RESULT = symbolValue;
+                :}
+
+            | text:text_value      
+                {: 
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[VALUE => text]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.VALUE);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+                    String value = new String(text_value.replace("\"", "")); // Delete double quote from lexeme
+                    
+                    String uuidVariable = variablesTable.generateVariable();
+                    Quadruple quadruple = new Quadruple(OP_CODE.assignVal, value, "", uuidVariable);
+                    quadruples.add(quadruple);
+
+                    SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_string, value);
+                    symbolValue.idVariable = uuidVariable;
+                    RESULT = symbolValue;
+                :}
+
+            | bool:bool_value      
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[VALUE => bool]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.VALUE);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+                    Boolean value = new Boolean(bool_value);
+
+                    String uuidVariable = variablesTable.generateVariable();
+                    Quadruple quadruple = new Quadruple(OP_CODE.assignVal, Boolean.toString(value) , "", uuidVariable);
+                    quadruples.add(quadruple);
+
+                    SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_boolean, value);
+                    symbolValue.idVariable = uuidVariable;
+                    RESULT = symbolValue;  
+                :}
+
+            | inst_input lparen id:type_id rparen
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[VALUE => inst_input lparen rparen]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.VALUE);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+                    TypeDescription typeDescription = symbolsTable.query(type_id);
+
+                    if (typeDescription.contentDescription != CONTENT_DESCRIPTION.dtype) {
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error in instruction 'input'. The content in parameters isn't a type."
+                        );
+                    }
+
+                    if (typeDescription.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_none) {
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error in instruction 'input'. Incorrect basic subjacent type."
+                        );
+                    }
+
+                    RESULT = new SymbolValue(typeDescription.basicSubjacentType);  
+
+                :}
+
+            | id:id_value           
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[VALUE => id]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.VALUE);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+
+                    TypeDescription typeDescription = symbolsTable.query(id_value);
+
+                    SymbolValue symbolValue = new SymbolValue(
+                        typeDescription.contentDescription,
+                        typeDescription.nameType
+                    );
+
+                    // If it is a constant, then we pass the value to the higher node
+                    if (typeDescription.contentDescription == CONTENT_DESCRIPTION.dconst) {   
+                        symbolValue.isConstant = true;
+                        symbolValue.valueType = typeDescription.value;
+                    }
+
+                    symbolValue.idVariable = id_value;
+
+                    RESULT = symbolValue;
+                :}
+            | CALL:call
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[VALUE => CALL]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.CALL);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.VALUE);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+                    SymbolCall symbolCall = call;
+
+                    TypeDescription typeDescription = symbolsTable.query(symbolCall.idFunction);
+
+                    RESULT = new SymbolValue(CONTENT_DESCRIPTION.dfunc, typeDescription.nameType);
+                :}
+            ;
+
+OUTPUT  ::= inst_output lparen VALUE:symbol_value rparen final_sentence
+            {:
+
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[OUTPUT => inst_output lparen VALUE rparen final_sentence]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.VALUE);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OUTPUT);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                SymbolValue symbolValue = symbol_value;
+                BASIC_SUBJACENT_TYPE subjacentType = BASIC_SUBJACENT_TYPE.ts_none;
+
+                // ======================= GET SUBJACENT TYPE OF OUR VALUE ==========================
+                if (!(symbolValue.contentDescription == CONTENT_DESCRIPTION.idnull
+                            ||symbolValue.contentDescription == CONTENT_DESCRIPTION.dvar
+                            || symbolValue.contentDescription == CONTENT_DESCRIPTION.dconst
+                            || symbolValue.contentDescription == CONTENT_DESCRIPTION.darg
+                            || symbolValue.contentDescription == CONTENT_DESCRIPTION.dfunc
+                        )) {
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error in output operation. The value has an incorrect type: " + symbolValue.contentDescription + "."
+                        );
+                    
+                }
+                // ====================================================================================
+
+                Quadruple quadruple = new Quadruple(OP_CODE.output, "", "", symbolValue.idVariable);
+                quadruples.add(quadruple);
+
+                RESULT = new SymbolOutput();
+            :}
+        ;
+
+INIT_OP_BOOL    ::= lparen OP_BOOLEAN:op_boolean rparen
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[INIT_OP_BOOL => lparen OP_BOOLEAN rparen]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.OP_BOOLEAN);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INIT_OP_BOOL);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolOpBoolean symbolOpBoolean = op_boolean;
+                        SymbolInitOpBool symbolInitOpBool = new SymbolInitOpBool();
+
+                        // If it is a constant, then we pass the value to the higher node
+                        if (symbolOpBoolean.isConstant) {
+                            symbolInitOpBool.isConstant = true;
+                            symbolInitOpBool.valueType = symbolOpBoolean.valueType;
+                        }
+
+                        if (!symbolOpBoolean.isSingleBoolean) {
+                            Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", symbolOpBoolean.idLabel);
+                            quadruples.add(quadruple);
+                        }
+                        
+                        symbolInitOpBool.idVariable = symbolOpBoolean.idVariable;
+
+                        RESULT = symbolInitOpBool;
+                    :}
+                ;
+
+OP_BOOLEAN     ::= OP_BOOLEAN:op_boolean_val1 op_logic:op_logic OP_BOOL_VALUE:op_boolean_val2
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[OP_BOOLEAN => OP_BOOLEAN op_logic OP_BOOL_VALUE]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.OP_BOOLEAN);
+                        childs.add(NodeGraph.VARIABLES.OP_BOOL_VALUE);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_BOOLEAN);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolOpBoolean symbolOpBooleanVal1 = op_boolean_val1;
+                        SymbolOpBoolValue symbolOpBoolVal2 = op_boolean_val2;
+                        SymbolOpBoolean symbolOpBoolean = new SymbolOpBoolean();
+
+                        // If it is a constant, then we calculate the value and pass it to the higher node
+                        if (symbolOpBooleanVal1.isConstant && symbolOpBoolVal2.isConstant) {
+                            Boolean val1 = (Boolean) symbolOpBooleanVal1.valueType;
+                            Boolean val2 = (Boolean) symbolOpBoolVal2.valueType;
+
+                            Boolean newValue = false;
+
+                            switch(op_logic) {
+                                case "&&": 
+                                    newValue = val1 && val2;
+                                break;
+                                case "||": 
+                                    newValue = val1 || val2;
+                                break;
+                            }
+
+                            symbolOpBoolean.isConstant = true;
+                            symbolOpBoolean.valueType = newValue;
+
+                        }
+
+                        OP_CODE opCodeVariable = OP_CODE.and;
+                        OP_CODE opCodeConditional = OP_CODE.condTrue;
+
+                        switch(op_logic) {
+                            case "&&": 
+                                opCodeVariable = OP_CODE.and;
+                                opCodeConditional = OP_CODE.condFalse;
+                            break;
+                            case "||":
+                                opCodeVariable = OP_CODE.or;
+                                opCodeConditional = OP_CODE.condTrue;
+                            break;
+                        }
+
+                        Quadruple quadruple = new Quadruple(opCodeConditional, symbolOpBooleanVal1.idVariable, "" , symbolOpBooleanVal1.idLabel);
+                        quadruples.add(symbolOpBooleanVal1.indexQuadruples, quadruple);
+
+                        Quadruple quadruple2 = new Quadruple(opCodeVariable, symbolOpBoolVal2.idVariable, "" , symbolOpBooleanVal1.idVariable);
+                        quadruples.add(quadruple2);
+
+                        symbolOpBoolean.idLabel = symbolOpBooleanVal1.idLabel;
+                        symbolOpBoolean.idVariable = symbolOpBooleanVal1.idVariable;
+                        symbolOpBoolean.indexQuadruples = quadruples.size();
+                        symbolOpBoolean.isSingleBoolean = false;
+                        RESULT = symbolOpBoolean;
+                    :}
+
+                | OP_BOOL_VALUE:op_bool_value
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[OP_BOOLEAN => OP_BOOL_VALUE]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.OP_BOOL_VALUE);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_BOOLEAN);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolOpBoolValue symbolOpBoolValue =  op_bool_value;
+                        SymbolOpBoolean symbolOpBoolean = new SymbolOpBoolean();
+
+                        // If it is a constant, then we pass the value to the higher node
+                        if (symbolOpBoolValue.isConstant) {
+                            symbolOpBoolean.isConstant = true;
+                            symbolOpBoolean.valueType = symbolOpBoolValue.valueType;
+                        }
+
+                        String uuidLabel = UUID.randomUUID().toString();
+
+                        symbolOpBoolean.idVariable = symbolOpBoolValue.idVariable;
+                        symbolOpBoolean.idLabel = uuidLabel;
+                        symbolOpBoolean.indexQuadruples = quadruples.size();
+                        symbolOpBoolean.isSingleBoolean = true;
+                        RESULT = symbolOpBoolean;
+                    :}
+                ;
+
+OP_BOOL_VALUE   ::= bool:bool_val
+                    {: 
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[OP_BOOL_VALUE => bool]";
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_BOOL_VALUE);
+                        digraph.addNode(nodeGraph);
+                        // =======================================================
+                        Boolean boolVal = new Boolean(bool_val);
+                         
+                        SymbolOpBoolValue symbolOpBoolValue = new SymbolOpBoolValue(boolVal);
+
+                        String uuidVariable = variablesTable.generateVariable();
+
+                        Quadruple quadruple = new Quadruple(OP_CODE.assignVal, Boolean.toString(boolVal), "", uuidVariable);
+                        quadruples.add(quadruple);
+
+                        symbolOpBoolValue.idVariable = uuidVariable;
+
+                        RESULT = symbolOpBoolValue;
+                    :}
+
+                | lparen OP_BOOLEAN:op_boolean rparen
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[OP_BOOL_VALUE => lparen OP_BOOLEAN rparen]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.OP_BOOLEAN);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_BOOL_VALUE);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolOpBoolean symbolOpBoolean = op_boolean;
+                        SymbolOpBoolValue symbolOpBoolValue = new SymbolOpBoolValue();
+
+                        // If it is a constant, then we pass the value to the higher node
+                        if(symbolOpBoolean.isConstant) {
+                            symbolOpBoolValue.isConstant = true;
+                            symbolOpBoolValue.valueType = symbolOpBoolean.valueType;
+                        }
+
+                        Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", symbolOpBoolean.idLabel);
+                        quadruples.add(quadruple);
+
+                        symbolOpBoolValue.idVariable = symbolOpBoolean.idVariable;
+                        RESULT = symbolOpBoolValue;
+                    :}
+
+                | id:id
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[OP_BOOL_VALUE => id]";
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_BOOL_VALUE);
+                        digraph.addNode(nodeGraph);
+                        // =======================================================
+
+                        TypeDescription typeDescription = symbolsTable.query(id);
+                        if (typeDescription.contentDescription != CONTENT_DESCRIPTION.dvar 
+                            && typeDescription.contentDescription != CONTENT_DESCRIPTION.dconst 
+                            && typeDescription.contentDescription != CONTENT_DESCRIPTION.darg) {
+                                throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in boolean operation. The value has an incorrect content description: " + typeDescription.contentDescription + "."
+                                );
+                        }
+                        TypeDescription typeDescriptionType = symbolsTable.query(typeDescription.nameType);
+                        if (typeDescriptionType.basicSubjacentType != BASIC_SUBJACENT_TYPE.ts_boolean) {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in boolean operation. The value has an incorrect subjacent type: " + typeDescriptionType.basicSubjacentType + "."
+                            );
+                        }
+
+                        SymbolOpBoolValue symbolOpBoolValue = new SymbolOpBoolValue();
+                        // If it is a constant, then we pass the value to the higher node
+                        if (typeDescription.contentDescription == CONTENT_DESCRIPTION.dconst) {
+                            symbolOpBoolValue.isConstant = true;
+                            symbolOpBoolValue.valueType = typeDescription.value;
+                        }
+
+                        symbolOpBoolValue.idVariable = id;
+
+                        RESULT = symbolOpBoolValue; 
+                    :}
+                | RELATIONAL_COMP 
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[OP_BOOL_VALUE => RELATIONAL_COMP]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.RELATIONAL_COMP);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_BOOL_VALUE);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+
+                        RESULT = new SymbolOpBoolValue(); 
+                    :}
+                ;
+
+RELATIONAL_COMP ::= lbracket VALUE:value_1 op_relational:op_relational VALUE:value_2 rbracket
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[RELATIONAL_COMP => lbracket VALUE op_relational VALUE rbracket]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.VALUE);
+                        childs.add(NodeGraph.VARIABLES.VALUE);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.RELATIONAL_COMP);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+
+                        SymbolValue symbolValue1 = value_1;
+                        SymbolValue symbolValue2 = value_2;
+
+                        BASIC_SUBJACENT_TYPE value1SubjacenBasicType = BASIC_SUBJACENT_TYPE.ts_none;
+                        BASIC_SUBJACENT_TYPE value2SubjacenBasicType = BASIC_SUBJACENT_TYPE.ts_none;
+
+                        // ===================== CHECK VALUE 1 AND GET HIS SUUBJACENT BASIC TYPE ========================
+                        if (symbolValue1.contentDescription == CONTENT_DESCRIPTION.idnull) {
+                            value1SubjacenBasicType = symbolValue1.basicSubjacentType;
+                            
+                        } else if (symbolValue1.contentDescription == CONTENT_DESCRIPTION.dvar
+                                || symbolValue1.contentDescription == CONTENT_DESCRIPTION.dconst
+                                || symbolValue1.contentDescription == CONTENT_DESCRIPTION.darg
+                                || symbolValue1.contentDescription == CONTENT_DESCRIPTION.dfunc
+                            ) {
+                            TypeDescription typeDescription1 = symbolsTable.query(symbolValue1.nameType);
+                            value1SubjacenBasicType = typeDescription1.basicSubjacentType;
+
+                            if (value1SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_none) {
+                                throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in relational comparation. The basic subjacent type can't be 'none'."
+                                );
+                            }
+
+                        } else {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in relational comparation. The value has an incorrect content description: " + symbolValue1.contentDescription + "."
+                                );
+                        }
+                        // =============================================================================================
+                        
+                        // ===================== CHECK VALUE 2 AND GET HIS SUUBJACENT BASIC TYPE ========================
+                        if (symbolValue2.contentDescription == CONTENT_DESCRIPTION.idnull) {
+                            value2SubjacenBasicType = symbolValue2.basicSubjacentType;
+                            
+                        } else if (symbolValue2.contentDescription == CONTENT_DESCRIPTION.dvar
+                                || symbolValue2.contentDescription == CONTENT_DESCRIPTION.dconst
+                                || symbolValue2.contentDescription == CONTENT_DESCRIPTION.darg
+                                || symbolValue2.contentDescription == CONTENT_DESCRIPTION.dfunc
+                            ) {
+                            TypeDescription typeDescription2 = symbolsTable.query(symbolValue2.nameType);
+                            value2SubjacenBasicType = typeDescription2.basicSubjacentType;
+
+                            if (value2SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_none) {
+                                throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in relational comparation. The basic subjacent type can't be 'none'."
+                                );
+                            }
+
+                        } else {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in relational comparation. The value has an incorrect content description: " + symbolValue2.contentDescription + "."
+                            );
+                        }
+                        // =============================================================================================
+
+                        // ====================== CHECK SUBJACENT BASIC TYPES FROM VALUES ==============================
+                        if (value1SubjacenBasicType != BASIC_SUBJACENT_TYPE.ts_integer
+                            && value1SubjacenBasicType != BASIC_SUBJACENT_TYPE.ts_boolean
+                            && value1SubjacenBasicType != BASIC_SUBJACENT_TYPE.ts_string
+                            ) {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in relational comparation. One value has an incorrect subjacent basic type: " + value1SubjacenBasicType + "."
+                            );
+                        }
+
+                        if (value2SubjacenBasicType != BASIC_SUBJACENT_TYPE.ts_integer
+                            && value2SubjacenBasicType != BASIC_SUBJACENT_TYPE.ts_boolean
+                            && value2SubjacenBasicType != BASIC_SUBJACENT_TYPE.ts_string
+                            ) {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in relational comparation. One value has an incorrect subjacent basic type: " + value2SubjacenBasicType + "."
+                            );
+                        }
+
+                        if (value1SubjacenBasicType != value2SubjacenBasicType) {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in relational comparation. The values has differente subjacent basic types. " 
+                                    + "Value 1 has " + value1SubjacenBasicType + " as his subjacent basic type. "
+                                    + "Value 1 has " + value2SubjacenBasicType + " as his subjacent basic type. "
+                            );
+                        }
+                        // =============================================================================================
+
+                        if ((op_relational.equals("<")
+                            || op_relational.equals("<=")
+                            || op_relational.equals(">")
+                            || op_relational.equals(">="))
+                            && value1SubjacenBasicType != BASIC_SUBJACENT_TYPE.ts_integer
+                            ) {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in relational comparation. This relational operator '"
+                                    + op_relational 
+                                    +"' only compares numbers, not values with this basic subjacent type " 
+                                    + value1SubjacenBasicType 
+                                    + "."
+                            );
+                        }
+
+                        SymbolRelationalComp symbolRelationalComp = new SymbolRelationalComp();
+                        
+                        // If it is a constant, then we pass the value to the higher node
+                        if (symbolValue1.isConstant && symbolValue2.isConstant) {
+                            Boolean newValue = false;
+
+
+                            switch(op_relational) {
+                                case "==": 
+                                    if (value1SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_integer) {
+                                        newValue = (((Integer) symbolValue1.valueType) == ((Integer) symbolValue2.valueType));
+
+                                    } else if (value1SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_boolean) {
+                                        newValue = (((Boolean) symbolValue1.valueType) == ((Boolean) symbolValue2.valueType));
+
+                                    } else if (value1SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_string) {
+                                        newValue = ((String) symbolValue1.valueType).equals((String) symbolValue2.valueType);
+                                    }
+                                break;
+
+                                case "!=": 
+                                    if (value1SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_integer) {
+                                        newValue = (((Integer) symbolValue1.valueType) != ((Integer) symbolValue2.valueType));
+
+                                    } else if (value1SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_boolean) {
+                                        newValue = (((Boolean) symbolValue1.valueType) !=((Boolean) symbolValue2.valueType));
+
+                                    } else if (value1SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_string) {
+                                        newValue = !(((String) symbolValue1.valueType).equals((String) symbolValue2.valueType));
+                                    }
+                                break;
+
+                                case "<" : newValue = (((Integer) symbolValue1.valueType) <  ((Integer) symbolValue2.valueType)); break;
+                                case "<=": newValue = (((Integer) symbolValue1.valueType) <= ((Integer) symbolValue2.valueType)); break;
+                                case ">" : newValue = (((Integer) symbolValue1.valueType) >  ((Integer) symbolValue2.valueType)); break;
+                                case ">=": newValue = (((Integer) symbolValue1.valueType) >= ((Integer) symbolValue2.valueType)); break;
+                            }
+
+                            symbolRelationalComp.isConstant = true;
+                            symbolRelationalComp.valueType = newValue;
+                        }
+
+                        RESULT = symbolRelationalComp; 
+
+                    :}
+                ;
+
+COND    ::= INIT_OP_BOOL:init_op_bool
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="COND => INIT_OP_BOOL]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.INIT_OP_BOOL);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                String uuidTrueCondLabel = UUID.randomUUID().toString();
+                String uuidFalseCondLabel = UUID.randomUUID().toString();
+
+                stackTrueCond.push(uuidTrueCondLabel);
+                stackFalseCond.push(uuidFalseCondLabel);
+
+                SymbolInitOpBool symbolInitOpBool = init_op_bool;
+
+                Quadruple quadrupleTrueCond = new Quadruple(OP_CODE.condTrue, symbolInitOpBool.idVariable, "" , uuidTrueCondLabel);
+                quadruples.add(quadrupleTrueCond);
+                
+                Quadruple quadrupleFalseCond = new Quadruple(OP_CODE.condFalse, symbolInitOpBool.idVariable, "" , uuidFalseCondLabel);
+                quadruples.add(quadrupleFalseCond);
+
+                RESULT = new SymbolCond();
+            :}
+        ;
+
+COND_TRUE_MASK ::=
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="COND_TRUE_MASK => lambda]";
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_TRUE_MASK);
+                        digraph.addNode(nodeGraph);
+                        // =======================================================
+
+                        String trueCondLabel = stackTrueCond.pop();
+                        Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", trueCondLabel);
+                        quadruples.add(quadruple);
+
+                        RESULT = new SymbolCondTrueMask();
+                    :}
+                ;
+
+COND_FALSE_MASK ::=
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="COND_FALSE_MASK => lambda]";
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_FALSE_MASK);
+                        digraph.addNode(nodeGraph);
+                        // =======================================================
+                        String falseCondLabel = stackFalseCond.pop();
+                        Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", falseCondLabel);
+                        quadruples.add(quadruple);
+
+                        RESULT = new SymbolCondFalseMask();
+                    :}
+                ;
+
+JUMP_LABEL     ::= USELESS
+        {:
+            String uuidLabel = UUID.randomUUID().toString();
+            Quadruple quadruple = new Quadruple(OP_CODE.jump, "", "", uuidLabel);
+            quadruples.add(quadruple);
+
+            RESULT = new SymbolJumpLabel(uuidLabel);
+        :}
+    ;
+
+SKIP_LABEL ::= USELESS
+        {:
+            String uuidLabel = UUID.randomUUID().toString();
+            Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", uuidLabel);
+            quadruples.add(quadruple);
+
+            RESULT = new SymbolSkipLabel(uuidLabel);
+        :}
+    ;
+
+COND_IF ::= inst_if COND lbracket CODE_BLOCK_IN COND_TRUE_MASK INSTRS CODE_BLOCK_OUT rbracket  COND_ELIF COND_ELSE 
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[COND_IF => inst_if COND lbracket CODE_BLOCK_IN COND_TRUE_MASK INSTRS CODE_BLOCK_OUT rbracket COND_ELIF COND_ELSE]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.COND);
+                childs.add(NodeGraph.VARIABLES.CODE_BLOCK_IN);
+                childs.add(NodeGraph.VARIABLES.COND_TRUE_MASK);
+                childs.add(NodeGraph.VARIABLES.INSTRS);
+                childs.add(NodeGraph.VARIABLES.CODE_BLOCK_OUT);
+                childs.add(NodeGraph.VARIABLES.COND_ELIF);
+                childs.add(NodeGraph.VARIABLES.COND_ELSE);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_IF);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolCondIf();
+            :}
+        ;
+
+COND_ELIF   ::= COND_ELIF JUMP_LABEL:jump_label inst_elif COND_FALSE_MASK COND lbracket CODE_BLOCK_IN COND_TRUE_MASK INSTRS CODE_BLOCK_OUT rbracket
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[COND_ELIF => COND_ELIF inst_elif COND_FALSE_MASK COND lbracket CODE_BLOCK_IN INSTRS CODE_BLOCK_OUT rbracket]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.COND_ELIF);
+                    childs.add(NodeGraph.VARIABLES.COND_FALSE_MASK);
+                    childs.add(NodeGraph.VARIABLES.COND);
+                    childs.add(NodeGraph.VARIABLES.CODE_BLOCK_IN);
+                    childs.add(NodeGraph.VARIABLES.INSTRS);
+                    childs.add(NodeGraph.VARIABLES.CODE_BLOCK_OUT);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_ELIF);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+
+                    Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", jump_label.idLabel);
+                    quadruples.add(quadruple);
+
+                    RESULT = new SymbolCondElif();
+                :}
+            |
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[COND_ELIF => lambda]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_ELIF);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+
+                    RESULT = new SymbolCondElif();
+                :}
+            ;
+
+
+COND_ELSE   ::= JUMP_LABEL:jump_label inst_else lbracket CODE_BLOCK_IN COND_FALSE_MASK INSTRS CODE_BLOCK_OUT rbracket
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[COND_ELSE => inst_else lbracket COND_FALSE_MASK CODE_BLOCK_IN INSTRS CODE_BLOCK_OUT rbracket]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.CODE_BLOCK_IN);
+                    childs.add(NodeGraph.VARIABLES.COND_FALSE_MASK);
+                    childs.add(NodeGraph.VARIABLES.INSTRS);
+                    childs.add(NodeGraph.VARIABLES.CODE_BLOCK_OUT);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_ELSE);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+
+                    Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", jump_label.idLabel);
+                    quadruples.add(quadruple);
+
+                    RESULT = new SymbolCondElse();
+                :}
+
+            | COND_FALSE_MASK
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[COND_ELSE => COND_FALSE_MASK]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.COND_FALSE_MASK);
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_ELSE);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+
+                    RESULT = new SymbolCondElse();
+                :}
+            ;
+
+SWITCH  ::= SWITCH_BEGIN SWITCH_END
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[SWITCH => SWITCH_BEGIN SWITCH_END]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.SWITCH_BEGIN);
+                childs.add(NodeGraph.VARIABLES.SWITCH_END);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.SWITCH);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolSwitch();
+            :}
+        ;
+
+SWITCH_BEGIN    ::= SWITCH_BEGIN:switch_begin inst_case lparen VALUE:comparison_value rparen two_points CODE_BLOCK_IN INSTRS CODE_BLOCK_OUT inst_break final_sentence 
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[SWITCH_BEGIN => SWITCH_BEGIN inst_case lparen VALUE rparen two_points CODE_BLOCK_IN INSTRS CODE_BLOCK_OUT inst_break final_sentence]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.SWITCH_BEGIN);
+                        childs.add(NodeGraph.VARIABLES.VALUE);
+                        childs.add(NodeGraph.VARIABLES.CODE_BLOCK_IN);
+                        childs.add(NodeGraph.VARIABLES.INSTRS);
+                        childs.add(NodeGraph.VARIABLES.CODE_BLOCK_OUT);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.SWITCH_BEGIN);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolSwitchBegin symbolSwitchBegin = switch_begin;
+                        SymbolValue symbolValue = comparison_value;
+                        BASIC_SUBJACENT_TYPE caseBasicSubjacentType = BASIC_SUBJACENT_TYPE.ts_none;
+
+                        if (symbolValue.contentDescription == CONTENT_DESCRIPTION.idnull) {
+                            caseBasicSubjacentType = symbolValue.basicSubjacentType;
+
+                        }else if (symbolValue.contentDescription == CONTENT_DESCRIPTION.dvar
+                                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.dconst
+                                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.darg
+                                ) {
+                            TypeDescription typeDescription = symbolsTable.query(symbolValue.nameType);
+                            caseBasicSubjacentType = typeDescription.basicSubjacentType;
+                        } else {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in switch. The value has an incorrect type: " + symbolValue.contentDescription + "."
+                            );
+                        }
+
+                        if (symbolSwitchBegin.basicSubjacentType != caseBasicSubjacentType) {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in case. The value of switch and case are different. The basic subjacent type of switch is '" 
+                                    + symbolSwitchBegin.basicSubjacentType + "' and the basic subjacent type of case is '" + caseBasicSubjacentType + "'."
+                            );
+                        }
+
+                        RESULT = symbolSwitchBegin;
+                    :}
+
+                | inst_switch lparen VALUE:comparison_value rparen lbracket
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[SWITCH_BEGIN => inst_switch lparen VALUE rparen lbracket]";
+
+                        ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                        childs.add(NodeGraph.VARIABLES.VALUE);
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.SWITCH_BEGIN);
+                        digraph.addNode(nodeGraph, childs);
+                        // =======================================================
+                        SymbolValue symbolValue = comparison_value;
+                        BASIC_SUBJACENT_TYPE basicSubjacentType = BASIC_SUBJACENT_TYPE.ts_none;
+
+                        if (symbolValue.contentDescription == CONTENT_DESCRIPTION.idnull) {
+                            basicSubjacentType = symbolValue.basicSubjacentType;
+
+                        }else if (symbolValue.contentDescription == CONTENT_DESCRIPTION.dvar
+                                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.dconst
+                                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.darg
+                                ) {
+                            TypeDescription typeDescription = symbolsTable.query(symbolValue.nameType);
+                            basicSubjacentType = typeDescription.basicSubjacentType;
+                        } else {
+                            throw new IncorrectTypeException(
+                                    CompilerException.CompilerErrorType.semantic,
+                                    "Error in switch. The value has an incorrect type: " + symbolValue.contentDescription + "."
+                            );
+                        }
+
+                        RESULT = new SymbolSwitchBegin(basicSubjacentType);
+                    :}
+                ;
+
+SWITCH_END  ::= inst_default two_points CODE_BLOCK_IN INSTRS CODE_BLOCK_OUT inst_break final_sentence rbracket
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[SWITCH_END => inst_default two_points CODE_BLOCK_IN INSTRS CODE_BLOCK_OUT rbracket]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.CODE_BLOCK_IN);
+                    childs.add(NodeGraph.VARIABLES.INSTRS);
+                    childs.add(NodeGraph.VARIABLES.CODE_BLOCK_OUT);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.SWITCH_END);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+
+                    RESULT = new SymbolSwitchEnd();
+                :}
+            | rbracket
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[SWITCH_END => lambda]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.SWITCH_END);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+
+                    RESULT = new SymbolSwitchEnd();
+                :}
+            ;
+
+WHILE   ::= inst_while SKIP_LABEL:skip_label COND lbracket CODE_BLOCK_IN COND_TRUE_MASK INSTRS CODE_BLOCK_OUT rbracket
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[WHILE => inst_while  INIT_OP_BOOL lbracket CODE_BLOCK_IN INSTRS CODE_BLOCK_OUT rbracket]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.INIT_OP_BOOL);
+                childs.add(NodeGraph.VARIABLES.CODE_BLOCK_IN);
+                childs.add(NodeGraph.VARIABLES.INSTRS);
+                childs.add(NodeGraph.VARIABLES.CODE_BLOCK_OUT);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.WHILE);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                Quadruple quadrupleJump = new Quadruple(OP_CODE.jump, "", "", skip_label.idLabel);
+                quadruples.add(quadrupleJump);
+
+                String falseCondLabel = stackFalseCond.pop();
+                Quadruple quadrupleSkip = new Quadruple(OP_CODE.skip, "", "", falseCondLabel);
+                quadruples.add(quadrupleSkip);
+
+                RESULT = new SymbolWhile();
+            :}
+        ;
+
+FOR     ::= inst_for CODE_BLOCK_IN lparen DECLS INIT_OP_BOOL final_sentence ASSIGN rparen lbracket INSTRS CODE_BLOCK_OUT rbracket
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[FOR => inst_for CODE_BLOCK_IN lparen DECLS two_points INIT_OP_BOOL two_points ASSIGN rparen lbracket INSTRS CODE_BLOCK_OUT rbracket]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.CODE_BLOCK_IN);
+                childs.add(NodeGraph.VARIABLES.DECLS);
+                childs.add(NodeGraph.VARIABLES.INIT_OP_BOOL);
+                childs.add(NodeGraph.VARIABLES.ASSIGN);
+                childs.add(NodeGraph.VARIABLES.INSTRS);
+                childs.add(NodeGraph.VARIABLES.CODE_BLOCK_OUT);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.FOR);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                RESULT = new SymbolFor();
+            :}
+        ;
+
+CODE_BLOCK_IN   ::= 
+                    {:
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[CODE_BLOCK_IN => lambda]";
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.CODE_BLOCK_IN);
+                        digraph.addNode(nodeGraph);
+                        // =======================================================
+
+                        symbolsTable.getinBlock();
+                        RESULT = new SymbolCodeBlockIn();
+                    :}
+                ;
+
+CODE_BLOCK_OUT  ::= 
+                    {:  
+                        // ============== GENERATE NODE FOR DIGRAPH ==============
+                        String description ="[CODE_BLOCK_OUT => lambda]";
+
+                        NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.CODE_BLOCK_OUT);
+                        digraph.addNode(nodeGraph);
+                        // =======================================================
+
+                        symbolsTable.getoutBlock();
+                        RESULT = new SymbolCodeBlockOut();
+                    :}
+                ;
+
+FUNCTION ::= FUNC_HEAD:func_head rparen lbracket CODE_BLOCK_IN FUNC_BODY RETURN:return_val CODE_BLOCK_OUT rbracket 
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[FUNCTION => FUNC_HEAD rparen lbracket CODE_BLOCK_IN INSTRS RETURN CODE_BLOCK_OUT rbracket]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.FUNC_HEAD);
+                childs.add(NodeGraph.VARIABLES.CODE_BLOCK_IN);
+                childs.add(NodeGraph.VARIABLES.FUNC_BODY);
+                childs.add(NodeGraph.VARIABLES.RETURN);
+                childs.add(NodeGraph.VARIABLES.CODE_BLOCK_OUT);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.FUNCTION);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                SymbolFuncHead symbolFuncHead = func_head;
+                SymbolReturn symbolReturn = return_val;
+                TypeDescription typeDescription = symbolsTable.query(symbolFuncHead.nameType);
+
+                if (symbolReturn == null) {
+                    if (typeDescription.basicSubjacentType != BASIC_SUBJACENT_TYPE.ts_none) {
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Your function doesn't return a value."
+                        );
+                    }
+                } else if (symbolReturn.basicSubjacentType != typeDescription.basicSubjacentType) {
+                    throw new IncorrectTypeException(
+                        CompilerException.CompilerErrorType.semantic,
+                        "Your function returns an incorrect value."
+                    );
+                }
+
+                RESULT = new SymbolFunction();
+            :}
+        ;
+
+FUNC_HEAD   ::= inst_function id:type_variable id:id_function lparen PARAMS:params
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[FUNC_HEAD => inst_function id id lparen PARAMS]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.PARAMS);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.FUNC_HEAD);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+
+                    // ================ CHECK IF TYPE IS CORRECT =========================================================
+                    TypeDescription typeDescription = symbolsTable.query((String) type_variable);
+
+                    if (typeDescription.contentDescription != TypeDescription.CONTENT_DESCRIPTION.dtype) {
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Must be a correct type."
+                        );
+                    }
+
+                    if (!   (typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_integer
+                                || typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_boolean
+                                || typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_string
+                                || typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_none
+                            )
+                        ) { 
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Type of variable must have a correct subjacent type."
+                        ); 
+                    }
+                    // ==================================================================================================
+
+                    // ============= ADD OUR FUNCTION TO DESCRIPTION TABLE ==============================================
+                    TypeDescription functionTypeDescription = new TypeDescription(
+                        CONTENT_DESCRIPTION.dfunc,
+                        type_variable
+                    );
+
+                    symbolsTable.add(id_function, functionTypeDescription);
+                    // ==================================================================================================
+
+                    // ============= ADD PARAMS OF OUR FUNCTION TO EXPANSION TABLE ======================================
+                    SymbolParams symbolParams = params;
+
+                    ArrayList<String> listVariableIds = new ArrayList<String>();
+                    ArrayList<TypeDescription> listVariableTypeDescription = new ArrayList<TypeDescription>();
+
+                    if (symbolParams != null) {
+                        listVariableIds = symbolParams.listVariableIds;
+                        listVariableTypeDescription = symbolParams.listVariableTypeDescription;
+
+                    }
+
+                    for (int i = 0; i < listVariableIds.size(); i++) {
+                        symbolsTable.addParam(id_function, listVariableIds.get(i), listVariableTypeDescription.get(i));
+                    }
+                    // ==================================================================================================
+
+                    RESULT = new SymbolFuncHead(type_variable);
+                :}
+            ;
+
+PARAMS  ::= HAS_PARAMS:has_params
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[PARAMS => HAS_PARAMS]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.HAS_PARAMS);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.PARAMS);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                SymbolHasParams symbolHasParams = has_params;
+
+                RESULT = new SymbolParams(symbolHasParams.listVariableIds, symbolHasParams.listVariableTypeDescription);
+            :}
+        |
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[PARAMS => lambda]";
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.PARAMS);
+                digraph.addNode(nodeGraph);
+                // =======================================================
+
+                RESULT = new SymbolParams();
+            :}
+        ;
+
+HAS_PARAMS  ::= HAS_PARAMS:has_params separator id:id_variable two_points id:type_variable
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[HAS_PARAMS => HAS_PARAMS separator id two_points id]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.HAS_PARAMS);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.HAS_PARAMS);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+
+
+                    // ================ CHECK IF TYPE IS CORRECT =============================================================
+                    TypeDescription typeDescription = symbolsTable.query((String) type_variable);
+
+                    if (typeDescription.contentDescription != TypeDescription.CONTENT_DESCRIPTION.dtype) {
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error in parameters of function. Must be a correct type."
+                        );
+                    }
+
+                    if (!   (typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_integer
+                                || typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_boolean
+                                || typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_string
+                            )
+                        ) { 
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error in parameters of function. Type of variable must have a correct subjacent type."
+                        ); 
+                }
+                    // =======================================================================================================
+                    
+                    SymbolHasParams symbolHasParams = has_params;
+                    ArrayList<String> listVariableIds = symbolHasParams.listVariableIds;
+                    ArrayList<TypeDescription> listVariableTypeDescription = symbolHasParams.listVariableTypeDescription;
+
+                    TypeDescription argumentTypeDescription = new TypeDescription(
+                        CONTENT_DESCRIPTION.darg,
+                        type_variable
+                    );
+
+                    listVariableIds.add(id_variable);
+                    listVariableTypeDescription.add(argumentTypeDescription);
+
+
+                    RESULT = new SymbolHasParams(listVariableIds, listVariableTypeDescription);
+
+                :}
+
+            | id:id_variable two_points id:type_variable
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[HAS_PARAMS => id two_points id]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.HAS_PARAMS);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+
+                    // ================ CHECK IF TYPE IS CORRECT =============================================================
+                    TypeDescription typeDescription = symbolsTable.query((String) type_variable);
+
+                    if (typeDescription.contentDescription != TypeDescription.CONTENT_DESCRIPTION.dtype) {
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error in parameters of function. Must be a correct type."
+                            );
+                    }
+
+                    if (!   (typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_integer
+                                || typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_boolean
+                                || typeDescription.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_string
+                            )
+                        ) { throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error in parameters of function. Type of variable must have a correct subjacent type."
+                        ); }
+                    // =======================================================================================================
+                    ArrayList<String> listVariableIds = new ArrayList<String>();
+                    ArrayList<TypeDescription> listVariableTypeDescription = new ArrayList<TypeDescription>();
+
+                    TypeDescription argumentTypeDescription = new TypeDescription(
+                        CONTENT_DESCRIPTION.darg,
+                        type_variable
+                    );
+
+                    listVariableIds.add(id_variable);
+                    listVariableTypeDescription.add(argumentTypeDescription);
+
+
+                    RESULT = new SymbolHasParams(listVariableIds, listVariableTypeDescription);
+                :}
+            ;
+
+FUNC_BODY   ::= INSTRS
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[FUNC_BODY => INSTRS]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.INSTRS);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.FUNC_BODY);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+                    RESULT = new SymbolFuncBody();
+                :}
+            |
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[FUNC_BODY => lambda]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.FUNC_BODY);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+                    RESULT = new SymbolFuncBody();
+                :}
+            ;
+
+RETURN ::= inst_return VALUE:val final_sentence
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[RETURN => inst_return VALUE final_sentence]";
+
+                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                childs.add(NodeGraph.VARIABLES.VALUE);
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.RETURN);
+                digraph.addNode(nodeGraph, childs);
+                // =======================================================
+
+                SymbolValue symbolValue = val;
+                BASIC_SUBJACENT_TYPE basicSubjacentType = BASIC_SUBJACENT_TYPE.ts_none;
+
+                if (symbolValue.contentDescription == CONTENT_DESCRIPTION.idnull) {
+                    basicSubjacentType = symbolValue.basicSubjacentType;
+                } else if (symbolValue.contentDescription == CONTENT_DESCRIPTION.dvar
+                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.dconst
+                    || symbolValue.contentDescription == CONTENT_DESCRIPTION.darg
+                    ) {
+                        TypeDescription typeDescription = symbolsTable.query(symbolValue.nameType);
+                        basicSubjacentType = typeDescription.basicSubjacentType;
+                } else {
+                    throw new IncorrectTypeException(
+                        CompilerException.CompilerErrorType.semantic,
+                        "Error in return instruction. The value has an incorrect content description: " + symbolValue.contentDescription + "."
+                    );
+
+                }
+
+                RESULT = new SymbolReturn(basicSubjacentType);
+            :}
+        |
+            {:
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[RETURN => lambda]";
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.RETURN);
+                digraph.addNode(nodeGraph);
+                // =======================================================
+
+                RESULT = new SymbolReturn();
+            :}
+        ;
+
+CALL ::= inst_call lparen CALL_BODY:call_body rparen
+        {:
+            // ============== GENERATE NODE FOR DIGRAPH ==============
+            String description ="[CALL => inst_call lparen CALL_BODY rparen final_sentence]";
+
+            ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+            childs.add(NodeGraph.VARIABLES.CALL_BODY);
+
+            NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.CALL);
+            digraph.addNode(nodeGraph, childs);
+            // =======================================================
+
+            SymbolCallBody symbolCallBody = call_body;
+
+            int numParamsCall = symbolCallBody.counter;
+            int numParamsOurFunction = symbolsTable.getNumParameters(symbolCallBody.idFunction);
+            
+            if (numParamsCall != numParamsOurFunction) {
+                throw new IncorrectTypeException(
+                    CompilerException.CompilerErrorType.semantic,
+                    "Error in call instruction. The number of parameters of the function '" + symbolCallBody.idFunction + "' and the call's instruction are not the same!!"
+                );
+
+            }
+
+            RESULT = new SymbolCall(symbolCallBody.idFunction);
+        :}
+    ;
+
+CALL_BODY   ::= CALL_BODY:call_params separator VALUE:val
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[CALL_BODY => CALL_BODY separator VALUE]";
+
+                    ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
+                    childs.add(NodeGraph.VARIABLES.CALL_BODY);
+                    childs.add(NodeGraph.VARIABLES.VALUE);
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.CALL_BODY);
+                    digraph.addNode(nodeGraph, childs);
+                    // =======================================================
+
+                    SymbolCallBody symbolCallBody = call_params;
+                    SymbolValue symbolValue = val;
+
+                    // =================== GET SUBJACENT BASIC TYPE OF OUR VALUE =========================
+                    BASIC_SUBJACENT_TYPE valueBasicSubjacentType = BASIC_SUBJACENT_TYPE.ts_none;
+
+                    if (symbolValue.contentDescription == CONTENT_DESCRIPTION.idnull) {
+                        valueBasicSubjacentType = symbolValue.basicSubjacentType;
+                    } else if (symbolValue.contentDescription == CONTENT_DESCRIPTION.dvar
+                        || symbolValue.contentDescription == CONTENT_DESCRIPTION.dconst
+                        || symbolValue.contentDescription == CONTENT_DESCRIPTION.darg
+                        ) {
+                            TypeDescription typeDescription = symbolsTable.query(symbolValue.nameType);
+                            valueBasicSubjacentType = typeDescription.basicSubjacentType;
+                    } else{
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error in call instruction with function id '" + symbolCallBody.idFunction + "'.The value has an incorrect content description: " + symbolValue.contentDescription + "."
+                        );
+
+                    }
+                    // ======================================================================================
+
+                    TypeDescription parameterTypeDescription = symbolsTable.queryParam(symbolCallBody.idFunction, symbolCallBody.counter);
+                    BASIC_SUBJACENT_TYPE parameterBasicSubjacentType = symbolsTable.query(parameterTypeDescription.nameType).basicSubjacentType;
+
+                    if (parameterBasicSubjacentType != valueBasicSubjacentType) {
+                        throw new IncorrectTypeException(
+                            CompilerException.CompilerErrorType.semantic,
+                            "Error in call instruction with function id '" + symbolCallBody.idFunction + "'. The type of parameter and your value are incorrect."
+                        );
+                    }
+
+                    RESULT = new SymbolCallBody(symbolCallBody.idFunction, symbolCallBody.counter + 1);
+                :}
+
+            | id:id_function
+                {:
+                    // ============== GENERATE NODE FOR DIGRAPH ==============
+                    String description ="[CALL_BODY => id]";
+
+                    NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.CALL_BODY);
+                    digraph.addNode(nodeGraph);
+                    // =======================================================
+
+                    // Only to know if exists our function
+                    symbolsTable.query(id_function);
+
+                    RESULT = new SymbolCallBody(id_function, 0);
+                :}
+            ;
+
+USELESS    ::= 
+        {:
+            RESULT = new SymbolUseless();
+        :}
+    ;
