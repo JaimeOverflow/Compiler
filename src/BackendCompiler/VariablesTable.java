@@ -32,6 +32,7 @@ public class VariablesTable {
         variables.put(id, "");
     }
     
+        
     public void showInfo() {
         for(String key: this.variables.keySet()) {
             System.out.println("[" + key + "]");

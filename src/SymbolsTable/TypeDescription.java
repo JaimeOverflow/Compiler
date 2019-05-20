@@ -40,6 +40,8 @@ public class TypeDescription {
     // Only for constants (dconst)
     public Object value;
     
+    public int idBackend = -1;
+    
     // dtype
     public TypeDescription(CONTENT_DESCRIPTION contentDescription, BASIC_SUBJACENT_TYPE basicSubjacentType, int size, int lowerLimit, int higherLimit) {
         this.contentDescription = contentDescription;

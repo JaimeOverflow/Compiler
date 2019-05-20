@@ -1,0 +1,8 @@
+function none main() {
+
+	andres : int = 3.
+	output(andres).
+
+}
+
+call(main)

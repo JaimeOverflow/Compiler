@@ -10,13 +10,34 @@ package BackendCompiler;
  * @author Jaime
  */
 public class Quadruple {
-    
-    public static enum OpCode {
+/*
         assignVal, assignRef,
         sum, sub, mult, div, mod,
         output,
         skip,
         jump,
+        and, or,
+        condTrue, condFalse
+*/
+    public static enum OpCode {
+        // variables
+        assign,
+        
+        // Procedure
+        procedureName,
+        procedurePreamble,
+        procedureReturn,
+        procedureEnd,
+        procedureCall,
+        
+        //Ouput
+        standardOutput,
+        standardOutputEnd,
+        
+        // Arithmetic operators
+        sum, sub, mult, div, mod,
+        
+        // Conditionals
         and, or,
         condTrue, condFalse
     }
@@ -33,13 +54,12 @@ public class Quadruple {
     
     @Override
     public String toString() {
-        String result = "[" + this.opCode + ", ";
-        
-        if (this.source1 != null) result += this.source1 + ", ";
-        if (this.source2 != null) result += this.source2 + ", ";
-        if (this.destination != null) result += this.destination;
-        
-        result += "]";
+        String result = "[" + this.opCode + ", "
+                + this.source1 + ", "
+                + this.source2 + ", "
+                + this.destination
+                + "]";
+
         return result;
         
     }

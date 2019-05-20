@@ -11,11 +11,15 @@ package Symbols;
  */
 public class SymbolFuncHead extends SymbolBase{
     
+    public String nameFunc;
     public String nameType;
+    public int numProcedure;
     
-    public SymbolFuncHead(String nameType) {
+    public SymbolFuncHead(String nameFunc, String nameType, int numProcedure) {
         super("SymbolFuncHead", 0);
+        this.nameFunc = nameFunc;
         this.nameType = nameType;
+        this.numProcedure = numProcedure;
     }
     
 }

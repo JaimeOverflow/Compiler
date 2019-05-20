@@ -1,30 +1,56 @@
 ========================= INFO =========================
-DATE: 24/04/2019 14:15:36
-NUMBER OF TOKENS: 10========================================================
+DATE: 20/05/2019 22:44:31
+NUMBER OF TOKENS: 22========================================================
 ======================== TOKENS ========================
-TOKEN: [ID]
-LEXEME: [b]
+TOKEN: [INST_FUNCTION]
 LINE: [0] - COLUMN: [0]
-TOKEN: [TWO_POINTS]
-LINE: [0] - COLUMN: [2]
 TOKEN: [ID]
-LEXEME: [boolean]
-LINE: [0] - COLUMN: [4]
-TOKEN: [OP_ASSIGN]
-LINE: [0] - COLUMN: [12]
-TOKEN: [LPAREN]
+LEXEME: [none]
+LINE: [0] - COLUMN: [9]
+TOKEN: [ID]
+LEXEME: [main]
 LINE: [0] - COLUMN: [14]
-TOKEN: [BOOL]
-LEXEME: [true]
-LINE: [0] - COLUMN: [15]
-TOKEN: [OP_LOGIC]
-LEXEME: [&&]
-LINE: [0] - COLUMN: [20]
-TOKEN: [BOOL]
-LEXEME: [false]
-LINE: [0] - COLUMN: [23]
+TOKEN: [LPAREN]
+LINE: [0] - COLUMN: [18]
 TOKEN: [RPAREN]
-LINE: [0] - COLUMN: [28]
+LINE: [0] - COLUMN: [19]
+TOKEN: [LBRACKET]
+LINE: [0] - COLUMN: [21]
+TOKEN: [ID]
+LEXEME: [andres]
+LINE: [2] - COLUMN: [1]
+TOKEN: [TWO_POINTS]
+LINE: [2] - COLUMN: [8]
+TOKEN: [ID]
+LEXEME: [int]
+LINE: [2] - COLUMN: [10]
+TOKEN: [OP_ASSIGN]
+LINE: [2] - COLUMN: [14]
+TOKEN: [NUMBER]
+LEXEME: [3]
+LINE: [2] - COLUMN: [16]
 TOKEN: [FINAL_SENTENCE]
-LINE: [0] - COLUMN: [29]
+LINE: [2] - COLUMN: [17]
+TOKEN: [INST_OUTPUT]
+LINE: [3] - COLUMN: [1]
+TOKEN: [LPAREN]
+LINE: [3] - COLUMN: [7]
+TOKEN: [ID]
+LEXEME: [andres]
+LINE: [3] - COLUMN: [8]
+TOKEN: [RPAREN]
+LINE: [3] - COLUMN: [14]
+TOKEN: [FINAL_SENTENCE]
+LINE: [3] - COLUMN: [15]
+TOKEN: [RBRACKET]
+LINE: [5] - COLUMN: [0]
+TOKEN: [INST_CALL]
+LINE: [7] - COLUMN: [0]
+TOKEN: [LPAREN]
+LINE: [7] - COLUMN: [4]
+TOKEN: [ID]
+LEXEME: [main]
+LINE: [7] - COLUMN: [5]
+TOKEN: [RPAREN]
+LINE: [7] - COLUMN: [9]
 ========================================================

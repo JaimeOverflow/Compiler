@@ -13,7 +13,7 @@ public class Operator {
     
     public enum TypeOperator {
         variable,
-        procediment,
+        procedure,
         param,
         string_value,
         int_value,
@@ -25,13 +25,20 @@ public class Operator {
     
     public Operator(String value, TypeOperator typeOperator) {
         this.value = value;
-        this.typeOperator = typeOperator;
-        
+        this.typeOperator = typeOperator; 
     }
     
     public boolean compare(Operator operator) {
         return this.value.equals(operator.value) 
                 && typeOperator == operator.typeOperator;
+    }
+    
+    @Override
+    public String toString(){
+        return "[OPERATOR. "
+                + "Type operator: " + this.typeOperator 
+                + ", value: " + this.value 
+                + "]";
     }
     
 }

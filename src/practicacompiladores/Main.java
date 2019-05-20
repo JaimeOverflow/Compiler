@@ -74,7 +74,7 @@ public class Main {
         System.out.println(OPTION_EXIT + ") Exit.");
         System.out.print("Option: ");
     }
-    
+
     public static void generateJFlexFile() {
         String pathGenerateFlexFile = JFLEX_PATH_TO_GENERATE_FILES + JFLEX_FLEX_FILENAME;
 

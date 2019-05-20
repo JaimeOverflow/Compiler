@@ -23,13 +23,13 @@ public class ProcedureBackend {
     public int size;
     public BASIC_SUBJACENT_TYPE basicSubjacentType;
 
-    public ProcedureBackend(String name, int depth, String initalLabel, int numParams, int sizeLocalVariables, int sizeTemporalArgs, int size, BASIC_SUBJACENT_TYPE basicSubjacentType) {
+    public ProcedureBackend(String name, int depth, String initalLabel, int numParams, int sizeLocalVariables, int size, BASIC_SUBJACENT_TYPE basicSubjacentType) {
         this.name = name;
         this.depth = depth;
         this.initalLabel = initalLabel;
         this.numParams = numParams;
         this.sizeLocalVariables = sizeLocalVariables;
-        this.sizeTemporalArgs = sizeTemporalArgs;
+        this.sizeTemporalArgs = 0;
         this.size = size;
         this.basicSubjacentType = basicSubjacentType;
     }

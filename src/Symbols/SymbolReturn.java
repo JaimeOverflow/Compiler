@@ -13,10 +13,12 @@ import SymbolsTable.TypeDescription.BASIC_SUBJACENT_TYPE;
  */
 public class SymbolReturn extends SymbolBase{
     
+    public String idVariable;
     public BASIC_SUBJACENT_TYPE basicSubjacentType;
     
-    public SymbolReturn(BASIC_SUBJACENT_TYPE basicSubjacentType) {
+    public SymbolReturn(String idVariable, BASIC_SUBJACENT_TYPE basicSubjacentType) {
         super("SymbolReturn", 0);
+        this.idVariable = idVariable;
         this.basicSubjacentType = basicSubjacentType;
     }
     
