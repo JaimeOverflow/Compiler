@@ -5,6 +5,7 @@
  */
 package BackendCompiler;
 
+import BackendCompiler.Quadruple.OpCode;
 import Utils.FilesManager;
 import java.util.ArrayList;
 
@@ -33,12 +34,24 @@ public class AssemblerConverter {
     
     
     public void generateAssemblerCode() {
-        String functionsCode = "";
         String assemblerCode = getAssemblerHeadboard();
         
+        for(int i = 0; i < this.c3dList.size(); i++) {
+            Quadruple c3dInstruction = this.c3dList.get(i);
+            OpCode opCodeInst = c3dInstruction.opCode;
+            
+            switch (opCodeInst) {
+                case procedureName:
+                    assemblerCode += getProcedureInitialLabel(c3dInstruction);
+                    break;
+                case procedurePreamble:
+                    assemblerCode += getProcedurePreamble(c3dInstruction);
+                    break;
+
+            }
+        }
         
-        
-        assemblerCode += functionsCode;
+        assemblerCode += "    SIMHALT\n";
         filesManager.writeFile(filename, assemblerCode);
     }
     
@@ -47,7 +60,7 @@ public class AssemblerConverter {
                         "* Title      : Practice compilers II.\n" +
                         "* Written by : Andrés Ramos Seguí, Alex Mateo Fiol, Jaime Crespí Valero.\n" +
                         "* Date       : 17/06/2019\n" +
-                        "* Description: Assembler code.\n" +
+                        "* Description: Assembler code for compilers II practice.\n" +
                         "*-----------------------------------------------------------\n"+
                         "\n* ------------------------ INCLUDES ---------------------- *\n"+
                         "INCLUDE \"MACROS.X68\"\n"+
@@ -57,10 +70,30 @@ public class AssemblerConverter {
         return result;
     }
     
+    private String getProcedureInitialLabel(Quadruple c3dInstruction){
+        int idProcedure = Integer.parseInt(c3dInstruction.destination.value);
+        String result = "";
+        result += "*\n INITIAL LABEL (PROCEDURE) *\n"+
+                "* Intermediate code => " + c3dInstruction.toString() + "\n"+
+                this.tablesManager.getProcedure(idProcedure).initialLabel+":\n";
+        
+        return result;
+    }
 
-    
-    
-    
-    
-    
+    private String getProcedurePreamble(Quadruple c3dInstruction){
+        int idProcedure = Integer.parseInt(c3dInstruction.destination.value);
+        ProcedureBackend procedure = this.tablesManager.getProcedure(idProcedure);
+        String result = "";
+        result += "*\n PREAMBLE (PROCEDURE) *\n"+
+                "* Intermediate code => " + c3dInstruction.toString() + "\n"+
+                "    SUB.L #"+Math.abs(procedure.sizeTemporalArgs)+", A7\n"+
+                "    SUB.L #4, A7  ;BP\n"+
+                "    MOVE.L #0, (A7) ;Todo 0\n"+
+                "    MOVE.L A7, A6 ;SP==A7\n"+
+                "    SUB.L #"+Math.abs(procedure.sizeLocalVariables)+", A6\n";
+        
+        
+        return result;
+    }
+
 }

@@ -69,6 +69,10 @@ public class TablesManager {
     public int getActualProcedure() {
         return proceduresTable.size() - 1;
     }
+    
+    public ProcedureBackend getProcedure(int idProcedure) {
+        return this.proceduresTable.get(idProcedure);
+    }
 
     public void printTables(){
         System.out.println("=====================");

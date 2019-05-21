@@ -16,17 +16,17 @@ public class ProcedureBackend {
     
     public String name;
     public int depth;
-    public String initalLabel;
+    public String initialLabel;
     public int numParams;
     public int sizeLocalVariables;
     public int sizeTemporalArgs;
     public int size;
     public BASIC_SUBJACENT_TYPE basicSubjacentType;
 
-    public ProcedureBackend(String name, int depth, String initalLabel, int numParams, int sizeLocalVariables, int size, BASIC_SUBJACENT_TYPE basicSubjacentType) {
+    public ProcedureBackend(String name, int depth, String initialLabel, int numParams, int sizeLocalVariables, int size, BASIC_SUBJACENT_TYPE basicSubjacentType) {
         this.name = name;
         this.depth = depth;
-        this.initalLabel = initalLabel;
+        this.initialLabel = initialLabel.toUpperCase();
         this.numParams = numParams;
         this.sizeLocalVariables = sizeLocalVariables;
         this.sizeTemporalArgs = 0;
@@ -39,7 +39,7 @@ public class ProcedureBackend {
         return "ProcedureBackend{" 
                 + "name=" + name 
                 + ", depth=" + depth 
-                + ", initalLabel=" + initalLabel 
+                + ", initalLabel=" + initialLabel 
                 + ", numParams=" + numParams 
                 + ", sizeLocalVariables=" + sizeLocalVariables 
                 + ", sizeTemporalArgs=" + sizeTemporalArgs 

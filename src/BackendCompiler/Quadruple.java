@@ -42,8 +42,8 @@ public class Quadruple {
         condTrue, condFalse
     }
     
-    private OpCode opCode;
-    private Operator source1, source2, destination;
+    public OpCode opCode;
+    public Operator source1, source2, destination;
     
     public Quadruple(OpCode opCode, Operator source1, Operator source2, Operator destination){
         this.opCode = opCode;
@@ -61,7 +61,6 @@ public class Quadruple {
                 + "]";
 
         return result;
-        
     }
     
 }
