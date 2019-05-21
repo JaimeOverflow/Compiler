@@ -101,6 +101,7 @@ INST_FOR        = ("for")
 INST_FUNCTION   = ("function")
 INST_RETURN     = ("return")
 INST_CALL       = ("call")
+INST_CALL_MAIN  = ("call_main")
 INST_INPUT      = ("input")
 INST_OUTPUT     = ("output")
 
@@ -205,6 +206,13 @@ OP_ARITHMETIC   = ( "+" | "-" | "*" | "/" | "%")
                     tokens.add(token);
 
                     return symbol(ParserSym.inst_call);
+                  }
+//===============================================================
+{INST_CALL_MAIN}  {
+                    TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_CALL_MAIN, yyline, yycolumn);
+                    tokens.add(token);
+
+                    return symbol(ParserSym.inst_call_main);
                   }
 //===============================================================
 {INST_INPUT}      {

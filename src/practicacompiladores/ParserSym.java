@@ -8,36 +8,37 @@ package practicacompiladores;
 /** CUP generated class containing symbol constants. */
 public class ParserSym {
   /* terminals */
-  public static final int number = 29;
-  public static final int op_arithmetic = 27;
-  public static final int op_logic = 26;
-  public static final int constant = 24;
-  public static final int separator = 21;
-  public static final int inst_output = 16;
+  public static final int number = 30;
+  public static final int op_arithmetic = 28;
+  public static final int op_logic = 27;
+  public static final int constant = 25;
+  public static final int separator = 22;
+  public static final int inst_output = 17;
   public static final int inst_elif = 4;
   public static final int two_points = 2;
+  public static final int inst_call_main = 15;
   public static final int inst_case = 7;
-  public static final int lbracket = 19;
+  public static final int lbracket = 20;
   public static final int inst_function = 12;
   public static final int inst_break = 8;
-  public static final int bool = 31;
-  public static final int text = 30;
+  public static final int bool = 32;
+  public static final int text = 31;
   public static final int EOF = 0;
   public static final int inst_return = 13;
   public static final int inst_if = 3;
-  public static final int id = 28;
+  public static final int id = 29;
   public static final int inst_else = 5;
   public static final int inst_switch = 6;
-  public static final int rparen = 18;
+  public static final int rparen = 19;
   public static final int error = 1;
   public static final int inst_call = 14;
-  public static final int final_sentence = 22;
+  public static final int final_sentence = 23;
   public static final int inst_default = 9;
-  public static final int rbracket = 20;
-  public static final int op_relational = 25;
-  public static final int inst_input = 15;
-  public static final int op_assign = 23;
-  public static final int lparen = 17;
+  public static final int rbracket = 21;
+  public static final int op_relational = 26;
+  public static final int inst_input = 16;
+  public static final int op_assign = 24;
+  public static final int lparen = 18;
   public static final int inst_for = 11;
   public static final int inst_while = 10;
   public static final String[] terminalNames = new String[] {
@@ -56,6 +57,7 @@ public class ParserSym {
   "inst_function",
   "inst_return",
   "inst_call",
+  "inst_call_main",
   "inst_input",
   "inst_output",
   "lparen",

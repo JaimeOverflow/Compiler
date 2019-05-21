@@ -1,6 +1,6 @@
 ========================= INFO =========================
-DATE: 21/05/2019 16:27:56
-NUMBER OF TOKENS: 22========================================================
+DATE: 21/05/2019 18:31:24
+NUMBER OF TOKENS: 23========================================================
 ======================== TOKENS ========================
 TOKEN: [INST_FUNCTION]
 LINE: [0] - COLUMN: [0]
@@ -44,13 +44,15 @@ LINE: [3] - COLUMN: [14]
 LINE: [3] - COLUMN: [15]
 TOKEN: [RBRACKET]
 LINE: [5] - COLUMN: [0]
-TOKEN: [INST_CALL]
+TOKEN: [INST_CALL_MAIN]
 LINE: [7] - COLUMN: [0]
 TOKEN: [LPAREN]
-LINE: [7] - COLUMN: [4]
+LINE: [7] - COLUMN: [9]
 TOKEN: [ID]
 LEXEME: [main]
-LINE: [7] - COLUMN: [5]
+LINE: [7] - COLUMN: [10]
 TOKEN: [RPAREN]
-LINE: [7] - COLUMN: [9]
+LINE: [7] - COLUMN: [14]
+TOKEN: [FINAL_SENTENCE]
+LINE: [7] - COLUMN: [15]
 ========================================================

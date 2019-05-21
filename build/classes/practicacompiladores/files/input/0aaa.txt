@@ -5,4 +5,4 @@ function none main() {
 
 }
 
-call(main)
+call_main(main).

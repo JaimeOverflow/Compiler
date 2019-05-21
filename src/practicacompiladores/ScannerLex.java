@@ -43,13 +43,13 @@ public class ScannerLex implements java_cup.runtime.Scanner {
    * Translates characters to character classes
    */
   private static final String ZZ_CMAP_PACKED = 
-    "\11\0\1\3\1\5\1\10\1\10\1\4\22\0\1\3\1\45\1\12"+
-    "\2\0\1\51\1\47\1\0\1\35\1\36\1\7\1\51\1\41\1\51"+
-    "\1\43\1\6\1\11\11\2\1\42\1\0\1\46\1\44\1\46\2\0"+
-    "\32\1\4\0\1\1\1\0\1\20\1\31\1\23\1\33\1\16\1\17"+
-    "\1\1\1\30\1\26\1\1\1\32\1\21\1\1\1\25\1\24\1\34"+
-    "\1\1\1\14\1\22\1\13\1\15\1\1\1\27\3\1\1\37\1\50"+
-    "\1\40\7\0\1\10\u1fa2\0\1\10\1\10\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udfe6\0";
+    "\11\0\1\3\1\5\1\10\1\10\1\4\22\0\1\3\1\47\1\13"+
+    "\2\0\1\53\1\51\1\0\1\37\1\40\1\7\1\53\1\43\1\53"+
+    "\1\45\1\6\1\12\11\2\1\44\1\0\1\50\1\46\1\50\2\0"+
+    "\32\1\4\0\1\11\1\0\1\21\1\32\1\24\1\34\1\17\1\20"+
+    "\1\1\1\31\1\27\1\1\1\33\1\22\1\35\1\26\1\25\1\36"+
+    "\1\1\1\15\1\23\1\14\1\16\1\1\1\30\3\1\1\41\1\52"+
+    "\1\42\7\0\1\10\u1fa2\0\1\10\1\10\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udfe6\0";
 
   /** 
    * Translates characters to character classes
@@ -67,11 +67,12 @@ public class ScannerLex implements java_cup.runtime.Scanner {
     "\1\15\1\1\1\16\2\1\1\17\2\0\1\20\12\2"+
     "\1\21\4\2\1\16\1\22\1\0\6\2\1\23\11\2"+
     "\1\17\1\24\1\2\1\25\1\26\2\2\1\27\1\30"+
-    "\11\2\1\31\1\2\1\32\1\33\1\34\1\2\1\35"+
-    "\1\2\1\36\1\37\2\2\1\40\1\41";
+    "\12\2\1\31\1\2\1\32\1\33\1\34\1\2\1\35"+
+    "\1\2\1\36\1\2\1\37\3\2\1\40\1\41\1\2"+
+    "\1\42";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[103];
+    int [] result = new int[108];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -96,22 +97,23 @@ public class ScannerLex implements java_cup.runtime.Scanner {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\52\0\124\0\176\0\52\0\250\0\322\0\52"+
-    "\0\52\0\374\0\u0126\0\u0150\0\u017a\0\u01a4\0\u01ce\0\u01f8"+
-    "\0\u0222\0\u024c\0\u0276\0\u02a0\0\u02ca\0\52\0\52\0\52"+
-    "\0\52\0\52\0\52\0\52\0\u02f4\0\u02f4\0\u02f4\0\u031e"+
-    "\0\u0348\0\u0372\0\u039c\0\374\0\52\0\u03c6\0\u03f0\0\u041a"+
-    "\0\u0444\0\u046e\0\u0498\0\u04c2\0\u04ec\0\u0516\0\u0540\0\124"+
-    "\0\u056a\0\u0594\0\u05be\0\u05e8\0\52\0\52\0\u0612\0\u063c"+
-    "\0\u0666\0\u0690\0\u06ba\0\u06e4\0\u070e\0\124\0\u0738\0\u0762"+
-    "\0\u078c\0\u07b6\0\u07e0\0\u080a\0\u0834\0\u085e\0\u0888\0\u039c"+
-    "\0\124\0\u08b2\0\124\0\124\0\u08dc\0\u0906\0\124\0\124"+
-    "\0\u0930\0\u095a\0\u0984\0\u09ae\0\u09d8\0\u0a02\0\u0a2c\0\u0a56"+
-    "\0\u0a80\0\124\0\u0aaa\0\124\0\124\0\124\0\u0ad4\0\124"+
-    "\0\u0afe\0\124\0\124\0\u0b28\0\u0b52\0\124\0\124";
+    "\0\0\0\54\0\130\0\204\0\54\0\260\0\334\0\54"+
+    "\0\54\0\u0108\0\u0134\0\u0160\0\u018c\0\u01b8\0\u01e4\0\u0210"+
+    "\0\u023c\0\u0268\0\u0294\0\u02c0\0\u02ec\0\54\0\54\0\54"+
+    "\0\54\0\54\0\54\0\54\0\u0318\0\u0318\0\u0318\0\u0344"+
+    "\0\u0370\0\u039c\0\u03c8\0\u0108\0\54\0\u03f4\0\u0420\0\u044c"+
+    "\0\u0478\0\u04a4\0\u04d0\0\u04fc\0\u0528\0\u0554\0\u0580\0\130"+
+    "\0\u05ac\0\u05d8\0\u0604\0\u0630\0\54\0\54\0\u065c\0\u0688"+
+    "\0\u06b4\0\u06e0\0\u070c\0\u0738\0\u0764\0\130\0\u0790\0\u07bc"+
+    "\0\u07e8\0\u0814\0\u0840\0\u086c\0\u0898\0\u08c4\0\u08f0\0\u03c8"+
+    "\0\130\0\u091c\0\130\0\130\0\u0948\0\u0974\0\u09a0\0\130"+
+    "\0\u09cc\0\u09f8\0\u0a24\0\u0a50\0\u0a7c\0\u0aa8\0\u0ad4\0\u0b00"+
+    "\0\u0b2c\0\u0b58\0\130\0\u0b84\0\130\0\130\0\130\0\u0bb0"+
+    "\0\130\0\u0bdc\0\130\0\u0c08\0\130\0\u0c34\0\u0c60\0\u0c8c"+
+    "\0\130\0\130\0\u0cb8\0\130";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[103];
+    int [] result = new int[108];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -135,76 +137,81 @@ public class ScannerLex implements java_cup.runtime.Scanner {
 
   private static final String ZZ_TRANS_PACKED_0 =
     "\1\2\1\3\1\4\1\5\1\6\1\5\1\7\1\10"+
-    "\1\2\1\11\1\12\1\13\1\14\1\3\1\15\1\16"+
-    "\2\3\1\17\1\20\1\21\1\3\1\22\1\23\1\3"+
-    "\1\24\1\3\1\25\1\3\1\26\1\27\1\30\1\31"+
-    "\1\32\1\33\1\34\1\35\1\36\1\37\1\40\1\41"+
-    "\1\10\53\0\2\3\6\0\1\3\1\0\22\3\17\0"+
-    "\1\4\6\0\1\4\45\0\1\5\52\0\1\42\1\43"+
-    "\42\0\12\44\1\45\37\44\1\0\2\3\6\0\1\3"+
-    "\1\0\1\3\1\46\20\3\16\0\2\3\6\0\1\3"+
-    "\1\0\3\3\1\47\16\3\16\0\2\3\6\0\1\3"+
-    "\1\0\6\3\1\50\13\3\16\0\2\3\6\0\1\3"+
-    "\1\0\2\3\1\51\2\3\1\52\3\3\1\53\10\3"+
-    "\16\0\2\3\6\0\1\3\1\0\14\3\1\54\5\3"+
-    "\16\0\2\3\6\0\1\3\1\0\5\3\1\55\3\3"+
-    "\1\56\10\3\16\0\2\3\6\0\1\3\1\0\2\3"+
-    "\1\57\17\3\16\0\2\3\6\0\1\3\1\0\4\3"+
-    "\1\60\5\3\1\61\7\3\16\0\2\3\6\0\1\3"+
-    "\1\0\15\3\1\62\4\3\16\0\2\3\6\0\1\3"+
-    "\1\0\1\3\1\63\20\3\16\0\2\3\6\0\1\3"+
-    "\1\0\3\3\1\64\16\3\61\0\1\65\54\0\1\66"+
-    "\52\0\1\66\1\0\4\42\2\0\44\42\4\43\2\0"+
-    "\1\43\1\67\1\0\41\43\1\0\2\3\6\0\1\3"+
-    "\1\0\2\3\1\70\17\3\16\0\2\3\6\0\1\3"+
-    "\1\0\1\71\21\3\16\0\2\3\6\0\1\3\1\0"+
-    "\7\3\1\72\3\3\1\73\6\3\16\0\2\3\6\0"+
-    "\1\3\1\0\12\3\1\74\7\3\16\0\2\3\6\0"+
-    "\1\3\1\0\6\3\1\75\13\3\16\0\2\3\6\0"+
-    "\1\3\1\0\1\3\1\76\20\3\16\0\2\3\6\0"+
-    "\1\3\1\0\13\3\1\77\6\3\16\0\2\3\6\0"+
-    "\1\3\1\0\6\3\1\100\1\101\12\3\16\0\2\3"+
-    "\6\0\1\3\1\0\12\3\1\102\7\3\16\0\2\3"+
-    "\6\0\1\3\1\0\1\103\21\3\16\0\2\3\6\0"+
-    "\1\3\1\0\21\3\1\104\16\0\2\3\6\0\1\3"+
-    "\1\0\13\3\1\105\6\3\16\0\2\3\6\0\1\3"+
-    "\1\0\3\3\1\106\16\3\16\0\2\3\6\0\1\3"+
-    "\1\0\4\3\1\107\15\3\15\0\4\43\2\0\1\110"+
-    "\1\67\1\0\41\43\1\0\2\3\6\0\1\3\1\0"+
-    "\3\3\1\111\16\3\16\0\2\3\6\0\1\3\1\0"+
-    "\2\3\1\112\17\3\16\0\2\3\6\0\1\3\1\0"+
-    "\3\3\1\113\16\3\16\0\2\3\6\0\1\3\1\0"+
-    "\4\3\1\114\15\3\16\0\2\3\6\0\1\3\1\0"+
-    "\10\3\1\115\11\3\16\0\2\3\6\0\1\3\1\0"+
-    "\7\3\1\70\12\3\16\0\2\3\6\0\1\3\1\0"+
-    "\1\116\21\3\16\0\2\3\6\0\1\3\1\0\6\3"+
-    "\1\117\13\3\16\0\2\3\6\0\1\3\1\0\3\3"+
-    "\1\120\16\3\16\0\2\3\6\0\1\3\1\0\7\3"+
-    "\1\121\12\3\16\0\2\3\6\0\1\3\1\0\21\3"+
-    "\1\122\16\0\2\3\6\0\1\3\1\0\2\3\1\123"+
-    "\17\3\16\0\2\3\6\0\1\3\1\0\6\3\1\124"+
-    "\13\3\16\0\2\3\6\0\1\3\1\0\5\3\1\125"+
-    "\14\3\16\0\2\3\6\0\1\3\1\0\5\3\1\126"+
-    "\14\3\16\0\2\3\6\0\1\3\1\0\1\3\1\127"+
-    "\20\3\16\0\2\3\6\0\1\3\1\0\1\130\21\3"+
-    "\16\0\2\3\6\0\1\3\1\0\10\3\1\131\11\3"+
-    "\16\0\2\3\6\0\1\3\1\0\1\132\21\3\16\0"+
-    "\2\3\6\0\1\3\1\0\2\3\1\133\17\3\16\0"+
-    "\2\3\6\0\1\3\1\0\1\134\21\3\16\0\2\3"+
-    "\6\0\1\3\1\0\3\3\1\135\16\3\16\0\2\3"+
-    "\6\0\1\3\1\0\17\3\1\136\2\3\16\0\2\3"+
-    "\6\0\1\3\1\0\2\3\1\137\17\3\16\0\2\3"+
-    "\6\0\1\3\1\0\12\3\1\140\7\3\16\0\2\3"+
-    "\6\0\1\3\1\0\13\3\1\141\6\3\16\0\2\3"+
-    "\6\0\1\3\1\0\15\3\1\142\4\3\16\0\2\3"+
-    "\6\0\1\3\1\0\1\143\21\3\16\0\2\3\6\0"+
-    "\1\3\1\0\6\3\1\144\13\3\16\0\2\3\6\0"+
-    "\1\3\1\0\11\3\1\145\10\3\16\0\2\3\6\0"+
-    "\1\3\1\0\1\146\21\3\16\0\2\3\6\0\1\3"+
-    "\1\0\12\3\1\147\7\3\15\0";
+    "\1\2\1\3\1\11\1\12\1\13\1\14\1\3\1\15"+
+    "\1\16\2\3\1\17\1\20\1\21\1\3\1\22\1\23"+
+    "\1\3\1\24\1\3\1\25\2\3\1\26\1\27\1\30"+
+    "\1\31\1\32\1\33\1\34\1\35\1\36\1\37\1\40"+
+    "\1\41\1\10\55\0\2\3\6\0\2\3\1\0\23\3"+
+    "\17\0\1\4\7\0\1\4\46\0\1\5\54\0\1\42"+
+    "\1\43\44\0\13\44\1\45\40\44\1\0\2\3\6\0"+
+    "\2\3\1\0\1\3\1\46\21\3\16\0\2\3\6\0"+
+    "\2\3\1\0\3\3\1\47\17\3\16\0\2\3\6\0"+
+    "\2\3\1\0\6\3\1\50\14\3\16\0\2\3\6\0"+
+    "\2\3\1\0\2\3\1\51\2\3\1\52\3\3\1\53"+
+    "\11\3\16\0\2\3\6\0\2\3\1\0\14\3\1\54"+
+    "\6\3\16\0\2\3\6\0\2\3\1\0\5\3\1\55"+
+    "\3\3\1\56\11\3\16\0\2\3\6\0\2\3\1\0"+
+    "\2\3\1\57\20\3\16\0\2\3\6\0\2\3\1\0"+
+    "\4\3\1\60\5\3\1\61\10\3\16\0\2\3\6\0"+
+    "\2\3\1\0\15\3\1\62\5\3\16\0\2\3\6\0"+
+    "\2\3\1\0\1\3\1\63\21\3\16\0\2\3\6\0"+
+    "\2\3\1\0\3\3\1\64\17\3\63\0\1\65\56\0"+
+    "\1\66\54\0\1\66\1\0\4\42\2\0\46\42\4\43"+
+    "\2\0\1\43\1\67\1\0\43\43\1\0\2\3\6\0"+
+    "\2\3\1\0\2\3\1\70\20\3\16\0\2\3\6\0"+
+    "\2\3\1\0\1\71\22\3\16\0\2\3\6\0\2\3"+
+    "\1\0\7\3\1\72\3\3\1\73\7\3\16\0\2\3"+
+    "\6\0\2\3\1\0\12\3\1\74\10\3\16\0\2\3"+
+    "\6\0\2\3\1\0\6\3\1\75\14\3\16\0\2\3"+
+    "\6\0\2\3\1\0\1\3\1\76\21\3\16\0\2\3"+
+    "\6\0\2\3\1\0\13\3\1\77\7\3\16\0\2\3"+
+    "\6\0\2\3\1\0\6\3\1\100\1\101\13\3\16\0"+
+    "\2\3\6\0\2\3\1\0\12\3\1\102\10\3\16\0"+
+    "\2\3\6\0\2\3\1\0\1\103\22\3\16\0\2\3"+
+    "\6\0\2\3\1\0\22\3\1\104\16\0\2\3\6\0"+
+    "\2\3\1\0\13\3\1\105\7\3\16\0\2\3\6\0"+
+    "\2\3\1\0\3\3\1\106\17\3\16\0\2\3\6\0"+
+    "\2\3\1\0\4\3\1\107\16\3\15\0\4\43\2\0"+
+    "\1\110\1\67\1\0\43\43\1\0\2\3\6\0\2\3"+
+    "\1\0\3\3\1\111\17\3\16\0\2\3\6\0\2\3"+
+    "\1\0\2\3\1\112\20\3\16\0\2\3\6\0\2\3"+
+    "\1\0\3\3\1\113\17\3\16\0\2\3\6\0\2\3"+
+    "\1\0\4\3\1\114\16\3\16\0\2\3\6\0\2\3"+
+    "\1\0\10\3\1\115\12\3\16\0\2\3\6\0\2\3"+
+    "\1\0\7\3\1\70\13\3\16\0\2\3\6\0\2\3"+
+    "\1\0\1\116\22\3\16\0\2\3\6\0\2\3\1\0"+
+    "\6\3\1\117\14\3\16\0\2\3\6\0\2\3\1\0"+
+    "\3\3\1\120\17\3\16\0\2\3\6\0\2\3\1\0"+
+    "\7\3\1\121\13\3\16\0\2\3\6\0\2\3\1\0"+
+    "\22\3\1\122\16\0\2\3\6\0\2\3\1\0\2\3"+
+    "\1\123\20\3\16\0\2\3\6\0\2\3\1\0\6\3"+
+    "\1\124\14\3\16\0\2\3\6\0\2\3\1\0\5\3"+
+    "\1\125\15\3\16\0\2\3\6\0\2\3\1\0\5\3"+
+    "\1\126\15\3\16\0\2\3\6\0\2\3\1\0\1\3"+
+    "\1\127\21\3\16\0\2\3\6\0\2\3\1\0\1\130"+
+    "\22\3\16\0\2\3\6\0\2\3\1\0\10\3\1\131"+
+    "\12\3\16\0\2\3\6\0\1\132\1\3\1\0\23\3"+
+    "\16\0\2\3\6\0\2\3\1\0\1\133\22\3\16\0"+
+    "\2\3\6\0\2\3\1\0\2\3\1\134\20\3\16\0"+
+    "\2\3\6\0\2\3\1\0\1\135\22\3\16\0\2\3"+
+    "\6\0\2\3\1\0\3\3\1\136\17\3\16\0\2\3"+
+    "\6\0\2\3\1\0\17\3\1\137\3\3\16\0\2\3"+
+    "\6\0\2\3\1\0\2\3\1\140\20\3\16\0\2\3"+
+    "\6\0\2\3\1\0\12\3\1\141\10\3\16\0\2\3"+
+    "\6\0\2\3\1\0\13\3\1\142\7\3\16\0\2\3"+
+    "\6\0\2\3\1\0\15\3\1\143\5\3\16\0\2\3"+
+    "\6\0\2\3\1\0\21\3\1\144\1\3\16\0\2\3"+
+    "\6\0\2\3\1\0\1\145\22\3\16\0\2\3\6\0"+
+    "\2\3\1\0\6\3\1\146\14\3\16\0\2\3\6\0"+
+    "\2\3\1\0\11\3\1\147\11\3\16\0\2\3\6\0"+
+    "\2\3\1\0\5\3\1\150\15\3\16\0\2\3\6\0"+
+    "\2\3\1\0\1\151\22\3\16\0\2\3\6\0\2\3"+
+    "\1\0\12\3\1\152\10\3\16\0\2\3\6\0\2\3"+
+    "\1\0\13\3\1\153\7\3\16\0\2\3\6\0\2\3"+
+    "\1\0\12\3\1\154\10\3\15\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[2940];
+    int [] result = new int[3300];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -243,10 +250,10 @@ public class ScannerLex implements java_cup.runtime.Scanner {
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
     "\1\0\1\11\2\1\1\11\2\1\2\11\14\1\7\11"+
-    "\6\1\2\0\1\11\17\1\2\11\1\0\60\1";
+    "\6\1\2\0\1\11\17\1\2\11\1\0\65\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[103];
+    int [] result = new int[108];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -759,7 +766,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.error, lexeme);
             } 
             // fall through
-          case 34: break;
+          case 35: break;
           case 2: 
             { String lexeme = new String(yytext());
                     TokenLex token = new TokenLex(TokenLex.TOKEN_ID.ID, lexeme, yyline, yycolumn);
@@ -768,7 +775,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.id, lexeme);
             } 
             // fall through
-          case 35: break;
+          case 36: break;
           case 3: 
             { String lexeme = new String(yytext());
                     TokenLex token = new TokenLex(TokenLex.TOKEN_ID.NUMBER, lexeme, yyline, yycolumn);
@@ -777,12 +784,12 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.number, lexeme);
             } 
             // fall through
-          case 36: break;
+          case 37: break;
           case 4: 
             { /*Ignore*/
             } 
             // fall through
-          case 37: break;
+          case 38: break;
           case 5: 
             { String lexeme = new String(yytext());
                     TokenLex token = new TokenLex(TokenLex.TOKEN_ID.OP_ARITHMETIC, lexeme, yyline, yycolumn);
@@ -791,7 +798,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.op_arithmetic, lexeme);
             } 
             // fall through
-          case 38: break;
+          case 39: break;
           case 6: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.LPAREN, yyline, yycolumn);
                     tokens.add(token);
@@ -799,7 +806,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.lparen);
             } 
             // fall through
-          case 39: break;
+          case 40: break;
           case 7: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.RPAREN, yyline, yycolumn);
                     tokens.add(token);
@@ -807,7 +814,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.rparen);
             } 
             // fall through
-          case 40: break;
+          case 41: break;
           case 8: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.LBRACKET, yyline, yycolumn);
                     tokens.add(token);
@@ -815,7 +822,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.lbracket);
             } 
             // fall through
-          case 41: break;
+          case 42: break;
           case 9: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.RBRACKET, yyline, yycolumn);
                     tokens.add(token);
@@ -823,7 +830,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.rbracket);
             } 
             // fall through
-          case 42: break;
+          case 43: break;
           case 10: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.SEPARATOR, yyline, yycolumn);
                     tokens.add(token);
@@ -831,7 +838,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.separator);
             } 
             // fall through
-          case 43: break;
+          case 44: break;
           case 11: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.TWO_POINTS, yyline, yycolumn);
                     tokens.add(token);
@@ -839,7 +846,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.two_points);
             } 
             // fall through
-          case 44: break;
+          case 45: break;
           case 12: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.FINAL_SENTENCE, yyline, yycolumn);
                     tokens.add(token);
@@ -847,7 +854,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.final_sentence);
             } 
             // fall through
-          case 45: break;
+          case 46: break;
           case 13: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.OP_ASSIGN, yyline, yycolumn);
                     tokens.add(token);
@@ -855,7 +862,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.op_assign);
             } 
             // fall through
-          case 46: break;
+          case 47: break;
           case 14: 
             { String lexeme = new String(yytext());
                     TokenLex token = new TokenLex(TokenLex.TOKEN_ID.OP_RELATIONAL, lexeme, yyline, yycolumn);
@@ -864,12 +871,12 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.op_relational, lexeme);
             } 
             // fall through
-          case 47: break;
+          case 48: break;
           case 15: 
             { /* Ignore */
             } 
             // fall through
-          case 48: break;
+          case 49: break;
           case 16: 
             { String lexeme = new String(yytext());
                     TokenLex token = new TokenLex(TokenLex.TOKEN_ID.TEXT, lexeme, yyline, yycolumn);
@@ -878,7 +885,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.text, lexeme);
             } 
             // fall through
-          case 49: break;
+          case 50: break;
           case 17: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_IF, yyline, yycolumn);
                     tokens.add(token);
@@ -886,7 +893,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_if);
             } 
             // fall through
-          case 50: break;
+          case 51: break;
           case 18: 
             { String lexeme = new String(yytext());
                     TokenLex token = new TokenLex(TokenLex.TOKEN_ID.OP_LOGIC, lexeme, yyline, yycolumn);
@@ -895,7 +902,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.op_logic, lexeme);
             } 
             // fall through
-          case 51: break;
+          case 52: break;
           case 19: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_FOR, yyline, yycolumn);
                     tokens.add(token);
@@ -903,7 +910,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_for);
             } 
             // fall through
-          case 52: break;
+          case 53: break;
           case 20: 
             { String lexeme = new String(yytext());
                     TokenLex token = new TokenLex(TokenLex.TOKEN_ID.BOOL, lexeme, yyline, yycolumn);
@@ -912,7 +919,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.bool, lexeme);
             } 
             // fall through
-          case 53: break;
+          case 54: break;
           case 21: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_ELSE, yyline, yycolumn);
                     tokens.add(token);
@@ -920,7 +927,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_else);
             } 
             // fall through
-          case 54: break;
+          case 55: break;
           case 22: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_ELIF, yyline, yycolumn);
                     tokens.add(token);
@@ -928,7 +935,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_elif);
             } 
             // fall through
-          case 55: break;
+          case 56: break;
           case 23: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_CALL, yyline, yycolumn);
                     tokens.add(token);
@@ -936,7 +943,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_call);
             } 
             // fall through
-          case 56: break;
+          case 57: break;
           case 24: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_CASE, yyline, yycolumn);
                     tokens.add(token);
@@ -944,7 +951,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_case);
             } 
             // fall through
-          case 57: break;
+          case 58: break;
           case 25: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.CONSTANT, yyline, yycolumn);
                     tokens.add(token);
@@ -952,7 +959,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.constant);
             } 
             // fall through
-          case 58: break;
+          case 59: break;
           case 26: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_INPUT, yyline, yycolumn);
                     tokens.add(token);
@@ -960,7 +967,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_input);
             } 
             // fall through
-          case 59: break;
+          case 60: break;
           case 27: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_WHILE, yyline, yycolumn);
                     tokens.add(token);
@@ -968,7 +975,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_while);
             } 
             // fall through
-          case 60: break;
+          case 61: break;
           case 28: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_BREAK, yyline, yycolumn);
                     tokens.add(token);
@@ -976,7 +983,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_break);
             } 
             // fall through
-          case 61: break;
+          case 62: break;
           case 29: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_RETURN, yyline, yycolumn);
                     tokens.add(token);
@@ -984,7 +991,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_return);
             } 
             // fall through
-          case 62: break;
+          case 63: break;
           case 30: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_SWITCH, yyline, yycolumn);
                     tokens.add(token);
@@ -992,7 +999,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_switch);
             } 
             // fall through
-          case 63: break;
+          case 64: break;
           case 31: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_OUTPUT, yyline, yycolumn);
                     tokens.add(token);
@@ -1000,7 +1007,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_output);
             } 
             // fall through
-          case 64: break;
+          case 65: break;
           case 32: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_DEFAULT, yyline, yycolumn);
                     tokens.add(token);
@@ -1008,7 +1015,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_default);
             } 
             // fall through
-          case 65: break;
+          case 66: break;
           case 33: 
             { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_FUNCTION, yyline, yycolumn);
                     tokens.add(token);
@@ -1016,7 +1023,15 @@ public class ScannerLex implements java_cup.runtime.Scanner {
                     return symbol(ParserSym.inst_function);
             } 
             // fall through
-          case 66: break;
+          case 67: break;
+          case 34: 
+            { TokenLex token = new TokenLex(TokenLex.TOKEN_ID.INST_CALL_MAIN, yyline, yycolumn);
+                    tokens.add(token);
+
+                    return symbol(ParserSym.inst_call_main);
+            } 
+            // fall through
+          case 68: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }

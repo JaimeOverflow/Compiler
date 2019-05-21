@@ -127,13 +127,14 @@ parser code {:
 
 :};
 
-terminal                         two_points, inst_if, inst_elif, inst_else, inst_switch, inst_case, inst_break, inst_default, inst_while, inst_for, inst_function, inst_return, inst_call, inst_input, inst_output, lparen, rparen, lbracket, rbracket, separator, final_sentence, op_assign, constant;
+terminal                         two_points, inst_if, inst_elif, inst_else, inst_switch, inst_case, inst_break, inst_default, inst_while, inst_for, inst_function, inst_return, inst_call, inst_call_main, inst_input, inst_output, lparen, rparen, lbracket, rbracket, separator, final_sentence, op_assign, constant;
 terminal      String             op_relational, op_logic, op_arithmetic, id, number, text, bool; 
 
 non terminal  SymbolRoot            ROOT;
 
 // Initialize types (int, boolean, string)
 non terminal  SymbolInitType        INIT_TYPES;
+non terminal  SymbolCallMain        CALL_MAIN;
 
 // Instructions
 non terminal  SymbolInstrs          INSTRS;
@@ -206,7 +207,7 @@ non terminal  SymbolUseless         USELESS;
 
 start with ROOT;
 
-ROOT    ::= INIT_TYPES INSTRS 
+ROOT    ::= INIT_TYPES FUNCTION CALL_MAIN
             {: 
                 // ============== GENERATE NODE FOR DIGRAPH ==============
                 String description ="[ROOT => INIT_TYPES INSTRS]";
@@ -262,6 +263,13 @@ INIT_TYPES  ::=
                     initializeTypeString();
                     initializeTypeNone(); 
                     RESULT = new SymbolInitType();
+                :}
+            ;
+
+CALL_MAIN  ::= inst_call_main lparen id rparen final_sentence
+                {:
+
+                    RESULT = new SymbolCallMain();
                 :}
             ;
 
@@ -392,21 +400,6 @@ INSTR   ::= DECLS
 
                 ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
                 childs.add(NodeGraph.VARIABLES.OUTPUT);
-
-                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
-                digraph.addNode(nodeGraph, childs);
-                // =======================================================
-
-                RESULT = new SymbolInstr();
-            :}
-
-        | FUNCTION
-            {:
-                // ============== GENERATE NODE FOR DIGRAPH ==============
-                String description ="[INSTR => FUNCTION]";
-
-                ArrayList<NodeGraph.VARIABLES> childs = new ArrayList<NodeGraph.VARIABLES>();
-                childs.add(NodeGraph.VARIABLES.FUNCTION);
 
                 NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.INSTR);
                 digraph.addNode(nodeGraph, childs);
@@ -2021,7 +2014,7 @@ CODE_BLOCK_OUT  ::=
                     :}
                 ;
 
-FUNCTION ::= FUNC_HEAD:func_head rparen lbracket CODE_BLOCK_IN FUNC_BODY RETURN:return_val CODE_BLOCK_OUT rbracket 
+FUNCTION ::= FUNCTION FUNC_HEAD:func_head rparen lbracket CODE_BLOCK_IN FUNC_BODY RETURN:return_val CODE_BLOCK_OUT rbracket 
             {:
                 // ============== GENERATE NODE FOR DIGRAPH ==============
                 String description ="[FUNCTION => FUNC_HEAD rparen lbracket CODE_BLOCK_IN INSTRS RETURN CODE_BLOCK_OUT rbracket]";
@@ -2071,6 +2064,17 @@ FUNCTION ::= FUNC_HEAD:func_head rparen lbracket CODE_BLOCK_IN FUNC_BODY RETURN:
                 );
                 // =========================================================
 
+                RESULT = new SymbolFunction();
+            :}
+        |
+            {:
+
+                // ============== GENERATE NODE FOR DIGRAPH ==============
+                String description ="[FUNCTION => lambda]";
+
+                NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.FUNCTION);
+                digraph.addNode(nodeGraph);
+                // =======================================================
                 RESULT = new SymbolFunction();
             :}
         ;
