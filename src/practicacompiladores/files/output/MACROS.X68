@@ -167,3 +167,29 @@ PRINT_BUFFER      MACRO
     MOVE.L \2, D1
     TRAP      #15
     ENDM
+; -----------------------------------------------------------------------------
+RETURN_STRING      MACRO
+; Input    - \1  : Desp return
+;          - \2  : Desp var
+;          - \3  : ocupacion string
+; Modifies - 
+; -----------------------------------------------------------------------------
+            ;situar return
+            MOVE.L A7, A2
+            ADD.L \1, A2
+            ;siatuarvar
+            MOVE.L A7, A1
+            ADD.L \2, A1
+            ;poner ocupacion
+            MOVE.L \3, D1
+            ;Comprobamos la ocupacion
+            CMP.L #0, D1
+            BEQ final_return_string_asignar\@
+loop_return_string_asignar\@ 
+            MOVE.W (A1)+, D2
+            MOVE.W D2, (A2)+
+            SUB.L #2, D1
+            CMP.L #0, D1
+            BNE loop_return_string_asignar\@ 
+final_return_string_asignar\@
+            ENDM 

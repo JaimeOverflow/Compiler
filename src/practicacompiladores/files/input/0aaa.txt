@@ -1,10 +1,15 @@
-function none main() {
+function int doki() {
+	osi : string = "2".
 
+	output(osi).
+	return 6.
+}
+
+
+function none main() {
 	andres : string = "holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".
-	asd : int = 11.
-	output(asd).
+	call(doki).
 	output(andres).
-	output(asd).
 }
 
 call_main(main).

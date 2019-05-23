@@ -12,10 +12,13 @@ package Symbols;
 public class SymbolCall extends SymbolBase{
     
     public String idFunction;
+    
+    public int idBackend;
            
-    public SymbolCall(String idFunction) {
+    public SymbolCall(String idFunction, int idBackend) {
         super("SymbolCall", 0);
         this.idFunction = idFunction;
+        this.idBackend = idBackend;
     }
     
 }

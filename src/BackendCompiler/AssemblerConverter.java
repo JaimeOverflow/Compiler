@@ -65,11 +65,17 @@ public class AssemblerConverter {
                 case procedureCallMain:
                     assemblerCode += getProcedureCallMain(c3dInstruction);
                     break;
+                case procedureCall:
+                    assemblerCode += getProcedureCall(c3dInstruction);
+                    break;
                 case procedureName:
                     assemblerCode += getProcedureInitialLabel(c3dInstruction);
                     break;
                 case procedurePreamble:
                     assemblerCode += getProcedurePreamble(c3dInstruction);
+                    break;
+                case procedureReturn:
+                    assemblerCode += getProcedureReturn(c3dInstruction);
                     break;
                 case procedureEnd:
                     assemblerCode += getProcedureEnd(c3dInstruction);
@@ -79,7 +85,6 @@ public class AssemblerConverter {
                     break;
                 case standardOutput:
                     assemblerCode += getStandardOutput(c3dInstruction);
-                    assemblerCode += getStandardOutputPrintBuffer(c3dInstruction);
                     break;
 
             }
@@ -120,10 +125,41 @@ public class AssemblerConverter {
         ProcedureBackend procedure = this.tablesManager.getProcedure(idProcedure);
         
         String result = "";
-        result += "\n* CALL MAIN (PROCEDURE) *\n"+
+        result += "\n* CALL MAIN PROCEDURE *\n"+
         "* Intermediate code => " + c3dInstruction.toString() + "\n"+
         "    JSR " + procedure.initialLabel + "\n"+
         "    SIMHALT\n";
+        
+        return result;
+    }
+    
+    private String getProcedureCall(Quadruple c3dInstruction) {
+        int idProcedure = Integer.parseInt(c3dInstruction.destination.value);
+        ProcedureBackend procedure = this.tablesManager.getProcedure(idProcedure);
+        
+        String result = "";
+        result += "\n* CALL PROCEDURE *\n"+
+            "* Intermediate code => " + c3dInstruction.toString() + "\n"+
+            "    MOVE.L A7, A5\n"+
+            "    MOVE.L A6, A7\n"+
+            "    MOVE.L A5, -(A7)  ;previous block pointer\n";
+        if (procedure.basicSubjacentType != TypeDescription.BASIC_SUBJACENT_TYPE.ts_none) {
+            result += "    SUB.L #" + procedure.size +", A7 ; Memory space for return\n";
+        }
+        result += "    SUB.L #4, A7 ; Memory space for PC\n";
+        
+        if (procedure.numParams > 0) {
+            System.out.println("OKI");
+        }
+        //Llamamos al metodo
+        int offsetProcedure = Math.abs(procedure.sizeTemporalArgs)+4;
+        result += "    ADD.L #"+offsetProcedure+", A7  ;Regresamos para poner el pc en el salto\n";
+        result += "    JSR " + procedure.initialLabel + "\n";
+        // Come back from procedure
+        result += "    ADD.L #" + procedure.size + ", A7 ;Jump return\n";
+        result += "    MOVE.L (A7)+, A5 ;Get block pointer\n";
+        result += "    MOVE.L A7, A6  ;A6 => Stack pointer\n";
+        result += "    MOVE.L A5, A7 ;Update out block pointer\n";
         
         return result;
     }
@@ -153,6 +189,41 @@ public class AssemblerConverter {
         return result;
     }
     
+    private String getProcedureReturn(Quadruple c3dInstruction){
+        int idProcedure = Integer.parseInt(c3dInstruction.source1.value);
+        int idVariable = Integer.parseInt(c3dInstruction.destination.value);
+        
+        ProcedureBackend procedure = this.tablesManager.getProcedure(idProcedure);
+        VariableBackend variable = this.tablesManager.getVariable(idVariable);
+        
+        int pcSize = 4; // bytes;
+        int blockPointerSize = 4; // bytes
+        int offsetReturn = Math.abs(procedure.sizeTemporalArgs) + blockPointerSize + pcSize;
+        
+        String result = "";
+        result += "\n* RETURN (PROCEDURE) *\n"+
+                "* Intermediate code => " + c3dInstruction.toString() + "\n";
+                
+        switch(variable.basicSubjacentType) {
+            case ts_integer:
+                result += "    MOVE.L " + this.getOffsetFromVariable(variable) + "(A7), D0\n";
+                result += "    MOVE.L D0, " + offsetReturn + "(A7)\n";
+                break;
+            case ts_boolean:
+                result += "    MOVE.W " + this.getOffsetFromVariable(variable) + "(A7), D0\n";
+                result += "    MOVE.W D0, " + offsetReturn + "(A7)\n";
+                break;
+            case ts_string:
+                int putStringInReturn = IdentificarStringArg(idVariable);
+                if(putStringInReturn==0){
+                    putStringInReturn = variable.offset;
+                }
+                result += "    RETURN_STRING #" + offsetReturn + ", #" + putStringInReturn + ", #"+variable.size+"\n";
+                break;
+        }
+        
+        return result;
+    }
     private String getProcedureEnd(Quadruple c3dInstruction) {
         int idProcedure = Integer.parseInt(c3dInstruction.destination.value);
         ProcedureBackend procedure = this.tablesManager.getProcedure(idProcedure);
@@ -237,12 +308,12 @@ public class AssemblerConverter {
 
                 String labelString = "string_id_" + this.variablesString.size();
                 this.variablesString.add(textString);
-                int despStringArg = IdentificarStringArg(idVariableDestination);
-                if(despStringArg == 0){
-                    despStringArg = variableBackendDestination.offset;
+                int offsetParameters = IdentificarStringArg(idVariableDestination);
+                if(offsetParameters == 0){
+                    offsetParameters = variableBackendDestination.offset;
                  }
                 result += "    ASSIGNATION_STRING " +
-                          "#" + despStringArg+
+                          "#" + offsetParameters+
                         ", #" + labelString+
                         ", #" + variableBackendDestination.size+
                         "\n";
@@ -298,15 +369,8 @@ public class AssemblerConverter {
                 break;
             default:
         }
-        
-        return result;
-    }
-    
-    private String getStandardOutputPrintBuffer(Quadruple c3dInstruction){
-        String result = "";
         result += "\n* PRINT BUFFER *\n"+
-                "    PRINT_BUFFER #buffer, #0 \n";
-
+        "    PRINT_BUFFER #buffer, #0 \n";
         return result;
     }
  
@@ -322,6 +386,7 @@ public class AssemblerConverter {
         macros += getMacroOutputBoolean();
         macros += getMacroOutputString();
         macros += getMacroPrintNewLine();
+        macros += getMacroReturnString();
         
         filesManager.writeFile(MACROS_FILENAME, macros);
     }
@@ -544,6 +609,38 @@ public class AssemblerConverter {
                 "    TRAP      #15\n" +
                 "    ENDM\n";
         return result;
+    }
+    
+    private String getMacroReturnString() {
+        String result = "";
+        result += "; -----------------------------------------------------------------------------\n" +
+            "RETURN_STRING      MACRO\n" +
+            "; Input    - \\1  : Desp return\n" +
+            ";          - \\2  : Desp var\n" +
+            ";          - \\3  : ocupacion string\n" +
+            "; Modifies - \n" +
+            "; -----------------------------------------------------------------------------\n" +
+            "            ;situar return\n" +
+            "            MOVE.L A7, A2\n" +
+            "            ADD.L \\1, A2\n" +
+            "            ;siatuarvar\n" +
+            "            MOVE.L A7, A1\n" +
+            "            ADD.L \\2, A1\n" +
+            "            ;poner ocupacion\n" +
+            "            MOVE.L \\3, D1\n" +
+            "            ;Comprobamos la ocupacion\n" +
+            "            CMP.L #0, D1\n" +
+            "            BEQ final_return_string_asignar\\@\n" +
+            "loop_return_string_asignar\\@ \n" +
+            "            MOVE.W (A1)+, D2\n" +
+            "            MOVE.W D2, (A2)+\n" +
+            "            SUB.L #2, D1\n" +
+            "            CMP.L #0, D1\n" +
+            "            BNE loop_return_string_asignar\\@ \n" +
+            "final_return_string_asignar\\@\n" +
+            "            ENDM \n";
+        return result;
+        
     }
     
     

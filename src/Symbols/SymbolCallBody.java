@@ -13,11 +13,13 @@ public class SymbolCallBody extends SymbolBase{
     
     public String idFunction;
     public int counter;
+    public int idBackend;
            
-    public SymbolCallBody(String idFunction, int counter) {
+    public SymbolCallBody(String idFunction, int counter, int idBackend) {
         super("SymbolCallBody", 0);
         this.idFunction = idFunction;
         this.counter = counter;
+        this.idBackend = idBackend;
     }
     
 }

@@ -1224,8 +1224,22 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
                     SymbolCall symbolCall = call;
 
                     TypeDescription typeDescription = symbolsTable.query(symbolCall.idFunction);
+                    SymbolValue symbolValue = new SymbolValue(CONTENT_DESCRIPTION.dfunc, typeDescription.nameType);
+                    // ================ INTERMEDIATE CODE ======================
+                    int isArgument = 0; // Is not an argument
+                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeDescription.size, isArgument, typeDescription.basicSubjacentType);
+                    symbolValue.idVariable = idVar + "";
 
-                    RESULT = new SymbolValue(CONTENT_DESCRIPTION.dfunc, typeDescription.nameType);
+                    backendManager.generateC3DInst(
+                        OpCode.assign
+                        , new Operator(symbolCall.idBackend + "", TypeOperator.procedure)
+                        , null
+                        , new Operator(idVar + "", TypeOperator.variable)
+                    );
+
+                // =========================================================
+
+                    RESULT = symbolValue;
                 :}
             ;
 
@@ -2093,7 +2107,7 @@ FUNCTION ::= FUNCTION FUNC_HEAD:func_head rparen lbracket CODE_BLOCK_IN FUNC_BOD
                         OpCode.procedureReturn
                         , new Operator(symbolFuncHead.numProcedure + "", TypeOperator.procedure)
                         , null
-                        , new Operator(symbolFuncHead.numProcedure + "", TypeOperator.variable)
+                        , new Operator(return_val.idBackend + "", TypeOperator.variable)
                     );
                 }
 
@@ -2393,7 +2407,7 @@ RETURN ::= inst_return VALUE:val final_sentence
 
                 }
 
-                RESULT = new SymbolReturn(symbolValue.idVariable, basicSubjacentType);
+                RESULT = new SymbolReturn(symbolValue.idVariable, basicSubjacentType, symbolValue.idVariable);
             :}
         |
             {:
@@ -2408,7 +2422,7 @@ RETURN ::= inst_return VALUE:val final_sentence
             :}
         ;
 
-CALL ::= inst_call lparen CALL_BODY:call_body rparen
+CALL ::= inst_call lparen CALL_BODY:call_body rparen final_sentence
         {:
             // ============== GENERATE NODE FOR DIGRAPH ==============
             String description ="[CALL => inst_call lparen CALL_BODY rparen final_sentence]";
@@ -2433,7 +2447,7 @@ CALL ::= inst_call lparen CALL_BODY:call_body rparen
 
             }
 
-            RESULT = new SymbolCall(symbolCallBody.idFunction);
+            RESULT = new SymbolCall(symbolCallBody.idFunction, symbolCallBody.idBackend);
         :}
     ;
 
@@ -2483,7 +2497,7 @@ CALL_BODY   ::= CALL_BODY:call_params separator VALUE:val
                         );
                     }
 
-                    RESULT = new SymbolCallBody(symbolCallBody.idFunction, symbolCallBody.counter + 1);
+                    RESULT = new SymbolCallBody(symbolCallBody.idFunction, symbolCallBody.counter + 1, symbolCallBody.idBackend);
                 :}
 
             | id:id_function
@@ -2509,7 +2523,7 @@ CALL_BODY   ::= CALL_BODY:call_params separator VALUE:val
                 );
                 // =========================================================
 
-                    RESULT = new SymbolCallBody(id_function, 0);
+                    RESULT = new SymbolCallBody(id_function, 0, typeDescriptionFunction.idBackend);
                 :}
             ;
 

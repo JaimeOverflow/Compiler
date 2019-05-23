@@ -15,11 +15,12 @@ public class SymbolReturn extends SymbolBase{
     
     public String idVariable;
     public BASIC_SUBJACENT_TYPE basicSubjacentType;
-    
-    public SymbolReturn(String idVariable, BASIC_SUBJACENT_TYPE basicSubjacentType) {
+    public String idBackend;
+    public SymbolReturn(String idVariable, BASIC_SUBJACENT_TYPE basicSubjacentType, String idBackend) {
         super("SymbolReturn", 0);
         this.idVariable = idVariable;
         this.basicSubjacentType = basicSubjacentType;
+        this.idBackend = idBackend;
     }
     
     public SymbolReturn() {
