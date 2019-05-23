@@ -90,7 +90,6 @@ public class AssemblerConverter {
             }
         }
         
-        assemblerCode += "    SIMHALT\n";
         assemblerCode += "\n*Put variables and constants here\n";
         assemblerCode += "buffer ds.b 1024\n";
         for (int i = 0; i < this.variablesString.size(); i++) {
@@ -246,7 +245,7 @@ public class AssemblerConverter {
         int idVariableDestination = Integer.parseInt(c3dInstruction.destination.value);
         
         VariableBackend variableBackendDestination = this.tablesManager.getVariable(idVariableDestination);
-        
+        VariableBackend variableBackendSource1;
         String result = "";
         result += "\n* ASSIGNATION VARIABLE *\n"+
                 "* Intermediate code => " + c3dInstruction.toString() + "\n";
@@ -255,7 +254,7 @@ public class AssemblerConverter {
 
             case variable:
                 variableSource1Value = Integer.parseInt(valueC3DInstruction);
-                VariableBackend variableBackendSource1 = this.tablesManager.getVariable(variableSource1Value);
+                variableBackendSource1 = this.tablesManager.getVariable(variableSource1Value);
                 switch(variableBackendSource1.basicSubjacentType) {
                     case ts_integer:
                         result += "    ASSIGNATION_VARIABLE_INTEGER " +
@@ -286,7 +285,27 @@ public class AssemblerConverter {
                         break; 
                 }
                 break;
-
+            case procedure:
+                variableSource1Value = Integer.parseInt(valueC3DInstruction);
+                variableBackendSource1 = this.tablesManager.getVariable(variableSource1Value);
+                switch(variableBackendSource1.basicSubjacentType) {
+                    case ts_integer:
+                        result += "    RETURN_GET_INTEGER " + this.getOffsetFromVariable(variableBackendDestination) + "\n";
+                        break;
+                    case ts_boolean:
+                        result += "    RETURN_GET_BOOLEAN " + this.getOffsetFromVariable(variableBackendDestination) + "\n";
+                        break;
+                    case ts_string:
+                        int offsetDestinationReturn = IdentificarStringArg(idVariableDestination);
+                        if(offsetDestinationReturn==0){
+                            offsetDestinationReturn = variableBackendDestination.offset;
+                        }
+                        int sizeReturn = variableBackendSource1.size;
+                        result += "    RETURN_GET_STRING #"+sizeReturn+", #"+offsetDestinationReturn+", #"+variableBackendDestination.size+"  \n";
+                        break;
+                }
+                
+                break;
             case int_value:
                 variableSource1Value = Integer.parseInt(valueC3DInstruction);
                 result += "    ASSIGNATION_INTEGER " +
@@ -365,7 +384,7 @@ public class AssemblerConverter {
                     offsetVariable= variableBackendDestination.offset;
                 }
                 result += "    CLR.L buffer  \n";
-                result += "    PRINT #buffer, #"+offsetVariable+", #"+variableSize+"\n";
+                result += "    PRINT_STRING #buffer, #"+offsetVariable+", #"+variableSize+"\n";
                 break;
             default:
         }
@@ -382,6 +401,9 @@ public class AssemblerConverter {
         macros += getMacroAssignationVariableInteger();
         macros += getMacroAssignationVariableBoolean();
         macros += getMacroAssignationVariableString();
+        macros += getMacroRecoverIntegerFromReturn();
+        macros += getMacroRecoverBooleanFromReturn();
+        macros += getMacroRecoverStringFromReturn();
         macros += getMacroOutputInteger();
         macros += getMacroOutputBoolean();
         macros += getMacroOutputString();
@@ -405,244 +427,314 @@ public class AssemblerConverter {
     private String getMacroAssignationVariableInteger() {
         String result = "";
         result += "*-----------------------------------------------------------\n" +
-                    "ASSIGNATION_VARIABLE_INTEGER 	MACRO\n" +
-                    "* Macro to add.                          \n" +
-                    "* Parameters: \\1: Param1   ;source1\n" +
-                    "*             \\2: Param2   ;destination\n" +
-                    "* Modifies  : Nothing\n" +
-                    "*-----------------------------------------------------------\n" +
-                    "   MOVE.L \\1(A7), \\2(A7)\n" +
-                    "   \n   ENDM\n";
+            "ASSIGNATION_VARIABLE_INTEGER 	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1   ;source1\n" +
+            "*             \\2: Param2   ;destination\n" +
+            "* Modifies  : Nothing\n" +
+            "*-----------------------------------------------------------\n" +
+            "   MOVE.L \\1(A7), \\2(A7)\n" +
+            "   \n   ENDM\n";
         return result;
     }
     
     private String getMacroAssignationVariableBoolean() {
         String result = "";
         result += "*-----------------------------------------------------------\n" +
-                    "ASSIGNATION_VARIABLE_BOOLEAN 	MACRO\n" +
-                    "* Macro to add.                          \n" +
-                    "* Parameters: \\1: Param1   ;source1\n" +
-                    "*             \\2: Param2   ;destination\n" +
-                    "* Modifies  : Nothing\n" +
-                    "*-----------------------------------------------------------\n" +
-                    "   MOVE.W \\1(A7), \\2(A7)\n" +
-                    "   \n   ENDM\n";
+            "ASSIGNATION_VARIABLE_BOOLEAN 	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1   ;source1\n" +
+            "*             \\2: Param2   ;destination\n" +
+            "* Modifies  : Nothing\n" +
+            "*-----------------------------------------------------------\n" +
+            "   MOVE.W \\1(A7), \\2(A7)\n" +
+            "   \n   ENDM\n";
         return result;
     }
     
     private String getMacroAssignationVariableString() {
         String result = "";
         result += "*-----------------------------------------------------------\n" +
-                "ASSIGNATION_VARIABLE_STRING	MACRO\n" +
-                "* Macro to add.                          \n" +
-                "* Parameters: \\1: Param1   ;offset destination variable\n" +
-                "*             \\2: Param1   ;remaining size of destination var\n" +
-                "*             \\3: Param1   ;offset source variable\n" +
-                "*             \\4: Param1   ;size source variable\n" +
-                "* Modifies  : D0\n" +
-                "*-----------------------------------------------------------    \n" +
-                "    MOVE.L A7, A1\n" +
-                "    ADD.L \\1, A1\n" +
-                "    MOVE.L \\2, D1\n" +
-                "    MOVE.L A7, A2\n" +
-                "    ADD.L \\3, A2\n" +
-                "    MOVE.L \\4, D2\n" +
-                "    CMP.L #0, D2\n" +
-                "    BEQ FILL_REMAINING_STRING\\@\n" +
-                "    CLR.L D3\n" +
-                "FILL_NEXT_CHAR\\@\n" +
-                "    MOVE.W (A2)+, D3\n" +
-                "    MOVE.W D3, (A1)+\n" +
-                "    SUB.L #2, D2\n" +
-                "    CMP.L #0, D2\n" +
-                "    BNE FILL_NEXT_CHAR\\@\n" +
-                "FILL_REMAINING_STRING\\@ ; If var1 = var2 and var1 > var2\n" +
-                "    CMP.L #0, D1\n" +
-                "    BEQ STRING_COPIED\\@\n" +
-                "    CLR.L D2\n" +
-                "    MOVE.W #8224, D2 ;Blank space\n" +
-                "FILL_BLANK_CHAR\\@\n" +
-                "    MOVE.W D2, (A1)+\n" +
-                "    SUB.L #2, D1\n" +
-                "    CMP.L #0, D1\n" +
-                "    BNE FILL_BLANK_CHAR\\@   \n" +
-                "STRING_COPIED\\@    \n" +
-                "    ENDM\n";
+            "ASSIGNATION_VARIABLE_STRING	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1   ;offset destination variable\n" +
+            "*             \\2: Param1   ;remaining size of destination var\n" +
+            "*             \\3: Param1   ;offset source variable\n" +
+            "*             \\4: Param1   ;size source variable\n" +
+            "* Modifies  : D0\n" +
+            "*-----------------------------------------------------------    \n" +
+            "    MOVE.L A7, A1\n" +
+            "    ADD.L \\1, A1\n" +
+            "    MOVE.L \\2, D1\n" +
+            "    MOVE.L A7, A2\n" +
+            "    ADD.L \\3, A2\n" +
+            "    MOVE.L \\4, D2\n" +
+            "    CMP.L #0, D2\n" +
+            "    BEQ FILL_REMAINING_STRING\\@\n" +
+            "    CLR.L D3\n" +
+            "FILL_NEXT_CHAR\\@\n" +
+            "    MOVE.W (A2)+, D3\n" +
+            "    MOVE.W D3, (A1)+\n" +
+            "    SUB.L #2, D2\n" +
+            "    CMP.L #0, D2\n" +
+            "    BNE FILL_NEXT_CHAR\\@\n" +
+            "FILL_REMAINING_STRING\\@ ; If var1 = var2 and var1 > var2\n" +
+            "    CMP.L #0, D1\n" +
+            "    BEQ STRING_COPIED\\@\n" +
+            "    CLR.L D2\n" +
+            "    MOVE.W #8224, D2 ;Blank space\n" +
+            "FILL_BLANK_CHAR\\@\n" +
+            "    MOVE.W D2, (A1)+\n" +
+            "    SUB.L #2, D1\n" +
+            "    CMP.L #0, D1\n" +
+            "    BNE FILL_BLANK_CHAR\\@   \n" +
+            "STRING_COPIED\\@    \n" +
+            "    ENDM\n";
         return result;
     }
     
     private String getMacroAssignationInteger() {
         String result = "";
         result += "*-----------------------------------------------------------\n" +
-                "* Primary types are: Int, booleans, etc\n"+
-                "ASSIGNATION_INTEGER 	MACRO\n" +
-                "* Macro to add.\n" +
-                "* Parameters: \\1: Param1   ;Value of int or boolean\n" +
-                "*             \\2: Param2   ;Offset of destination variable\n" +
-                "* Modifies  : Nothing\n" +
-                "*-----------------------------------------------------------\n" +
-                "   MOVE.L \\1, \\2(A7)\n"
-                + "   ENDM\n";
+            "* Primary types are: Int, booleans, etc\n"+
+            "ASSIGNATION_INTEGER 	MACRO\n" +
+            "* Macro to add.\n" +
+            "* Parameters: \\1: Param1   ;Value of int or boolean\n" +
+            "*             \\2: Param2   ;Offset of destination variable\n" +
+            "* Modifies  : Nothing\n" +
+            "*-----------------------------------------------------------\n" +
+            "   MOVE.L \\1, \\2(A7)\n"
+            + "   ENDM\n";
         return result;
     }
     
     private String getMacroAssignationBoolean() {
         String result = "";
         result += "*-----------------------------------------------------------\n" +
-                "* Primary types are: Int, booleans, etc\n"+
-                "ASSIGNATION_BOOLEAN 	MACRO\n" +
-                "* Macro to add.\n" +
-                "* Parameters: \\1: Param1   ;Value of int or boolean\n" +
-                "*             \\2: Param2   ;Offset of destination variable\n" +
-                "* Modifies  : Nothing\n" +
-                "*-----------------------------------------------------------\n" +
-                "   MOVE.W \\1, \\2(A7)\n"
-                + "   ENDM\n";
+            "* Primary types are: Int, booleans, etc\n"+
+            "ASSIGNATION_BOOLEAN 	MACRO\n" +
+            "* Macro to add.\n" +
+            "* Parameters: \\1: Param1   ;Value of int or boolean\n" +
+            "*             \\2: Param2   ;Offset of destination variable\n" +
+            "* Modifies  : Nothing\n" +
+            "*-----------------------------------------------------------\n" +
+            "   MOVE.W \\1, \\2(A7)\n"
+            + "   ENDM\n";
         return result;
     }
     
     private String getMacroAssignationString() {
         String result = "";
         result += "*-----------------------------------------------------------\n" +
-                "ASSIGNATION_STRING 	MACRO\n" +
-                "* Macro to add.                          \n" +
-                "* Parameters: \\1: Param1   ;offset variable\n" +
-                "*             \\2: Param1   ;label variable\n" +
-                "*             \\3: Param1   ;size string\n" +
-                "* Modifies  : D0, D1\n" +
-                "*-----------------------------------------------------------\n" +
-                "    MOVE.L A7, A1\n" +
-                "    ADD.L \\1, A1\n" +
-                "    MOVE.L \\2, A2\n" +
-                "    MOVE.L \\3, D0\n" +
-                "    CMP.L #0, D0\n" +
-                "    BEQ STRING_COPIED\\@\n" +
-                "    CLR.L D1\n" +
-                "FILL_NEXT_CHAR\\@\n" +
-                "    MOVE.B (A2)+, D1\n" +
-                "    MOVE.W D1, (A1)+\n" +
-                "    SUB.L #2, D0\n" +
-                "    CMP.L #0, D0\n" +
-                "    BNE FILL_NEXT_CHAR\\@\n" +
-                "STRING_COPIED\\@\n"+
-                "    ENDM\n";
+            "ASSIGNATION_STRING 	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1   ;offset variable\n" +
+            "*             \\2: Param1   ;label variable\n" +
+            "*             \\3: Param1   ;size string\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    MOVE.L A7, A1\n" +
+            "    ADD.L \\1, A1\n" +
+            "    MOVE.L \\2, A2\n" +
+            "    MOVE.L \\3, D0\n" +
+            "    CMP.L #0, D0\n" +
+            "    BEQ STRING_COPIED\\@\n" +
+            "    CLR.L D1\n" +
+            "FILL_NEXT_CHAR\\@\n" +
+            "    MOVE.B (A2)+, D1\n" +
+            "    MOVE.W D1, (A1)+\n" +
+            "    SUB.L #2, D0\n" +
+            "    CMP.L #0, D0\n" +
+            "    BNE FILL_NEXT_CHAR\\@\n" +
+            "STRING_COPIED\\@\n"+
+            "    ENDM\n";
         return result;
     }
     
     private String getMacroOutputInteger() {
         String result = "";
         result += "; -----------------------------------------------------------------------------\n" +
-                "OUTPUT_INTEGER      MACRO\n" +
-                "; Input    - \\1  ; Offset's variable with integer value\n" +
-                "; Modifies - \n" +
-                "; -----------------------------------------------------------------------------\n" +
-                "   CLR.L D0\n" +
-                "   CLR.L D1\n" +
-                "   MOVE.L \\1(A7), D1\n" +
-                "   MOVE.W #20, D0\n" +
-                "   trap #15\n" +
-                "   ENDM\n";
+            "OUTPUT_INTEGER      MACRO\n" +
+            "; Input    - \\1  ; Offset's variable with integer value\n" +
+            "; Modifies - \n" +
+            "; -----------------------------------------------------------------------------\n" +
+            "   CLR.L D0\n" +
+            "   CLR.L D1\n" +
+            "   MOVE.L \\1(A7), D1\n" +
+            "   MOVE.W #20, D0\n" +
+            "   trap #15\n" +
+            "   ENDM\n";
         return result;
     }
     
     private String getMacroOutputBoolean() {
         String result = "";
         result += "; -----------------------------------------------------------------------------\n" +
-                "OUTPUT_BOOLEAN      MACRO\n" +
-                "; Input    - \\1  ; Offset's variable with boolean value\n" +
-                "; Modifies - \n" +
-                "; -----------------------------------------------------------------------------\n" +
-                "   CLR.L D0\n" +
-                "   CLR.L D1\n" +
-                "   MOVE.W \\1(A7), D1\n" +
-                "   MOVE.W #20, D0\n" +
-                "   trap #15\n" +
-                "   ENDM\n";
+            "OUTPUT_BOOLEAN      MACRO\n" +
+            "; Input    - \\1  ; Offset's variable with boolean value\n" +
+            "; Modifies - \n" +
+            "; -----------------------------------------------------------------------------\n" +
+            "   CLR.L D0\n" +
+            "   CLR.L D1\n" +
+            "   MOVE.W \\1(A7), D1\n" +
+            "   MOVE.W #20, D0\n" +
+            "   trap #15\n" +
+            "   ENDM\n";
         return result;
     }
     
     private String getMacroOutputString() {
         String result = "";
         result += "; -----------------------------------------------------------------------------\n" +
-                "PRINT      MACRO\n" +
-                "* Macro to add.                          \n" +
-                "; Input    - \\1  : Direccion de memoria del buffer\n" +
-                ";          - \\2  : Desplazamiento var\n" +
-                ";          - \\3  : ocupacion string / 2\n" +
-                "; Modifies - \n" +
-                "; -----------------------------------------------------------------------------\n" +
-                "            MOVE.L \\1,A1     ;buffer to print\n" +
-                "            MOVE.L A7, A2\n" +
-                "            ADD.L \\2, A2     ;Init string\n" +
-                "            MOVE.L \\3, D1\n" +
-                "            ;mirar si es 0 la ocupacion\n" +
-                "            CMP.L #0, D1\n" +
-                "            BEQ print_f\\@\n" +
-                "print_loop\\@ \n" +
-                "            MOVE.W  (A2)+, D0\n" +
-                "            CMP.W #8224, D0\n" +
-                "            BEQ print_f\\@ ; sin son espacios salir\n" +
-                "            MOVE.B  D0 ,(A1)+\n" +
-                "            SUB.L #1, D1      \n" +
-                "            CMP.L   #0, D1\n" +
-                "            BNE     print_loop\\@      ; Loop again\n" +
-                "print_f\\@            \n" +
-                "            MOVE.W  #1, D0\n" +
-                "            MOVE.L  \\3, D1\n" +
-                "            MOVE.L  \\1,A1    ; Reload original pointing address of bufferptr\n" +
-                "            TRAP      #15           ; Display it\n" +
-                "\n" +
-                "            ENDM\n";
+            "PRINT_STRING      MACRO\n" +
+            "* Macro to add.                          \n" +
+            "; Input    - \\1  ; buffer direction\n" +
+            ";          - \\2  ; offset variable\n" +
+            ";          - \\3  ; size string / 2\n" +
+            "; Modifies - \n" +
+            "; -----------------------------------------------------------------------------\n" +
+            "    MOVE.L \\1,A1\n" +
+            "    MOVE.L A7, A2\n" +
+            "    ADD.L \\2, A2\n" +
+            "    MOVE.L \\3, D1\n" +
+            "    CMP.L #0, D1\n" +
+            "    BEQ END_PRINT\\@\n" +
+            "NEXT_CHAR_TO_PRINT\\@ \n" +
+            "    MOVE.W  (A2)+, D0\n" +
+            "    CMP.W #8224, D0\n" +
+            "    BEQ END_PRINT\\@\n" +
+            "    MOVE.B D0 ,(A1)+\n" +
+            "    SUB.L #1, D1\n" +
+            "    CMP.L #0, D1\n" +
+            "    BNE NEXT_CHAR_TO_PRINT\\@\n" +
+            "END_PRINT\\@\n" +
+            "    MOVE.W #1, D0\n" +
+            "    MOVE.L \\3, D1\n" +
+            "    MOVE.L \\1,A1\n" +
+            "    TRAP #15\n" +
+            "\n    ENDM\n";
         return result;
     }
 
     private String getMacroPrintNewLine() {
         String result = "";
         result += "; -----------------------------------------------------------------------------\n" +
-                "PRINT_BUFFER      MACRO\n" +
-                "; Escribe un string de longitud n de max 255 char por pantalla.\n" +
-                "; Input    - \\1  : size string\n" +
-                "; -----------------------------------------------------------------------------\n" +
-                "    MOVE.W  #0, D0\n" +
-                "    MOVE.L \\1, A1\n" +
-                "    MOVE.L \\2, D1\n" +
-                "    TRAP      #15\n" +
-                "    ENDM\n";
+            "PRINT_BUFFER      MACRO\n" +
+            "; Input    - \\1  : size string\n" +
+            "; -----------------------------------------------------------------------------\n" +
+            "    MOVE.W  #0, D0\n" +
+            "    MOVE.L \\1, A1\n" +
+            "    MOVE.L \\2, D1\n" +
+            "    TRAP      #15\n" +
+            "    ENDM\n";
         return result;
     }
-    
+
     private String getMacroReturnString() {
         String result = "";
         result += "; -----------------------------------------------------------------------------\n" +
             "RETURN_STRING      MACRO\n" +
-            "; Input    - \\1  : Desp return\n" +
-            ";          - \\2  : Desp var\n" +
-            ";          - \\3  : ocupacion string\n" +
+            "; Input    - \\1  ; offset return\n" +
+            ";          - \\2  ; offset variable\n" +
+            ";          - \\3  ; size string\n" +
             "; Modifies - \n" +
             "; -----------------------------------------------------------------------------\n" +
-            "            ;situar return\n" +
-            "            MOVE.L A7, A2\n" +
-            "            ADD.L \\1, A2\n" +
-            "            ;siatuarvar\n" +
-            "            MOVE.L A7, A1\n" +
-            "            ADD.L \\2, A1\n" +
-            "            ;poner ocupacion\n" +
-            "            MOVE.L \\3, D1\n" +
-            "            ;Comprobamos la ocupacion\n" +
-            "            CMP.L #0, D1\n" +
-            "            BEQ final_return_string_asignar\\@\n" +
-            "loop_return_string_asignar\\@ \n" +
-            "            MOVE.W (A1)+, D2\n" +
-            "            MOVE.W D2, (A2)+\n" +
-            "            SUB.L #2, D1\n" +
-            "            CMP.L #0, D1\n" +
-            "            BNE loop_return_string_asignar\\@ \n" +
-            "final_return_string_asignar\\@\n" +
-            "            ENDM \n";
+            "    MOVE.L A7, A2\n" +
+            "    ADD.L \\1, A2\n" +
+            "    MOVE.L A7, A1\n" +
+            "    ADD.L \\2, A1\n" +
+            "    MOVE.L \\3, D1\n" +
+            "    CMP.L #0, D1\n" +
+            "    BEQ FINAL_RETURN_STRING\\@\n" +
+            "NEXT_CHAR\\@ \n" +
+            "    MOVE.W (A1)+, D2\n" +
+            "    MOVE.W D2, (A2)+\n" +
+            "    SUB.L #2, D1\n" +
+            "    CMP.L #0, D1\n" +
+            "    BNE NEXT_CHAR\\@ \n" +
+            "FINAL_RETURN_STRING\\@\n" +
+            "    ENDM \n";
         return result;
         
     }
+
+    private String getMacroRecoverIntegerFromReturn() {
+        String result = "*-----------------------------------------------------------\n" +
+            "RETURN_GET_INTEGER 	MACRO\n" +
+            "* Macro to add. \n" +
+            "* Parameters: \\1: Param1   ; offset variable\n" +
+            "* Modifies  : A5, A6, A7\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    MOVE.L A7, A5\n" +
+            "    MOVE.L A6, A7\n" +
+            "    SUB.L #4, A7\n" +
+            "    SUB.L #4, A7\n" +
+            "    MOVE.L (A7), D0\n" +
+            "    MOVE.L A5, A7\n" +
+            "    MOVE.L D0, \\1(A7)\n" +
+            "    ENDM\n";
+        return result; 
+    }
     
+    private String getMacroRecoverBooleanFromReturn() {
+        String result = "*-----------------------------------------------------------\n" +
+                    "RETURN_GET_BOOLEAN 	MACRO\n" +
+                    "* Macro to add.\n" +
+                    "* Parameters: \\1: Param1   ; offset variable\n" +
+                    "* Modifies  : D0\n" +
+                    "*-----------------------------------------------------------\n" +
+                    "    CLR.L D0\n" +
+                    "    MOVE.L A7, A5\n" +
+                    "    MOVE.L A6, A7\n" +
+                    "    SUB.L #4, A7\n" +
+                    "    SUB.L #2, A7A\n" +
+                    "    MOVE.W (A7), D0\n" +
+                    "    MOVE.L A5, A7\n" +
+                    "    MOVE.W D0, \\1(A7)\n" +
+                    "    ENDM\n";
+        return result; 
+    }
     
+        private String getMacroRecoverStringFromReturn() {
+        String result = "*-----------------------------------------------------------\n" +
+                    "RETURN_GET_STRING	MACRO\n" +
+                    "* Macro to add.                          \n" +
+                    "* Parameters: \\1: Param1   ;size return string\n" +
+                    "*             \\2: Param1   ;offset variable\n" +
+                    "*             \\3: Param1   ;sizevariable\n" +
+                    "* Modifies  : D0\n" +
+                    "*-----------------------------------------------------------   \n" +
+                    "    CLR.L D0\n" +
+                    "    CLR.L D1\n" +
+                    "    MOVE.L A6, A1\n" +
+                    "    SUB.L #4, A1\n" +
+                    "    SUB.L \\1, A1\n" +
+                    "    MOVE.L A7, A2\n" +
+                    "    ADD.L \\2, A2\n" +
+                    "    MOVE.L \\3, D0\n" +
+                    "    MOVE.L \\1, D1\n" +
+                    "    CMP.L #0, D1\n" +
+                    "    BEQ FILL_STRING\\@\n" +
+                    "NEXT_CHAR\\@\n" +
+                    "    MOVE.W (A1)+, D3\n" +
+                    "    MOVE.W D3, (A2)+\n" +
+                    "    SUB.L #2, D1 ;RESTAMOS 2 POR 2 BYTES\n" +
+                    "    CMP.L #0, D1\n" +
+                    "    BNE NEXT_CHAR\\@\n" +
+                    "FILL_STRING\\@\n" +
+                    "    CMP.L #0, D0\n" +
+                    "    BEQ END_STRING\\@\n" +
+                    "    CLR.L D1\n" +
+                    "    MOVE.W #8224, D1 ;blank spaces\n" +
+                    "EMPTY_STRING\\@\n" +
+                    "    MOVE.W D1, (A2)+\n" +
+                    "    SUB.L #2, D0\n" +
+                    "    CMP.L #0, D0\n" +
+                    "    BNE EMPTY_STRING\\@\n" +
+                    "END_STRING\\@    \n" +
+                    "    ENDM\n";
+        return result; 
+    }
     
 }

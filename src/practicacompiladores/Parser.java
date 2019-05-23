@@ -1858,11 +1858,12 @@ class CUP$Parser$actions {
                     // =======================================================
                     SymbolCall symbolCall = call;
 
-                    TypeDescription typeDescription = symbolsTable.query(symbolCall.idFunction);
-                    SymbolValue symbolValue = new SymbolValue(CONTENT_DESCRIPTION.dfunc, typeDescription.nameType);
+                    TypeDescription typeDescriptionFunction = symbolsTable.query(symbolCall.idFunction);
+                    TypeDescription typeDescriptionType = symbolsTable.query(typeDescriptionFunction.nameType);
+                    SymbolValue symbolValue = new SymbolValue(CONTENT_DESCRIPTION.dfunc, typeDescriptionFunction.nameType);
                     // ================ INTERMEDIATE CODE ======================
                     int isArgument = 0; // Is not an argument
-                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeDescription.size, isArgument, typeDescription.basicSubjacentType);
+                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeDescriptionType.size, isArgument, typeDescriptionType.basicSubjacentType);
                     symbolValue.idVariable = idVar + "";
 
                     backendManager.generateC3DInst(

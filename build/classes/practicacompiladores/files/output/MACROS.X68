@@ -105,6 +105,81 @@ FILL_BLANK_CHAR\@
     BNE FILL_BLANK_CHAR\@   
 STRING_COPIED\@    
     ENDM
+*-----------------------------------------------------------
+RECUPERAR_VALOR_INT 	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1   ;DESP DESTI
+* Modifies  : A5, A6, A7
+*-----------------------------------------------------------
+    CLR.L D0
+    MOVE.L A7, A5       ;GUARDAMOS BP\n";
+    MOVE.L A6, A7       ;SUBIMOS A LA CIMA";
+    SUB.L #4, A7        ;SALTAMOS BP ACTUAL GUARDADO
+    SUB.L #4, A7        ;NOS SITUAMOS EN LA RESPUESTA
+    MOVE.L (A7), D0     ;RECOGEMOS VALOR ENTERO\n";
+    MOVE.L A5, A7       ;VOLVEMOS A BP\n";
+    MOVE.L D0, \1(A7)   ;PONEMOS VALOR
+		
+    ENDM
+*-----------------------------------------------------------
+RECUPERAR_VALOR_BOOLEAN 	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1   ;DESP
+* Modifies  : D0
+*-----------------------------------------------------------
+    CLR.L D0
+    MOVE.L A7, A5       ;GUARDAMOS BP\n";
+    MOVE.L A6, A7       ;SUBIMOS A LA CIMA";
+    SUB.L #4, A7        ;SALTAMOS BP ACTUAL GUARDADO
+    SUB.L #2, A7        ;NOS SITUAMOS EN LA RESPUESTA
+    MOVE.W (A7), D0     ;RECOGEMOS VALOR BOOLEANO\n";
+    MOVE.L A5, A7       ;VOLVEMOS A BP\n";
+    MOVE.W D0, \1(A7)   ;PONEMOS VALOR
+		
+    ENDM
+*-----------------------------------------------------------
+RECUPERAR_VALOR_STRING	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1   ;ocup ret
+*             \2: Param1   ;desp desti
+*             \3: Param1   ;ocup desti
+* Modifies  : D0
+*-----------------------------------------------------------   
+    CLR.L D0
+    CLR.L D1
+    ;Situamos encima de return
+    MOVE.L A6, A1
+    SUB.L #4, A1 ;Saltamos BP
+    SUB.L \1, A1
+    ;Nos situamos en var desti
+    MOVE.L A7, A2
+    ADD.L \2, A2
+    ;Cogemos tamaño desti
+    MOVE.L \3, D0
+    ;Cogemos tamaño return
+    MOVE.L \1, D1
+    ;Comprobar si es 0
+    CMP.L #0, D1
+    BEQ RETURN_RELLENAR\@
+RETURN_STRING_SEGUIR\@
+    MOVE.W (A1)+, D3
+    MOVE.W D3, (A2)+
+    SUB.L #2, D1 ;RESTAMOS 2 POR 2 BYTES
+    CMP.L #0, D1
+    BNE RETURN_STRING_SEGUIR\@
+RETURN_RELLENAR\@
+    CMP.L #0, D0
+    BEQ RETURN_DEVOLVER_STRING\@
+    ;RELLENAR STRING CON ESPACIOS
+    CLR.L D1
+    MOVE.W #8224, D1 ;Rellenamos con espacios
+RETURN_VAR_STRING_VACIO\@
+    MOVE.W D1, (A2)+
+    SUB.L #2, D0
+    CMP.L #0, D0
+    BNE RETURN_VAR_STRING_VACIO\@   
+RETURN_DEVOLVER_STRING\@    
+    ENDM
 ; -----------------------------------------------------------------------------
 OUTPUT_INTEGER      MACRO
 ; Input    - \1  ; Offset's variable with integer value
@@ -128,33 +203,32 @@ OUTPUT_BOOLEAN      MACRO
    trap #15
    ENDM
 ; -----------------------------------------------------------------------------
-PRINT      MACRO
+PRINT_STRING      MACRO
 * Macro to add.                          
-; Input    - \1  : Direccion de memoria del buffer
-;          - \2  : Desplazamiento var
-;          - \3  : ocupacion string / 2
+; Input    - \1  : buffer direction
+;          - \2  : offset variable
+;          - \3  : size string / 2
 ; Modifies - 
 ; -----------------------------------------------------------------------------
-            MOVE.L \1,A1     ;buffer to print
-            MOVE.L A7, A2
-            ADD.L \2, A2     ;Init string
-            MOVE.L \3, D1
-            ;mirar si es 0 la ocupacion
-            CMP.L #0, D1
-            BEQ print_f\@
-print_loop\@ 
-            MOVE.W  (A2)+, D0
-            CMP.W #8224, D0
-            BEQ print_f\@ ; sin son espacios salir
-            MOVE.B  D0 ,(A1)+
-            SUB.L #1, D1      
-            CMP.L   #0, D1
-            BNE     print_loop\@      ; Loop again
-print_f\@            
-            MOVE.W  #1, D0
-            MOVE.L  \3, D1
-            MOVE.L  \1,A1    ; Reload original pointing address of bufferptr
-            TRAP      #15           ; Display it
+    MOVE.L \1,A1
+    MOVE.L A7, A2
+    ADD.L \2, A2
+    MOVE.L \3, D1
+    CMP.L #0, D1
+    BEQ END_PRINT\@
+NEXT_CHAR_TO_PRINT\@ 
+    MOVE.W  (A2)+, D0
+    CMP.W #8224, D0
+    BEQ END_PRINT\@
+    MOVE.B D0 ,(A1)+
+    SUB.L #1, D1
+    CMP.L #0, D1
+    BNE NEXT_CHAR_TO_PRINT\@
+END_PRINT\@
+    MOVE.W #1, D0
+    MOVE.L \3, D1
+    MOVE.L \1,A1
+    TRAP #15
 
             ENDM
 ; -----------------------------------------------------------------------------
