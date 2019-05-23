@@ -29,10 +29,10 @@ public class Quadruple {
         procedureReturn,
         procedureEnd,
         procedureCall,
+        procedureCallMain,
         
         //Ouput
         standardOutput,
-        standardOutputEnd,
         
         // Arithmetic operators
         sum, sub, mult, div, mod,

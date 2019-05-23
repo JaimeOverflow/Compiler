@@ -138,11 +138,8 @@ public class Main {
                 System.out.println("======================================================");
                 System.out.println("CONGRATULATIONS!! Your source code is correct ;)");
                 System.out.println("======================================================");
-            }
-            
-            
+            }    
         } catch (Exception ex) {
-            
             ex.printStackTrace();
         }
         

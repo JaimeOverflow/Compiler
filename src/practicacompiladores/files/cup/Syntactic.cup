@@ -90,7 +90,7 @@ parser code {:
         TypeDescription typeDescription = new TypeDescription(
             TypeDescription.CONTENT_DESCRIPTION.dtype,
             TypeDescription.BASIC_SUBJACENT_TYPE.ts_boolean,
-            1, // bytes
+            2, // bytes
             0,
             1
             );
@@ -106,7 +106,7 @@ parser code {:
             TypeDescription.BASIC_SUBJACENT_TYPE.ts_string,
             0, // bytes
             0,
-            0
+            1024
             );
 
         this.symbolsTable.add(keywordType, typeDescription);
@@ -266,8 +266,21 @@ INIT_TYPES  ::=
                 :}
             ;
 
-CALL_MAIN  ::= inst_call_main lparen id rparen final_sentence
+CALL_MAIN  ::= inst_call_main lparen id:id_main_function rparen final_sentence
                 {:
+                    TypeDescription typeDescription = symbolsTable.query(id_main_function);
+                    int idProcedure = typeDescription.idBackend;
+                    System.out.println("FINALE: " + idProcedure);
+
+                    // ==================== INTERMEDIATE CODE ====================
+                        backendManager.generateC3DInst(
+                            0 // We put our c3d instruction at the beginning of the list
+                            , OpCode.procedureCallMain
+                            , null
+                            , null
+                            , new Operator(idProcedure + "", TypeOperator.procedure)
+                        );
+                    // ===========================================================
 
                     RESULT = new SymbolCallMain();
                 :}
@@ -560,8 +573,11 @@ DECLS   ::= id:id_variable separator DECLS:decls
                 }
 
                 // ==================== INTERMEDIATE CODE ====================
+                    int variableSize = typeDescription.size;
+                    if (symbolValue.isString) variableSize = symbolValue.stringSize;
+
                     int isArgument = 0; // Is not an argument
-                    int idVar = backendManager.tablesManager.addVariable(id_variable, backendManager.tablesManager.getActualProcedure(), typeDescription.size, isArgument, typeDescription.basicSubjacentType);
+                    int idVar = backendManager.tablesManager.addVariable(id_variable, backendManager.tablesManager.getActualProcedure(), variableSize, isArgument, typeDescription.basicSubjacentType);
                     typeDescriptionForNewVariables.idBackend = idVar;
                 // ===========================================================
 
@@ -1086,7 +1102,24 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
                     */
 
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_string, value);
-                    //symbolValue.idVariable = uuidVariable;
+                    
+                    // ==================== INTERMEDIATE CODE ====================
+                    TypeDescription typeString = symbolsTable.query("string");
+                    int isArgument = 0; // Is not an argument
+                    int stringSize = value.length() * 2;
+                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), stringSize, 0, typeString.basicSubjacentType);
+                    symbolValue.idVariable = idVar + "";
+                    symbolValue.isString = true;
+                    symbolValue.stringSize = stringSize;
+
+                    backendManager.generateC3DInst(
+                        OpCode.assign
+                        , new Operator(text_value, TypeOperator.string_value)
+                        , null
+                        , new Operator(idVar + "", TypeOperator.variable)
+                    );
+                    // ===========================================================
+
                     RESULT = symbolValue;
                 :}
 
@@ -1105,7 +1138,21 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
                     quadruples.add(quadruple);
                     */
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_boolean, value);
-                    //symbolValue.idVariable = uuidVariable;
+                    
+                    // ==================== INTERMEDIATE CODE ====================
+                    TypeDescription typeBoolean = symbolsTable.query("boolean");
+                    int isArgument = 0; // Is not an argument
+                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeBoolean.size, 0, typeBoolean.basicSubjacentType);
+                    symbolValue.idVariable = idVar + "";
+
+                    backendManager.generateC3DInst(
+                        OpCode.assign
+                        , new Operator(bool_value, TypeOperator.bool_value)
+                        , null
+                        , new Operator(idVar + "", TypeOperator.variable)
+                    );
+                    // ===========================================================
+
                     RESULT = symbolValue;  
                 :}
 
@@ -1222,12 +1269,6 @@ OUTPUT  ::= inst_output lparen VALUE:symbol_value rparen final_sentence
                         , new Operator(symbolValue.idVariable + "", TypeOperator.variable)
                 );
 
-                backendManager.generateC3DInst(
-                        OpCode.standardOutputEnd
-                        , null
-                        , null
-                        , null
-                );
                 // =========================================================
                 RESULT = new SymbolOutput();
             :}
@@ -2060,7 +2101,7 @@ FUNCTION ::= FUNCTION FUNC_HEAD:func_head rparen lbracket CODE_BLOCK_IN FUNC_BOD
                         OpCode.procedureEnd
                         , null
                         , null
-                        , new Operator(symbolFuncHead.nameFunc + "", TypeOperator.procedure)
+                        , new Operator(symbolFuncHead.numProcedure + "", TypeOperator.procedure)
                 );
                 // =========================================================
 

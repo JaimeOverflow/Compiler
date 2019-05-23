@@ -482,7 +482,7 @@ public class Parser extends java_cup.runtime.lr_parser {
         TypeDescription typeDescription = new TypeDescription(
             TypeDescription.CONTENT_DESCRIPTION.dtype,
             TypeDescription.BASIC_SUBJACENT_TYPE.ts_boolean,
-            1, // bytes
+            2, // bytes
             0,
             1
             );
@@ -498,7 +498,7 @@ public class Parser extends java_cup.runtime.lr_parser {
             TypeDescription.BASIC_SUBJACENT_TYPE.ts_string,
             0, // bytes
             0,
-            0
+            1024
             );
 
         this.symbolsTable.add(keywordType, typeDescription);
@@ -630,7 +630,23 @@ class CUP$Parser$actions {
           case 3: // CALL_MAIN ::= inst_call_main lparen id rparen final_sentence 
             {
               SymbolCallMain RESULT =null;
+		int id_main_functionleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int id_main_functionright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		String id_main_function = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		
+                    TypeDescription typeDescription = symbolsTable.query(id_main_function);
+                    int idProcedure = typeDescription.idBackend;
+                    System.out.println("FINALE: " + idProcedure);
+
+                    // ==================== INTERMEDIATE CODE ====================
+                        backendManager.generateC3DInst(
+                            0 // We put our c3d instruction at the beginning of the list
+                            , OpCode.procedureCallMain
+                            , null
+                            , null
+                            , new Operator(idProcedure + "", TypeOperator.procedure)
+                        );
+                    // ===========================================================
 
                     RESULT = new SymbolCallMain();
                 
@@ -1011,8 +1027,11 @@ class CUP$Parser$actions {
                 }
 
                 // ==================== INTERMEDIATE CODE ====================
+                    int variableSize = typeDescription.size;
+                    if (symbolValue.isString) variableSize = symbolValue.stringSize;
+
                     int isArgument = 0; // Is not an argument
-                    int idVar = backendManager.tablesManager.addVariable(id_variable, backendManager.tablesManager.getActualProcedure(), typeDescription.size, isArgument, typeDescription.basicSubjacentType);
+                    int idVar = backendManager.tablesManager.addVariable(id_variable, backendManager.tablesManager.getActualProcedure(), variableSize, isArgument, typeDescription.basicSubjacentType);
                     typeDescriptionForNewVariables.idBackend = idVar;
                 // ===========================================================
 
@@ -1680,7 +1699,24 @@ class CUP$Parser$actions {
                     */
 
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_string, value);
-                    //symbolValue.idVariable = uuidVariable;
+                    
+                    // ==================== INTERMEDIATE CODE ====================
+                    TypeDescription typeString = symbolsTable.query("string");
+                    int isArgument = 0; // Is not an argument
+                    int stringSize = value.length() * 2;
+                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), stringSize, 0, typeString.basicSubjacentType);
+                    symbolValue.idVariable = idVar + "";
+                    symbolValue.isString = true;
+                    symbolValue.stringSize = stringSize;
+
+                    backendManager.generateC3DInst(
+                        OpCode.assign
+                        , new Operator(text_value, TypeOperator.string_value)
+                        , null
+                        , new Operator(idVar + "", TypeOperator.variable)
+                    );
+                    // ===========================================================
+
                     RESULT = symbolValue;
                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("VALUE",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1708,7 +1744,21 @@ class CUP$Parser$actions {
                     quadruples.add(quadruple);
                     */
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_boolean, value);
-                    //symbolValue.idVariable = uuidVariable;
+                    
+                    // ==================== INTERMEDIATE CODE ====================
+                    TypeDescription typeBoolean = symbolsTable.query("boolean");
+                    int isArgument = 0; // Is not an argument
+                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeBoolean.size, 0, typeBoolean.basicSubjacentType);
+                    symbolValue.idVariable = idVar + "";
+
+                    backendManager.generateC3DInst(
+                        OpCode.assign
+                        , new Operator(bool_value, TypeOperator.bool_value)
+                        , null
+                        , new Operator(idVar + "", TypeOperator.variable)
+                    );
+                    // ===========================================================
+
                     RESULT = symbolValue;  
                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("VALUE",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -1861,12 +1911,6 @@ class CUP$Parser$actions {
                         , new Operator(symbolValue.idVariable + "", TypeOperator.variable)
                 );
 
-                backendManager.generateC3DInst(
-                        OpCode.standardOutputEnd
-                        , null
-                        , null
-                        , null
-                );
                 // =========================================================
                 RESULT = new SymbolOutput();
             
@@ -2909,7 +2953,7 @@ class CUP$Parser$actions {
                         OpCode.procedureEnd
                         , null
                         , null
-                        , new Operator(symbolFuncHead.nameFunc + "", TypeOperator.procedure)
+                        , new Operator(symbolFuncHead.numProcedure + "", TypeOperator.procedure)
                 );
                 // =========================================================
 

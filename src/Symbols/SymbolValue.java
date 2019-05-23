@@ -24,6 +24,9 @@ public class SymbolValue extends SymbolBase{
     
     public String idVariable;
     
+    public boolean isString = false;
+    public int stringSize = 0; // We only fill this field if isString is true
+    
     public SymbolValue(TypeDescription.BASIC_SUBJACENT_TYPE basicSubjacentType) {
         super("value", 0);
         this.contentDescription = CONTENT_DESCRIPTION.idnull;

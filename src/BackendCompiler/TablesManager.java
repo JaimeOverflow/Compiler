@@ -36,7 +36,7 @@ public class TablesManager {
     }
     
     public int addProcedure(String name, int depth, int numParams, int size, BASIC_SUBJACENT_TYPE basicSubjacentType){
-        String label = "E_" + name;
+        String label = "PROCEDURE_" + name;
         
         proceduresTable.add(
                 new ProcedureBackend("#" + name, depth, label, numParams, 0, size, basicSubjacentType)
@@ -68,6 +68,10 @@ public class TablesManager {
     
     public int getActualProcedure() {
         return proceduresTable.size() - 1;
+    }
+    
+    public VariableBackend getVariable(int idVariable) {
+        return this.variablesTable.get(idVariable);
     }
     
     public ProcedureBackend getProcedure(int idProcedure) {

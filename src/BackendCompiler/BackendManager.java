@@ -28,6 +28,11 @@ public class BackendManager {
         c3dList.add(quadruple);        
     }
     
+    public void generateC3DInst(int index, OpCode opCode, Operator source1, Operator source2, Operator destination) {
+        Quadruple quadruple = new Quadruple(opCode, source1, source2, destination);
+        c3dList.add(index, quadruple);        
+    }
+    
     public void generateAssemblerCode() {
         for (int i = 0; i < this.c3dList.size(); i++) {
             System.out.println(this.c3dList.get(i));

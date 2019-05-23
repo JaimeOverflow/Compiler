@@ -24,7 +24,7 @@ Info: Add a new variable 'boolean'.
 ===========================================
 DESCRIPTION TABLE
 Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
 ===========================================
 ACTUAL SCOPE LEVEL: 0
 Scope table
@@ -43,8 +43,8 @@ Info: Add a new variable 'string'.
 ===========================================
 DESCRIPTION TABLE
 Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
 ===========================================
 ACTUAL SCOPE LEVEL: 0
 Scope table
@@ -63,8 +63,8 @@ Info: Add a new variable 'none'.
 ===========================================
 DESCRIPTION TABLE
 Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
 Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
 ===========================================
 ACTUAL SCOPE LEVEL: 0
@@ -85,8 +85,8 @@ Info: Add a new variable 'main'.
 DESCRIPTION TABLE
 Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
 Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
 Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
 ===========================================
 ACTUAL SCOPE LEVEL: 0
@@ -107,8 +107,8 @@ Info: Get in a new block and therefore increase the scope.
 DESCRIPTION TABLE
 Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
 Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
 Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
 ===========================================
 ACTUAL SCOPE LEVEL: 1
@@ -130,10 +130,35 @@ Info: Add a new variable 'andres'.
 DESCRIPTION TABLE
 Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
 Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
 Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: andres, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: andres, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: string}
+===========================================
+ACTUAL SCOPE LEVEL: 1
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: add.
+Info: Add a new variable 'asd'.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: asd, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: andres, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: string}
 ===========================================
 ACTUAL SCOPE LEVEL: 1
 Scope table
@@ -154,8 +179,8 @@ Info: Get out of last block and update variables and scope.
 DESCRIPTION TABLE
 Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
 Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 1, lower limit: 0, higher limit: 1}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
 Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
 ===========================================
 ACTUAL SCOPE LEVEL: 0

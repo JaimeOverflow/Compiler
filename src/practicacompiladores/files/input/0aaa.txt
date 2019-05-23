@@ -1,8 +1,10 @@
 function none main() {
 
-	andres : int = 3.
+	andres : string = "holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".
+	asd : int = 11.
+	output(asd).
 	output(andres).
-
+	output(asd).
 }
 
 call_main(main).

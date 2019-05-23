@@ -13,6 +13,7 @@ public class SymbolFuncHead extends SymbolBase{
     
     public String nameFunc;
     public String nameType;
+    
     public int numProcedure;
     
     public SymbolFuncHead(String nameFunc, String nameType, int numProcedure) {

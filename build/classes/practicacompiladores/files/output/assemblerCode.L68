@@ -1,0 +1,320 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 23/05/2019 13:08:37
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Practice compilers II.
+00000000                             3  * Written by : Andrés Ramos Seguí, Alex Mateo Fiol, Jaime Crespí Valero.
+00000000                             4  * Date       : 17/06/2019
+00000000                             5  * Description: Assembler code for compilers II practice.
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  
+00000000                             8  * ------------------------ INCLUDES ---------------------- *
+00000000                             9      INCLUDE "MACROS.X68"
+00000000                            10  
+00000000                            11  ASSIGNATION_INTEGER     MACRO
+00000000                            12  * Macro to add.
+00000000                            13  * Parameters: \1: Param1   ;Value of int or boolean
+00000000                            14  *             \2: Param2   ;Offset of destination variable
+00000000                            15  * Modifies  : Nothing
+00000000                            16  *-----------------------------------------------------------
+00000000                            17     MOVE.L \1, \2(A7)
+00000000                            18     ENDM
+00000000                            19  ASSIGNATION_BOOLEAN     MACRO
+00000000                            20  * Macro to add.
+00000000                            21  * Parameters: \1: Param1   ;Value of int or boolean
+00000000                            22  *             \2: Param2   ;Offset of destination variable
+00000000                            23  * Modifies  : Nothing
+00000000                            24  *-----------------------------------------------------------
+00000000                            25     MOVE.W \1, \2(A7)
+00000000                            26     ENDM
+00000000                            27  ASSIGNATION_STRING  MACRO
+00000000                            28  * Macro to add.                          
+00000000                            29  * Parameters: \1: Param1   ;offset variable
+00000000                            30  *             \2: Param1   ;label variable
+00000000                            31  *             \3: Param1   ;size string
+00000000                            32  * Modifies  : D0, D1
+00000000                            33  *-----------------------------------------------------------
+00000000                            34      MOVE.L A7, A1
+00000000                            35      ADD.L \1, A1
+00000000                            36      MOVE.L \2, A2
+00000000                            37      MOVE.L \3, D0
+00000000                            38      CMP.L #0, D0
+00000000                            39      BEQ STRING_COPIED\@
+00000000                            40      CLR.L D1
+00000000                            41  FILL_NEXT_CHAR\@
+00000000                            42      MOVE.B (A2)+, D1
+00000000                            43      MOVE.W D1, (A1)+
+00000000                            44      SUB.L #2, D0
+00000000                            45      CMP.L #0, D0
+00000000                            46      BNE FILL_NEXT_CHAR\@
+00000000                            47  STRING_COPIED\@
+00000000                            48      ENDM
+00000000                            49  ASSIGNATION_VARIABLE_INTEGER    MACRO
+00000000                            50  * Macro to add.                          
+00000000                            51  * Parameters: \1: Param1   ;source1
+00000000                            52  *             \2: Param2   ;destination
+00000000                            53  * Modifies  : Nothing
+00000000                            54  *-----------------------------------------------------------
+00000000                            55     MOVE.L \1(A7), \2(A7)
+00000000                            56     
+00000000                            57     ENDM
+00000000                            58  ASSIGNATION_VARIABLE_BOOLEAN    MACRO
+00000000                            59  * Macro to add.                          
+00000000                            60  * Parameters: \1: Param1   ;source1
+00000000                            61  *             \2: Param2   ;destination
+00000000                            62  * Modifies  : Nothing
+00000000                            63  *-----------------------------------------------------------
+00000000                            64     MOVE.W \1(A7), \2(A7)
+00000000                            65     
+00000000                            66     ENDM
+00000000                            67  ASSIGNATION_VARIABLE_STRING MACRO
+00000000                            68  * Macro to add.                          
+00000000                            69  * Parameters: \1: Param1   ;offset destination variable
+00000000                            70  *             \2: Param1   ;remaining size of destination var
+00000000                            71  *             \3: Param1   ;offset source variable
+00000000                            72  *             \4: Param1   ;size source variable
+00000000                            73  * Modifies  : D0
+00000000                            74  *-----------------------------------------------------------    
+00000000                            75      MOVE.L A7, A1
+00000000                            76      ADD.L \1, A1
+00000000                            77      MOVE.L \2, D1
+00000000                            78      MOVE.L A7, A2
+00000000                            79      ADD.L \3, A2
+00000000                            80      MOVE.L \4, D2
+00000000                            81      CMP.L #0, D2
+00000000                            82      BEQ FILL_REMAINING_STRING\@
+00000000                            83      CLR.L D3
+00000000                            84  FILL_NEXT_CHAR\@
+00000000                            85      MOVE.W (A2)+, D3
+00000000                            86      MOVE.W D3, (A1)+
+00000000                            87      SUB.L #2, D2
+00000000                            88      CMP.L #0, D2
+00000000                            89      BNE FILL_NEXT_CHAR\@
+00000000                            90  FILL_REMAINING_STRING\@ ; If var1 = var2 and var1 > var2
+00000000                            91      CMP.L #0, D1
+00000000                            92      BEQ STRING_COPIED\@
+00000000                            93      CLR.L D2
+00000000                            94      MOVE.W #8224, D2 ;Blank space
+00000000                            95  FILL_BLANK_CHAR\@
+00000000                            96      MOVE.W D2, (A1)+
+00000000                            97      SUB.L #2, D1
+00000000                            98      CMP.L #0, D1
+00000000                            99      BNE FILL_BLANK_CHAR\@   
+00000000                           100  STRING_COPIED\@    
+00000000                           101      ENDM
+00000000                           102  ; -----------------------------------------------------------------------------
+00000000                           103  OUTPUT_INTEGER      MACRO
+00000000                           104  ; Input    - \1  ; Offset's variable with integer value
+00000000                           105  ; Modifies - 
+00000000                           106  ; -----------------------------------------------------------------------------
+00000000                           107     CLR.L D0
+00000000                           108     CLR.L D1
+00000000                           109     MOVE.L \1(A7), D1
+00000000                           110     MOVE.W #20, D0
+00000000                           111     trap #15
+00000000                           112     ENDM
+00000000                           113  ; -----------------------------------------------------------------------------
+00000000                           114  OUTPUT_BOOLEAN      MACRO
+00000000                           115  ; Input    - \1  ; Offset's variable with boolean value
+00000000                           116  ; Modifies - 
+00000000                           117  ; -----------------------------------------------------------------------------
+00000000                           118     CLR.L D0
+00000000                           119     CLR.L D1
+00000000                           120     MOVE.W \1(A7), D1
+00000000                           121     MOVE.W #20, D0
+00000000                           122     trap #15
+00000000                           123     ENDM
+00000000                           124  ; -----------------------------------------------------------------------------
+00000000                           125  PRINT      MACRO
+00000000                           126  * Macro to add.                          
+00000000                           127  ; Input    - \1  : Direccion de memoria del buffer
+00000000                           128  ;          - \2  : Desplazamiento var
+00000000                           129  ;          - \3  : ocupacion string / 2
+00000000                           130  ; Modifies - 
+00000000                           131  ; -----------------------------------------------------------------------------
+00000000                           132              MOVE.L \1,A1     ;buffer to print
+00000000                           133              MOVE.L A7, A2
+00000000                           134              ADD.L \2, A2     ;Init string
+00000000                           135              MOVE.L \3, D1
+00000000                           136              ;mirar si es 0 la ocupacion
+00000000                           137              CMP.L #0, D1
+00000000                           138              BEQ print_f\@
+00000000                           139  print_loop\@ 
+00000000                           140              MOVE.W  (A2)+, D0
+00000000                           141              CMP.W #8224, D0
+00000000                           142              BEQ print_f\@ ; sin son espacios salir
+00000000                           143              MOVE.B  D0 ,(A1)+
+00000000                           144              SUB.L #1, D1      
+00000000                           145              CMP.L   #0, D1
+00000000                           146              BNE     print_loop\@      ; Loop again
+00000000                           147  print_f\@            
+00000000                           148              MOVE.W  #1, D0
+00000000                           149              MOVE.L  \3, D1
+00000000                           150              MOVE.L  \1,A1    ; Reload original pointing address of bufferptr
+00000000                           151              TRAP      #15           ; Display it
+00000000                           152  
+00000000                           153              ENDM
+00000000                           154  ; -----------------------------------------------------------------------------
+00000000                           155  PRINT_BUFFER      MACRO
+00000000                           156  ; Escribe un string de longitud n de max 255 char por pantalla.
+00000000                           157  ; Input    - \1  : size string
+00000000                           158  ; -----------------------------------------------------------------------------
+00000000                           159      MOVE.W  #0, D0
+00000000                           160      MOVE.L \1, A1
+00000000                           161      MOVE.L \2, D1
+00000000                           162      TRAP      #15
+00000000                           163      ENDM
+00000000                           164  -------------------- end include --------------------
+00000000                           165  * -------------------------------------------------------- *
+00000000                           166  
+00000000                           167  * ----------------------- MAIN PROGRAM -------------------- *
+00001000                           168      ORG    $1000
+00001000                           169  START:
+00001000                           170  
+00001000                           171  * CALL MAIN (PROCEDURE) *
+00001000                           172  * Intermediate code => [procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+00001000  4EB9 0000100A            173      JSR PROCEDURE_MAIN
+00001006  FFFF FFFF                174      SIMHALT
+0000100A                           175  
+0000100A                           176  * INITIAL LABEL (PROCEDURE) *
+0000100A                           177  * Intermediate code => [procedureName, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+0000100A                           178  PROCEDURE_MAIN:
+0000100A                           179  
+0000100A                           180  * PREAMBLE (PROCEDURE) *
+0000100A                           181  * Intermediate code => [procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+0000100A  9FFC 00000000            182      SUB.L #0, A7
+00001010  598F                     183      SUB.L #4, A7 ; Block pointer
+00001012  2EBC 00000000            184      MOVE.L #0, (A7)
+00001018  2C4F                     185      MOVE.L A7, A6
+0000101A  9DFC 000000AC            186      SUB.L #172, A6 ; Update stack pointer for a new activation block
+00001020                           187  
+00001020                           188  * ASSIGNATION VARIABLE *
+00001020                           189  * Intermediate code => [assign, [OPERATOR. Type operator: string_value, value: "holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"], null, [OPERATOR. Type operator: variable, value: 0]]
+00001020                           190m     ASSIGNATION_STRING #-82, #string_id_0, #82
+00001020                           191m * MACRO TO ADD.                          
+00001020                           192m * PARAMETERS: \1: PARAM1   ;OFFSET VARIABLE
+00001020                           193m *             \2: PARAM1   ;LABEL VARIABLE
+00001020                           194m *             \3: PARAM1   ;SIZE STRING
+00001020                           195m * MODIFIES  : D0, D1
+00001020                           196m *-----------------------------------------------------------
+0000104A                           197  
+0000104A                           198  * ASSIGNATION VARIABLE *
+0000104A                           199  * Intermediate code => [assign, [OPERATOR. Type operator: variable, value: 0], null, [OPERATOR. Type operator: variable, value: 1]]
+0000104A                           200m     ASSIGNATION_VARIABLE_STRING #-164, #0, #-82, #82 
+0000104A                           201m * MACRO TO ADD.                          
+0000104A                           202m * PARAMETERS: \1: PARAM1   ;OFFSET DESTINATION VARIABLE
+0000104A                           203m *             \2: PARAM1   ;REMAINING SIZE OF DESTINATION VAR
+0000104A                           204m *             \3: PARAM1   ;OFFSET SOURCE VARIABLE
+0000104A                           205m *             \4: PARAM1   ;SIZE SOURCE VARIABLE
+0000104A                           206m * MODIFIES  : D0
+0000104A                           207m *-----------------------------------------------------------    
+00001094                           208  
+00001094                           209  * ASSIGNATION VARIABLE *
+00001094                           210  * Intermediate code => [assign, [OPERATOR. Type operator: int_value, value: 11], null, [OPERATOR. Type operator: variable, value: 2]]
+00001094                           211m     ASSIGNATION_INTEGER #11, -168
+00001094                           212m * MACRO TO ADD.
+00001094                           213m * PARAMETERS: \1: PARAM1   ;VALUE OF INT OR BOOLEAN
+00001094                           214m *             \2: PARAM2   ;OFFSET OF DESTINATION VARIABLE
+00001094                           215m * MODIFIES  : NOTHING
+00001094                           216m *-----------------------------------------------------------
+0000109C                           217  
+0000109C                           218  * ASSIGNATION VARIABLE *
+0000109C                           219  * Intermediate code => [assign, [OPERATOR. Type operator: variable, value: 2], null, [OPERATOR. Type operator: variable, value: 3]]
+0000109C                           220m     ASSIGNATION_VARIABLE_INTEGER -168, -172
+0000109C                           221m * MACRO TO ADD.                          
+0000109C                           222m * PARAMETERS: \1: PARAM1   ;SOURCE1
+0000109C                           223m *             \2: PARAM2   ;DESTINATION
+0000109C                           224m * MODIFIES  : NOTHING
+0000109C                           225m *-----------------------------------------------------------
+000010A2                           226  
+000010A2                           227  * STANDARD OUTPUT *
+000010A2                           228  * Intermediate code => [standardOutput, null, null, [OPERATOR. Type operator: variable, value: 3]]
+000010A2                           229m     OUTPUT_INTEGER -172
+000010A2                           230m ; INPUT    - -172  ; OFFSET's variable with integer value
+000010A2                           231m ; MODIFIES - 
+000010A2                           232m ; -----------------------------------------------------------------------------
+000010B0                           233  
+000010B0                           234  * PRINT BUFFER *
+000010B0                           235m     PRINT_BUFFER #buffer, #0 
+000010B0                           236m ; ESCRIBE UN STRING DE LONGITUD N DE MAX 255 CHAR POR PANTALLA.
+000010B0                           237m ; INPUT    - #BUFFER  : SIZE STRING
+000010B0                           238m ; -----------------------------------------------------------------------------
+000010BE                           239  
+000010BE                           240  * STANDARD OUTPUT *
+000010BE                           241  * Intermediate code => [standardOutput, null, null, [OPERATOR. Type operator: variable, value: 1]]
+000010BE  42B9 00001134            242      CLR.L buffer  
+000010C4                           243m     PRINT #buffer, #-164, #41
+000010C4                           244m * MACRO TO ADD.                          
+000010C4                           245m ; INPUT    - #BUFFER  : DIRECCION DE MEMORIA DEL BUFFER
+000010C4                           246m ;          - #-164  : DESPLAZAMIENTO VAR
+000010C4                           247m ;          - #41  : OCUPACION STRING / 2
+000010C4                           248m ; MODIFIES - 
+000010C4                           249m ; -----------------------------------------------------------------------------
+000010D4                           250m             ;MIRAR SI ES 0 LA OCUPACION
+00001102                           251  
+00001102                           252  * PRINT BUFFER *
+00001102                           253m     PRINT_BUFFER #buffer, #0 
+00001102                           254m ; ESCRIBE UN STRING DE LONGITUD N DE MAX 255 CHAR POR PANTALLA.
+00001102                           255m ; INPUT    - #BUFFER  : SIZE STRING
+00001102                           256m ; -----------------------------------------------------------------------------
+00001110                           257  
+00001110                           258  * STANDARD OUTPUT *
+00001110                           259  * Intermediate code => [standardOutput, null, null, [OPERATOR. Type operator: variable, value: 3]]
+00001110                           260m     OUTPUT_INTEGER -172
+00001110                           261m ; INPUT    - -172  ; OFFSET's variable with integer value
+00001110                           262m ; MODIFIES - 
+00001110                           263m ; -----------------------------------------------------------------------------
+0000111E                           264  
+0000111E                           265  * PRINT BUFFER *
+0000111E                           266m     PRINT_BUFFER #buffer, #0 
+0000111E                           267m ; ESCRIBE UN STRING DE LONGITUD N DE MAX 255 CHAR POR PANTALLA.
+0000111E                           268m ; INPUT    - #BUFFER  : SIZE STRING
+0000111E                           269m ; -----------------------------------------------------------------------------
+0000112C                           270  
+0000112C                           271  * PREAMBLE END (PROCEDURE) *
+0000112C                           272  * Intermediate code => [procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+0000112C  588F                     273      ADD.L #4, A7
+0000112E  4E75                     274      RTS
+00001130  FFFF FFFF                275      SIMHALT
+00001134                           276  
+00001134                           277  *Put variables and constants here
+00001134                           278  buffer ds.b 1024
+00001534= 68 6F 6C 61 61 61 ...    279  string_id_0 dc.b 'holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 0
+0000155E                           280  ;variables para mensajes 
+0000155E= 49 6E 74 72 6F 64 ...    281  informacion dc.b 'Introduzca un texto que no supere los 1024 caracteres:',0  
+00001595= 45 52 52 4F 52 2C ...    282  errorstring dc.b 'ERROR, La longitud del texto supera los 1024 carcateres',0 
+000015CD                           283  
+000015CD                           284      END    START
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ASSIGNATION_BOOLEAN  F6
+ASSIGNATION_INTEGER  0
+ASSIGNATION_STRING  1EC
+ASSIGNATION_VARIABLE_BOOLEAN  4FE
+ASSIGNATION_VARIABLE_INTEGER  408
+ASSIGNATION_VARIABLE_STRING  5F4
+BUFFER              1134
+ERRORSTRING         1595
+FILL_BLANK_CHAR_2   1088
+FILL_NEXT_CHAR_1    103C
+FILL_NEXT_CHAR_2    106A
+FILL_REMAINING_STRING_2  1078
+INFORMACION         155E
+OUTPUT_BOOLEAN      A90
+OUTPUT_INTEGER      99E
+PRINT               B82
+PRINT_BUFFER        F70
+PRINT_F_7           10F4
+PRINT_LOOP_7        10DE
+PROCEDURE_MAIN      100A
+START               1000
+STRING_COPIED_1     104A
+STRING_COPIED_2     1094
+STRING_ID_0         1534
