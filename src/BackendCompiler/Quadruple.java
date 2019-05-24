@@ -31,7 +31,8 @@ public class Quadruple {
         procedureCall,
         procedureCallMain,
         
-        //Ouput
+        // Standard Keyboard actions
+        standardInput,
         standardOutput,
         
         // Arithmetic operators
@@ -39,7 +40,10 @@ public class Quadruple {
         
         // Conditionals
         and, or,
-        condTrue, condFalse
+        condTrue, condFalse,
+        
+        // jumps
+        skip, jump
     }
     
     public OpCode opCode;

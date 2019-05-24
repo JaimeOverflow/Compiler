@@ -12,6 +12,7 @@ package BackendCompiler;
 public class Operator {
     
     public enum TypeOperator {
+        label,
         variable,
         procedure,
         param,

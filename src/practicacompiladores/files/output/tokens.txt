@@ -1,66 +1,61 @@
 ========================= INFO =========================
-DATE: 23/05/2019 22:47:15
-NUMBER OF TOKENS: 27========================================================
+DATE: 24/05/2019 13:29:45
+NUMBER OF TOKENS: 25========================================================
 ======================== TOKENS ========================
 TOKEN: [INST_FUNCTION]
-LINE: [0] - COLUMN: [0]
-TOKEN: [ID]
-LEXEME: [int]
-LINE: [0] - COLUMN: [9]
-TOKEN: [ID]
-LEXEME: [doki]
-LINE: [0] - COLUMN: [13]
-TOKEN: [LPAREN]
-LINE: [0] - COLUMN: [17]
-TOKEN: [RPAREN]
-LINE: [0] - COLUMN: [18]
-TOKEN: [LBRACKET]
-LINE: [0] - COLUMN: [20]
-TOKEN: [INST_RETURN]
-LINE: [1] - COLUMN: [1]
-TOKEN: [NUMBER]
-LEXEME: [6]
-LINE: [1] - COLUMN: [8]
-TOKEN: [FINAL_SENTENCE]
-LINE: [1] - COLUMN: [9]
-TOKEN: [RBRACKET]
-LINE: [2] - COLUMN: [0]
-TOKEN: [INST_FUNCTION]
-LINE: [4] - COLUMN: [0]
+LINE: [3] - COLUMN: [0]
 TOKEN: [ID]
 LEXEME: [none]
-LINE: [4] - COLUMN: [9]
+LINE: [3] - COLUMN: [9]
 TOKEN: [ID]
 LEXEME: [main]
-LINE: [4] - COLUMN: [14]
+LINE: [3] - COLUMN: [14]
 TOKEN: [LPAREN]
-LINE: [4] - COLUMN: [18]
+LINE: [3] - COLUMN: [18]
 TOKEN: [RPAREN]
-LINE: [4] - COLUMN: [19]
+LINE: [3] - COLUMN: [19]
 TOKEN: [LBRACKET]
-LINE: [4] - COLUMN: [21]
-TOKEN: [INST_OUTPUT]
+LINE: [3] - COLUMN: [21]
+TOKEN: [ID]
+LEXEME: [n]
 LINE: [5] - COLUMN: [1]
+TOKEN: [TWO_POINTS]
+LINE: [5] - COLUMN: [3]
+TOKEN: [ID]
+LEXEME: [int]
+LINE: [5] - COLUMN: [5]
+TOKEN: [OP_ASSIGN]
+LINE: [5] - COLUMN: [9]
+TOKEN: [INST_INPUT]
+LINE: [5] - COLUMN: [11]
 TOKEN: [LPAREN]
-LINE: [5] - COLUMN: [7]
-TOKEN: [TEXT]
-LEXEME: ["ASD"]
-LINE: [5] - COLUMN: [8]
+LINE: [5] - COLUMN: [16]
 TOKEN: [RPAREN]
-LINE: [5] - COLUMN: [13]
+LINE: [5] - COLUMN: [17]
 TOKEN: [FINAL_SENTENCE]
-LINE: [5] - COLUMN: [14]
-TOKEN: [RBRACKET]
-LINE: [6] - COLUMN: [0]
-TOKEN: [INST_CALL_MAIN]
-LINE: [8] - COLUMN: [0]
+LINE: [5] - COLUMN: [18]
+TOKEN: [INST_OUTPUT]
+LINE: [6] - COLUMN: [1]
 TOKEN: [LPAREN]
-LINE: [8] - COLUMN: [9]
+LINE: [6] - COLUMN: [7]
+TOKEN: [ID]
+LEXEME: [n]
+LINE: [6] - COLUMN: [8]
+TOKEN: [RPAREN]
+LINE: [6] - COLUMN: [9]
+TOKEN: [FINAL_SENTENCE]
+LINE: [6] - COLUMN: [10]
+TOKEN: [RBRACKET]
+LINE: [8] - COLUMN: [0]
+TOKEN: [INST_CALL_MAIN]
+LINE: [10] - COLUMN: [0]
+TOKEN: [LPAREN]
+LINE: [10] - COLUMN: [9]
 TOKEN: [ID]
 LEXEME: [main]
-LINE: [8] - COLUMN: [10]
+LINE: [10] - COLUMN: [10]
 TOKEN: [RPAREN]
-LINE: [8] - COLUMN: [14]
+LINE: [10] - COLUMN: [14]
 TOKEN: [FINAL_SENTENCE]
-LINE: [8] - COLUMN: [15]
+LINE: [10] - COLUMN: [15]
 ========================================================

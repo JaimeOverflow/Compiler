@@ -45,6 +45,13 @@ public class TablesManager {
         return this.proceduresTable.size() - 1;
     }
     
+    public int addLabel() {
+        String label = "LABEL_" + this.labelsTable.size();
+        this.labelsTable.add(
+                new LabelBackend(label)
+        );
+        return this.labelsTable.size() - 1;
+    }
     
     public void updateOffsetOfTables() {
         for (int i = 0; i < this.variablesTable.size(); i++) {
@@ -76,6 +83,10 @@ public class TablesManager {
     
     public ProcedureBackend getProcedure(int idProcedure) {
         return this.proceduresTable.get(idProcedure);
+    }
+    
+    public LabelBackend getLabel(int idLabel) {
+        return this.labelsTable.get(idLabel);
     }
 
     public void printTables(){

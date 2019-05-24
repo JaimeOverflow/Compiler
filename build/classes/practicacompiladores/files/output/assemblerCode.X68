@@ -14,13 +14,13 @@
 START:
 
 * CALL MAIN PROCEDURE *
-* Intermediate code => [procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+* Intermediate code => [procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 0]]
     JSR PROCEDURE_MAIN
     SIMHALT
 
 * INITIAL LABEL (PROCEDURE) *
 * Intermediate code => [procedureName, null, null, [OPERATOR. Type operator: procedure, value: 0]]
-PROCEDURE_DOKI:
+PROCEDURE_MAIN:
 
 * PREAMBLE (PROCEDURE) *
 * Intermediate code => [procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 0]]
@@ -28,54 +28,30 @@ PROCEDURE_DOKI:
     SUB.L #4, A7 ; Block pointer
     MOVE.L #0, (A7)
     MOVE.L A7, A6
-    SUB.L #4, A6 ; Update stack pointer for a new activation block
+    SUB.L #8, A6 ; Update stack pointer for a new activation block
+
+* STANDARD INPUT *
+* Intermediate code => [standardInput, null, null, [OPERATOR. Type operator: variable, value: 0]]
+    STANDARD_INPUT -4
 
 * ASSIGNATION VARIABLE *
-* Intermediate code => [assign, [OPERATOR. Type operator: int_value, value: 6], null, [OPERATOR. Type operator: variable, value: 0]]
-    ASSIGNATION_INTEGER #6, -4
+* Intermediate code => [assign, [OPERATOR. Type operator: variable, value: 0], null, [OPERATOR. Type operator: variable, value: 1]]
+    ASSIGNATION_VARIABLE_INTEGER -4, -8
 
-* RETURN (PROCEDURE) *
-* Intermediate code => [procedureReturn, [OPERATOR. Type operator: procedure, value: 0], null, [OPERATOR. Type operator: variable, value: 0]]
-    MOVE.L -4(A7), D0
-    MOVE.L D0, 8(A7)
+* STANDARD OUTPUT *
+* Intermediate code => [standardOutput, null, null, [OPERATOR. Type operator: variable, value: 1]]
+    OUTPUT_INTEGER -8
+
+* PRINT BUFFER *
+    PRINT_BUFFER #buffer, #0 
 
 * PREAMBLE END (PROCEDURE) *
 * Intermediate code => [procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 0]]
     ADD.L #4, A7
     RTS
 
-* INITIAL LABEL (PROCEDURE) *
-* Intermediate code => [procedureName, null, null, [OPERATOR. Type operator: procedure, value: 1]]
-PROCEDURE_MAIN:
-
-* PREAMBLE (PROCEDURE) *
-* Intermediate code => [procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 1]]
-    SUB.L #0, A7
-    SUB.L #4, A7 ; Block pointer
-    MOVE.L #0, (A7)
-    MOVE.L A7, A6
-    SUB.L #6, A6 ; Update stack pointer for a new activation block
-
-* ASSIGNATION VARIABLE *
-* Intermediate code => [assign, [OPERATOR. Type operator: string_value, value: "ASD"], null, [OPERATOR. Type operator: variable, value: 1]]
-    ASSIGNATION_STRING #-6, #string_id_0, #6
-
-* STANDARD OUTPUT *
-* Intermediate code => [standardOutput, null, null, [OPERATOR. Type operator: variable, value: 1]]
-    CLR.L buffer  
-    PRINT_STRING #buffer, #-6, #3
-
-* PRINT BUFFER *
-    PRINT_BUFFER #buffer, #0 
-
-* PREAMBLE END (PROCEDURE) *
-* Intermediate code => [procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 1]]
-    ADD.L #4, A7
-    RTS
-
 *Put variables and constants here
 buffer ds.b 1024
-string_id_0 dc.b 'ASD', 0
 ;variables para mensajes 
 informacion dc.b 'Introduzca un texto que no supere los 1024 caracteres:',0  
 errorstring dc.b 'ERROR, La longitud del texto supera los 1024 carcateres',0 

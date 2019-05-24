@@ -27,6 +27,13 @@ public class SymbolValue extends SymbolBase{
     public boolean isString = false;
     public int stringSize = 0; // We only fill this field if isString is true
     
+    public SymbolValue() {
+        super("value", 0);
+        this.contentDescription = CONTENT_DESCRIPTION.idnull;
+        this.basicSubjacentType = BASIC_SUBJACENT_TYPE.ts_none;
+        this.isConstant = false;
+    }
+    
     public SymbolValue(TypeDescription.BASIC_SUBJACENT_TYPE basicSubjacentType) {
         super("value", 0);
         this.contentDescription = CONTENT_DESCRIPTION.idnull;

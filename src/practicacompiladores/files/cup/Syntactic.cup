@@ -753,9 +753,6 @@ OP_ARITHMETIC   ::= OP_ARITHMETIC:op_arithmetic_val op_arithmetic:op_arithmetic 
                             case "/": 
                                     opCode = OpCode.div;
                                     break;
-                            case "%":  
-                                    opCode = OpCode.mod;
-                                    break;
                         }
                         // We can calculate the value if all operands are constant
                         if (symbolOpArithmetic.isConstant && symbolOpArithValue.isConstant) {
@@ -774,8 +771,6 @@ OP_ARITHMETIC   ::= OP_ARITHMETIC:op_arithmetic_val op_arithmetic:op_arithmetic 
                                         break;
                                 case "/": newValue = value1 / value2;
                                         break;
-                                case "%": newValue = value1 % value2; 
-                                        break;
                             }
 
                             symbolOpArithmetic.valueType = newValue;
@@ -789,6 +784,20 @@ OP_ARITHMETIC   ::= OP_ARITHMETIC:op_arithmetic_val op_arithmetic:op_arithmetic 
 
                         symbolOpArithmetic.idVariable = uuidVariable;
                         */
+
+                        // ==================== INTERMEDIATE CODE ====================
+                            TypeDescription typeInt = symbolsTable.query("int");
+                            int isArgument = 0; // Is not an argument
+                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
+                            symbolOpArithmetic.idVariable = idVar + "";
+
+                            backendManager.generateC3DInst(
+                                opCode
+                                , new Operator(symbolOpArithmeticVal.idVariable, TypeOperator.variable)
+                                , new Operator(symbolOpArithValue.idVariable, TypeOperator.variable)
+                                , new Operator(idVar + "", TypeOperator.variable)
+                            );
+                        // ===========================================================
                         RESULT = symbolOpArithmetic;
                     :}
 
@@ -823,9 +832,6 @@ OP_ARITHMETIC   ::= OP_ARITHMETIC:op_arithmetic_val op_arithmetic:op_arithmetic 
                                 case "/":
                                         opCode = OpCode.div;
                                         break;
-                                case "%": 
-                                        opCode = OpCode.mod;
-                                        break;
 
                             }
                         // We can calculate the value if all operands are constant
@@ -845,8 +851,6 @@ OP_ARITHMETIC   ::= OP_ARITHMETIC:op_arithmetic_val op_arithmetic:op_arithmetic 
                                         break;
                                 case "/": newValue = value1 / value2;
                                         break;
-                                case "%": newValue = value1 % value2;
-                                        break;
 
                             }
                             symbolOpArithmetic.valueType = newValue;
@@ -859,6 +863,19 @@ OP_ARITHMETIC   ::= OP_ARITHMETIC:op_arithmetic_val op_arithmetic:op_arithmetic 
 
                         symbolOpArithmetic.idVariable = uuidVariable;
                         */
+                        // ==================== INTERMEDIATE CODE ====================
+                            TypeDescription typeInt = symbolsTable.query("int");
+                            int isArgument = 0; // Is not an argument
+                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
+                            symbolOpArithmetic.idVariable = idVar + "";
+
+                            backendManager.generateC3DInst(
+                                opCode
+                                , new Operator(symbolOpArithValue1.idVariable, TypeOperator.variable)
+                                , new Operator(symbolOpArithValue2.idVariable, TypeOperator.variable)
+                                , new Operator(idVar + "", TypeOperator.variable)
+                            );
+                        // ===========================================================
                         RESULT = symbolOpArithmetic; 
                     :}
                 ;
@@ -905,14 +922,21 @@ OP_ARITH_VALUE  ::= lparen OP_ARITHMETIC:op_arit rparen
                         }
 
                         SymbolOpArithValue symbolOpArithValue = new SymbolOpArithValue(number);
-                        /*
-                        String uuidVariable = variablesTable.generateVariable();
 
-                        Quadruple quadruple = new Quadruple(OP_CODE.assignVal, String.valueOf(number_val), "", uuidVariable);
-                        quadruples.add(quadruple);
+                        // ==================== INTERMEDIATE CODE ====================
+                            TypeDescription typeInt = symbolsTable.query("int");
+                            int isArgument = 0; // Is not an argument
+                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
+                            symbolOpArithValue.idVariable = idVar + "";
 
-                        symbolOpArithValue.idVariable = uuidVariable;
-                        */
+                            backendManager.generateC3DInst(
+                                OpCode.assign
+                                , new Operator(number + "", TypeOperator.int_value)
+                                , null
+                                , new Operator(idVar + "", TypeOperator.variable)
+                            );
+                        // ===========================================================
+
                         RESULT = symbolOpArithValue;
                     :}
 
@@ -952,7 +976,7 @@ OP_ARITH_VALUE  ::= lparen OP_ARITHMETIC:op_arit rparen
                             symbolOpArithValue.valueType = number;
                         }  
 
-                        symbolOpArithValue.idVariable = id;
+                        symbolOpArithValue.idVariable = typeDescription.idBackend + "";
                         
                         RESULT = symbolOpArithValue; 
                     :}
@@ -1077,7 +1101,7 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
 
                     backendManager.generateC3DInst(
                         OpCode.assign
-                        , new Operator(number_value, TypeOperator.int_value)
+                        , new Operator(value + "", TypeOperator.int_value)
                         , null
                         , new Operator(idVar + "", TypeOperator.variable)
                     );
@@ -1156,7 +1180,7 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
                     RESULT = symbolValue;  
                 :}
 
-            | inst_input lparen id:type_id rparen
+            | inst_input lparen rparen
                 {:
                     // ============== GENERATE NODE FOR DIGRAPH ==============
                     String description ="[VALUE => inst_input lparen rparen]";
@@ -1164,24 +1188,23 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
                     NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.VALUE);
                     digraph.addNode(nodeGraph);
                     // =======================================================
-                    TypeDescription typeDescription = symbolsTable.query(type_id);
+                    TypeDescription typeDescriptionInt = symbolsTable.query("int");
+                    SymbolValue symbolValue = new SymbolValue(typeDescriptionInt.basicSubjacentType);
+                    
+                    // ================ INTERMEDIATE CODE ======================
+                        int isArgument = 0; // Is not an argument
+                        int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeDescriptionInt.size, isArgument, typeDescriptionInt.basicSubjacentType);
+                        symbolValue.idVariable = idVar + "";
 
-                    if (typeDescription.contentDescription != CONTENT_DESCRIPTION.dtype) {
-                        throw new IncorrectTypeException(
-                            CompilerException.CompilerErrorType.semantic,
-                            "Error in instruction 'input'. The content in parameters isn't a type."
+                        backendManager.generateC3DInst(
+                            OpCode.standardInput
+                            , null
+                            , null
+                            , new Operator(idVar + "", TypeOperator.variable)
                         );
-                    }
+                    // =========================================================
 
-                    if (typeDescription.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_none) {
-                        throw new IncorrectTypeException(
-                            CompilerException.CompilerErrorType.semantic,
-                            "Error in instruction 'input'. Incorrect basic subjacent type."
-                        );
-                    }
-
-                    RESULT = new SymbolValue(typeDescription.basicSubjacentType);  
-
+                    RESULT = symbolValue;  
                 :}
 
             | id:id_value           
@@ -1238,7 +1261,7 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
                         , new Operator(idVar + "", TypeOperator.variable)
                     );
 
-                // =========================================================
+                    // =========================================================
 
                     RESULT = symbolValue;
                 :}
@@ -1308,13 +1331,21 @@ INIT_OP_BOOL    ::= lparen OP_BOOLEAN:op_boolean rparen
                             symbolInitOpBool.isConstant = true;
                             symbolInitOpBool.valueType = symbolOpBoolean.valueType;
                         }
-                        /*
-                        if (!symbolOpBoolean.isSingleBoolean) {
-                            Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", symbolOpBoolean.idLabel);
-                            quadruples.add(quadruple);
-                        }
-                        */
                         
+                        // ================ INTERMEDIATE CODE ======================
+                            if (!symbolOpBoolean.isSingleBoolean) {
+                                //Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", symbolOpBoolean.idLabel);
+                                //quadruples.add(quadruple);
+                                backendManager.generateC3DInst(
+                                    OpCode.skip
+                                    , null
+                                    , null
+                                    , new Operator(symbolOpBoolean.idLabel, TypeOperator.label)
+                                );
+                            }
+                            
+                        // =========================================================
+
                         symbolInitOpBool.idVariable = symbolOpBoolean.idVariable;
 
                         RESULT = symbolInitOpBool;
@@ -1413,6 +1444,10 @@ OP_BOOLEAN     ::= OP_BOOLEAN:op_boolean_val1 op_logic:op_logic OP_BOOL_VALUE:op
                         symbolOpBoolean.indexQuadruples = quadruples.size();
                         symbolOpBoolean.isSingleBoolean = true;
                         */
+                        // ==================== INTERMEDIATE CODE ====================
+                            symbolOpBoolean.idVariable = symbolOpBoolValue.idVariable;
+                            symbolOpBoolean.isSingleBoolean = true;
+                        // ===========================================================
                         RESULT = symbolOpBoolean;
                     :}
                 ;
@@ -1436,6 +1471,19 @@ OP_BOOL_VALUE   ::= bool:bool_val
 
                         symbolOpBoolValue.idVariable = uuidVariable;
                         */
+                        // ==================== INTERMEDIATE CODE ====================
+                            TypeDescription typeBoolean = symbolsTable.query("boolean");
+                            int isArgument = 0; // Is not an argument
+                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeBoolean.size, 0, typeBoolean.basicSubjacentType);
+                            symbolOpBoolValue.idVariable = idVar + "";
+                            backendManager.generateC3DInst(
+                                OpCode.assign
+                                , new Operator(bool_val, TypeOperator.bool_value)
+                                , null
+                                , new Operator(idVar + "", TypeOperator.variable)
+                            );
+                            
+                        // ===========================================================
                         RESULT = symbolOpBoolValue;
                     :}
 
@@ -1500,7 +1548,7 @@ OP_BOOL_VALUE   ::= bool:bool_val
                             symbolOpBoolValue.valueType = typeDescription.value;
                         }
 
-                        symbolOpBoolValue.idVariable = id;
+                        symbolOpBoolValue.idVariable = typeDescription.idBackend + "";
 
                         RESULT = symbolOpBoolValue; 
                     :}
@@ -1699,11 +1747,11 @@ COND    ::= INIT_OP_BOOL:init_op_bool
                 digraph.addNode(nodeGraph, childs);
                 // =======================================================
 
-                String uuidTrueCondLabel = UUID.randomUUID().toString();
-                String uuidFalseCondLabel = UUID.randomUUID().toString();
+                //String uuidTrueCondLabel = UUID.randomUUID().toString();
+                //String uuidFalseCondLabel = UUID.randomUUID().toString();
 
-                stackTrueCond.push(uuidTrueCondLabel);
-                stackFalseCond.push(uuidFalseCondLabel);
+                //stackTrueCond.push(uuidTrueCondLabel);
+                //stackFalseCond.push(uuidFalseCondLabel);
 
                 SymbolInitOpBool symbolInitOpBool = init_op_bool;
                 /*
@@ -1713,6 +1761,28 @@ COND    ::= INIT_OP_BOOL:init_op_bool
                 Quadruple quadrupleFalseCond = new Quadruple(OP_CODE.condFalse, symbolInitOpBool.idVariable, "" , uuidFalseCondLabel);
                 quadruples.add(quadrupleFalseCond);
                 */
+                // ================ INTERMEDIATE CODE ======================
+                    int idLabelTrueCond = backendManager.tablesManager.addLabel();
+                    int idLabelFalseCond = backendManager.tablesManager.addLabel();
+
+                    stackTrueCond.push(idLabelTrueCond + "");
+                    stackFalseCond.push(idLabelFalseCond + "");
+
+                    backendManager.generateC3DInst(
+                        OpCode.condTrue
+                        , new Operator(symbolInitOpBool.idVariable, TypeOperator.variable)
+                        , null
+                        , new Operator(idLabelTrueCond + "", TypeOperator.label)
+                    );
+
+                    backendManager.generateC3DInst(
+                        OpCode.condFalse
+                        , new Operator(symbolInitOpBool.idVariable, TypeOperator.variable)
+                        , null
+                        , new Operator(idLabelFalseCond + "", TypeOperator.label)
+                    );
+                // =========================================================
+
                 RESULT = new SymbolCond();
             :}
         ;
@@ -1730,6 +1800,16 @@ COND_TRUE_MASK ::=
                         Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", trueCondLabel);
                         quadruples.add(quadruple);
                         */
+                        // ================ INTERMEDIATE CODE ======================
+                            String trueCondLabel = stackTrueCond.pop();
+                            backendManager.generateC3DInst(
+                                OpCode.skip
+                                , null
+                                , null
+                                , new Operator(trueCondLabel, TypeOperator.label)
+                            );
+                        // =========================================================
+
                         RESULT = new SymbolCondTrueMask();
                     :}
                 ;
@@ -1747,6 +1827,15 @@ COND_FALSE_MASK ::=
                         Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", falseCondLabel);
                         quadruples.add(quadruple);
                         */
+                        // ================ INTERMEDIATE CODE ======================
+                            String falseCondLabel = stackFalseCond.pop();
+                            backendManager.generateC3DInst(
+                                OpCode.skip
+                                , null
+                                , null
+                                , new Operator(falseCondLabel, TypeOperator.label)
+                            );
+                        // =========================================================
                         RESULT = new SymbolCondFalseMask();
                     :}
                 ;
@@ -1759,7 +1848,18 @@ JUMP_LABEL     ::= USELESS
             quadruples.add(quadruple);
             RESULT = new SymbolJumpLabel(uuidLabel);
             */
-            RESULT = new SymbolJumpLabel();
+
+            // ================ INTERMEDIATE CODE ======================
+                int idLabel = backendManager.tablesManager.addLabel();
+                backendManager.generateC3DInst(
+                    OpCode.jump
+                    , null
+                    , null
+                    , new Operator(idLabel + "", TypeOperator.label)
+                );
+            // =========================================================
+
+            RESULT = new SymbolJumpLabel(idLabel + "");
         :}
     ;
 
@@ -1771,7 +1871,16 @@ SKIP_LABEL ::= USELESS
             quadruples.add(quadruple);
             RESULT = new SymbolSkipLabel(uuidLabel);
             */
-            RESULT = new SymbolSkipLabel();
+            // ================ INTERMEDIATE CODE ======================
+                int idLabel = backendManager.tablesManager.addLabel();
+                backendManager.generateC3DInst(
+                    OpCode.skip
+                    , null
+                    , null
+                    , new Operator(idLabel + "", TypeOperator.label)
+                );
+            // =========================================================
+            RESULT = new SymbolSkipLabel(idLabel + "");
         :}
     ;
 
@@ -1817,6 +1926,14 @@ COND_ELIF   ::= COND_ELIF JUMP_LABEL:jump_label inst_elif COND_FALSE_MASK COND l
                     Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", jump_label.idLabel);
                     quadruples.add(quadruple);
                     */
+                    // ================ INTERMEDIATE CODE ======================
+                        backendManager.generateC3DInst(
+                            OpCode.skip
+                            , null
+                            , null
+                            , new Operator(jump_label.idLabel, TypeOperator.label)
+                        );
+                    // =========================================================
                     RESULT = new SymbolCondElif();
                 :}
             |
@@ -1851,6 +1968,14 @@ COND_ELSE   ::= JUMP_LABEL:jump_label inst_else lbracket CODE_BLOCK_IN COND_FALS
                     Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", jump_label.idLabel);
                     quadruples.add(quadruple);
                     */
+                    // ================ INTERMEDIATE CODE ======================
+                        backendManager.generateC3DInst(
+                            OpCode.skip
+                            , null
+                            , null
+                            , new Operator(jump_label.idLabel, TypeOperator.label)
+                        );
+                    // =========================================================
                     RESULT = new SymbolCondElse();
                 :}
 
@@ -2017,6 +2142,22 @@ WHILE   ::= inst_while SKIP_LABEL:skip_label COND lbracket CODE_BLOCK_IN COND_TR
                 Quadruple quadrupleSkip = new Quadruple(OP_CODE.skip, "", "", falseCondLabel);
                 quadruples.add(quadrupleSkip);
                 */
+                // ================ INTERMEDIATE CODE ======================
+                    String falseCondLabel = stackFalseCond.pop();
+                    backendManager.generateC3DInst(
+                        OpCode.jump
+                        , null
+                        , null
+                        , new Operator(skip_label.idLabel, TypeOperator.label)
+                    );
+
+                    backendManager.generateC3DInst(
+                        OpCode.skip
+                        , null
+                        , null
+                        , new Operator(falseCondLabel, TypeOperator.label)
+                    );
+                // =========================================================
                 RESULT = new SymbolWhile();
             :}
         ;

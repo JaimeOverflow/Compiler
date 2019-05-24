@@ -83,10 +83,30 @@ public class AssemblerConverter {
                 case assign:
                     assemblerCode += getAssignation(c3dInstruction);
                     break;
+                case standardInput:
+                    assemblerCode += getStandardInput(c3dInstruction);
+                    break;
                 case standardOutput:
                     assemblerCode += getStandardOutput(c3dInstruction);
                     break;
-
+                case sum:
+                case sub:
+                case mult:
+                case div:
+                    assemblerCode += getArithmeticOperation(c3dInstruction);
+                    break;
+                case skip:
+                    assemblerCode += getSkip(c3dInstruction);
+                    break;
+                case jump:
+                    assemblerCode += getJump(c3dInstruction);
+                    break;
+                case condTrue:
+                    assemblerCode += getCondTrue(c3dInstruction);
+                    break;
+                case condFalse:
+                    assemblerCode += getCondFalse(c3dInstruction);
+                    break;
             }
         }
         
@@ -223,6 +243,7 @@ public class AssemblerConverter {
         
         return result;
     }
+    
     private String getProcedureEnd(Quadruple c3dInstruction) {
         int idProcedure = Integer.parseInt(c3dInstruction.destination.value);
         ProcedureBackend procedure = this.tablesManager.getProcedure(idProcedure);
@@ -238,7 +259,7 @@ public class AssemblerConverter {
         
     }
 
-        private String getAssignation(Quadruple c3dInstruction){
+    private String getAssignation(Quadruple c3dInstruction){
         String valueC3DInstruction = c3dInstruction.source1.value;
         
         int variableSource1Value;
@@ -342,6 +363,7 @@ public class AssemblerConverter {
         
         return result;
     }
+    
     private int IdentificarStringArg(int param1){
         VariableBackend actual = this.tablesManager.getVariable(param1);
         VariableBackend anterior= null;
@@ -363,6 +385,7 @@ public class AssemblerConverter {
         }
         return 0; //NO es arg
     }
+    
     private String getStandardOutput(Quadruple c3dInstruction){
         int idVariableDestination = Integer.parseInt(c3dInstruction.destination.value);
         VariableBackend variableBackendDestination = this.tablesManager.getVariable(idVariableDestination);
@@ -393,6 +416,110 @@ public class AssemblerConverter {
         return result;
     }
  
+    private String getStandardInput(Quadruple c3dInstruction){
+        int idVariableDestination = Integer.parseInt(c3dInstruction.destination.value);
+        VariableBackend variableBackendDestination = this.tablesManager.getVariable(idVariableDestination);
+        String result = "";
+        result += "\n* STANDARD INPUT *\n"+
+                "* Intermediate code => " + c3dInstruction.toString() + "\n"+
+                "    STANDARD_INPUT " + this.getOffsetFromVariable(variableBackendDestination) + "\n";
+        return result;
+    }
+            
+    private String getArithmeticOperation(Quadruple c3dInstruction){
+        int idVariableSource1 = Integer.parseInt(c3dInstruction.source1.value);
+        VariableBackend variableBackendSource1 = this.tablesManager.getVariable(idVariableSource1);
+        
+        int idVariableSource2 = Integer.parseInt(c3dInstruction.source2.value);
+        VariableBackend variableBackendSource2 = this.tablesManager.getVariable(idVariableSource2);
+        
+        int idVariableDestination = Integer.parseInt(c3dInstruction.destination.value);
+        VariableBackend variableBackendDestination = this.tablesManager.getVariable(idVariableDestination);
+
+        String result = "";
+        result += "\n* ARITHMETIC OPERATION *\n"+
+                "* Intermediate code => " + c3dInstruction.toString() + "\n";
+        
+        switch(c3dInstruction.opCode) {
+            case sum:
+                result += "    OP_SUMA_VAR_VAR ";
+                break;
+            case sub:
+                result += "    OP_SUMA_VAR_VAR ";
+                break;
+            case mult:
+                result += "    OP_MULTI_VAR_VAR ";
+                break;
+            case div:
+                result += "    OP_DIV_VAR_VAR ";
+                break;
+        }
+        result += this.getOffsetFromVariable(variableBackendDestination)+", "+this.getOffsetFromVariable(variableBackendSource1)+", "+this.getOffsetFromVariable(variableBackendSource2)+"\n";   
+                
+        
+        return result;
+    }
+
+    private String getSkip(Quadruple c3dInstruction) {
+        int idLabel = Integer.parseInt(c3dInstruction.destination.value);
+        LabelBackend label = this.tablesManager.getLabel(idLabel);
+        
+        String result = "";
+        result += "\n* SKIP (LABEL) *\n"+
+        "* Intermediate code => " + c3dInstruction.toString() + "\n"+
+        label.label + ":\n";
+        
+        return result;
+    }
+    
+    private String getJump(Quadruple c3dInstruction) {
+        int idLabel = Integer.parseInt(c3dInstruction.destination.value);
+        LabelBackend label = this.tablesManager.getLabel(idLabel);
+        
+        String result = "";
+        result += "\n* JUMP (LABEL) *\n"+
+        "* Intermediate code => " + c3dInstruction.toString() + "\n"+
+        "    JMP " + label.label + "\n";
+        
+        return result;
+    }
+    
+    private String getCondTrue(Quadruple c3dInstruction) {
+        int idVariable = Integer.parseInt(c3dInstruction.source1.value);
+        VariableBackend variable = this.tablesManager.getVariable(idVariable);
+        
+        
+        int idLabel = Integer.parseInt(c3dInstruction.destination.value);
+        LabelBackend label = this.tablesManager.getLabel(idLabel);
+        
+        String result = "";
+        result += "\n* True condition *\n"+
+        "* Intermediate code => " + c3dInstruction.toString() + "\n"+
+        "    MOVE.W " + this.getOffsetFromVariable(variable) + "(A7), D0\n"+
+        "    CMP.W #1, D0\n"+
+        "    BEQ " + label.label + "\n";
+        
+        return result;
+    }
+    
+    private String getCondFalse(Quadruple c3dInstruction) {
+        int idVariable = Integer.parseInt(c3dInstruction.source1.value);
+        VariableBackend variable = this.tablesManager.getVariable(idVariable);
+        
+        
+        int idLabel = Integer.parseInt(c3dInstruction.destination.value);
+        LabelBackend label = this.tablesManager.getLabel(idLabel);
+        
+        String result = "";
+        result += "\n* False condition *\n"+
+        "* Intermediate code => " + c3dInstruction.toString() + "\n"+
+        "    MOVE.W " + this.getOffsetFromVariable(variable) + "(A7), D0\n"+
+        "    CMP.W #0, D0\n"+
+        "    BEQ " + label.label + "\n";
+        
+        return result;
+    }
+        
     private void generateMacros() {
         String macros = getMacrosHeadboard();
         macros += getMacroAssignationInteger();
@@ -404,11 +531,17 @@ public class AssemblerConverter {
         macros += getMacroRecoverIntegerFromReturn();
         macros += getMacroRecoverBooleanFromReturn();
         macros += getMacroRecoverStringFromReturn();
+        macros += getMacroStandardInput();
         macros += getMacroOutputInteger();
         macros += getMacroOutputBoolean();
         macros += getMacroOutputString();
         macros += getMacroPrintNewLine();
         macros += getMacroReturnString();
+        macros += getMacroOperationArithmeticSum();
+        macros += getMacroOperationArithmeticSub();
+        macros += getMacroOperationArithmeticMult();
+        macros += getMacroOperationArithmeticDiv();
+        
         
         filesManager.writeFile(MACROS_FILENAME, macros);
     }
@@ -696,7 +829,7 @@ public class AssemblerConverter {
         return result; 
     }
     
-        private String getMacroRecoverStringFromReturn() {
+    private String getMacroRecoverStringFromReturn() {
         String result = "*-----------------------------------------------------------\n" +
                     "RETURN_GET_STRING	MACRO\n" +
                     "* Macro to add.                          \n" +
@@ -735,6 +868,115 @@ public class AssemblerConverter {
                     "END_STRING\\@    \n" +
                     "    ENDM\n";
         return result; 
+    }
+    
+    private String getMacroOperationArithmeticSum() {
+        String result = "*-----------------------------------------------------------\n" +
+            "OP_SUMA_VAR_VAR 	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 desti                        \n" +
+            "*             \\2: Param2 op1\n" +
+            "*             \\3: Param3 op2\n" +
+            "* Modifies  : D0\n" +
+            "*-----------------------------------------------------------\n" +
+            "   CLR.L D0\n" +
+            "   CLR.L D1\n" +
+            "\n" +
+            "   MOVE.L \\2(A7), D0\n" +
+            "   MOVE.L \\3(A7), D1\n" +
+            "   \n" +
+            "   ADD.L D1,D0\n" +
+            "   \n" +
+            "   MOVE.L D0, \\1(A7)\n" +
+            "   \n" +
+            "   ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroOperationArithmeticSub() {
+        String result = "*-----------------------------------------------------------\n" +
+            "OP_RESTA_VAR_VAR  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 desti                        \n" +
+            "*             \\2: Param2 op1\n" +
+            "*             \\3: Param3 op2\n" +
+            "* Modifies  : D0\n" +
+            "*-----------------------------------------------------------\n" +
+            "   CLR.L D0\n" +
+            "   CLR.L D1\n" +
+            "\n" +
+            "   MOVE.L \\2(A7), D0\n" +
+            "   MOVE.L \\3(A7), D1\n" +
+            "   \n" +
+            "   SUB.L D1,D0\n" +
+            "   \n" +
+            "   MOVE.L D0, \\1(A7)\n" +
+            "   \n" +
+            "   ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroOperationArithmeticMult() {
+        String result = "*-----------------------------------------------------------\n" +
+            "OP_MULTI_VAR_VAR  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 desti                        \n" +
+            "*             \\2: Param2 op1\n" +
+            "*             \\3: Param3 op2\n" +
+            "* Modifies  : D0\n" +
+            "*-----------------------------------------------------------\n" +
+            "   CLR.L D0\n" +
+            "   CLR.L D1\n" +
+            "\n" +
+            "   MOVE.L \\2(A7), D0\n" +
+            "   MOVE.L \\3(A7), D1\n" +
+            "   \n" +
+            "   MULS D1,D0\n" +
+            "   \n" +
+            "   MOVE.L D0, \\1(A7)\n" +
+            "   \n" +
+            "   ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroOperationArithmeticDiv() {
+        String result = "*-----------------------------------------------------------\n" +
+            "OP_DIV_VAR_VAR  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 desti                        \n" +
+            "*             \\2: Param2 op1\n" +
+            "*             \\3: Param3 op2\n" +
+            "* Modifies  : D0\n" +
+            "*-----------------------------------------------------------\n" +
+            "   CLR.L D0\n" +
+            "   CLR.L D1\n" +
+            "\n" +
+            "   MOVE.L \\2(A7), D0\n" +
+            "   MOVE.L \\3(A7), D1\n" +
+            "   \n" +
+            "   DIVU D1,D0\n" +
+            "   \n" +
+            "   MOVE.L D0, \\1(A7)\n" +
+            "   \n" +
+            "   ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroStandardInput() {
+        String result = "*-----------------------------------------------------------\n" +
+            "STANDARD_INPUT  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1 ; offset variable\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n"+
+            "    CLR.L D1\n"+
+            "    MOVE.L #4, D0\n"+
+            "    TRAP #15\n"+
+            "    MOVE.L D1, \\1(A7)\n" +
+            "    ENDM\n";
+        return result; 
+        
     }
     
 }

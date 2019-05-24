@@ -1,9 +1,11 @@
-function int doki() {
-	return 6.
-}
+
+
 
 function none main() {
-	output("ASD").
+	
+	n : int = input().
+	output(n).
+
 }
 
 call_main(main).

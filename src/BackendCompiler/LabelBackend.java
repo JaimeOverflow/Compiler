@@ -10,19 +10,17 @@ package BackendCompiler;
  * @author Jaime
  */
 public class LabelBackend {
-    public String name;
+    public String label;
     public int procedure;
 
-    public LabelBackend(String name, int procedure) {
-        this.name = name;
-        this.procedure = procedure;
+    public LabelBackend(String name) {
+        this.label = name;
     }
 
     @Override
     public String toString() {
         return "LabelBackend{" 
-                + "name=" + name 
-                + ", procedure=" + procedure 
+                + "label=" + label
                 + '}';
     }
     
