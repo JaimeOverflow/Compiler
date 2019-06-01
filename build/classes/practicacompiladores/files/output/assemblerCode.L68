@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 24/05/2019 13:29:51
+Created On: 01/06/2019 12:53:41
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Practice compilers II.
@@ -340,63 +340,188 @@ Created On: 24/05/2019 13:29:51
 00001000                           336  START:
 00001000                           337  
 00001000                           338  * CALL MAIN PROCEDURE *
-00001000                           339  * Intermediate code => [procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 0]]
-00001000  4EB9 0000100A            340      JSR PROCEDURE_MAIN
+00001000                           339  * Intermediate code => [procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+00001000  4EB9 000010B4            340      JSR PROCEDURE_MAIN
 00001006  FFFF FFFF                341      SIMHALT
 0000100A                           342  
 0000100A                           343  * INITIAL LABEL (PROCEDURE) *
 0000100A                           344  * Intermediate code => [procedureName, null, null, [OPERATOR. Type operator: procedure, value: 0]]
-0000100A                           345  PROCEDURE_MAIN:
+0000100A                           345  PROCEDURE_ASE2:
 0000100A                           346  
 0000100A                           347  * PREAMBLE (PROCEDURE) *
 0000100A                           348  * Intermediate code => [procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 0]]
-0000100A  9FFC 00000000            349      SUB.L #0, A7
-00001010  598F                     350      SUB.L #4, A7 ; Block pointer
-00001012  2EBC 00000000            351      MOVE.L #0, (A7)
-00001018  2C4F                     352      MOVE.L A7, A6
-0000101A  518E                     353      SUB.L #8, A6 ; Update stack pointer for a new activation block
+0000100A  518F                     349      SUB.L #8, A7
+0000100C  598F                     350      SUB.L #4, A7 ; Block pointer
+0000100E  2EBC 00000000            351      MOVE.L #0, (A7)
+00001014  2C4F                     352      MOVE.L A7, A6
+00001016  9DFC 0000000C            353      SUB.L #12, A6 ; Update stack pointer for a new activation block
 0000101C                           354  
-0000101C                           355  * STANDARD INPUT *
-0000101C                           356  * Intermediate code => [standardInput, null, null, [OPERATOR. Type operator: variable, value: 0]]
-0000101C                           357m     STANDARD_INPUT -4
-0000101C                           358m * MACRO TO ADD.                          
-0000101C                           359m * PARAMETERS: \1 ; OFFSET VARIABLE
-0000101C                           360m * MODIFIES  : D0, D1
-0000101C                           361m *-----------------------------------------------------------
-00001028                           362  
-00001028                           363  * ASSIGNATION VARIABLE *
-00001028                           364  * Intermediate code => [assign, [OPERATOR. Type operator: variable, value: 0], null, [OPERATOR. Type operator: variable, value: 1]]
-00001028                           365m     ASSIGNATION_VARIABLE_INTEGER -4, -8
-00001028                           366m * MACRO TO ADD.                          
-00001028                           367m * PARAMETERS: \1: PARAM1   ;SOURCE1
-00001028                           368m *             \2: PARAM2   ;DESTINATION
-00001028                           369m * MODIFIES  : NOTHING
-00001028                           370m *-----------------------------------------------------------
-0000102E                           371  
-0000102E                           372  * STANDARD OUTPUT *
-0000102E                           373  * Intermediate code => [standardOutput, null, null, [OPERATOR. Type operator: variable, value: 1]]
-0000102E                           374m     OUTPUT_INTEGER -8
-0000102E                           375m ; INPUT    - -8  ; OFFSET's variable with integer value
-0000102E                           376m ; MODIFIES - 
-0000102E                           377m ; -----------------------------------------------------------------------------
-0000103C                           378  
-0000103C                           379  * PRINT BUFFER *
-0000103C                           380m     PRINT_BUFFER #buffer, #0 
-0000103C                           381m ; INPUT    - #BUFFER  : SIZE STRING
-0000103C                           382m ; -----------------------------------------------------------------------------
-0000104A                           383  
-0000104A                           384  * PREAMBLE END (PROCEDURE) *
-0000104A                           385  * Intermediate code => [procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 0]]
-0000104A  588F                     386      ADD.L #4, A7
-0000104C  4E75                     387      RTS
-0000104E                           388  
-0000104E                           389  *Put variables and constants here
-0000104E                           390  buffer ds.b 1024
-0000144E                           391  ;variables para mensajes 
-0000144E= 49 6E 74 72 6F 64 ...    392  informacion dc.b 'Introduzca un texto que no supere los 1024 caracteres:',0  
-00001485= 45 52 52 4F 52 2C ...    393  errorstring dc.b 'ERROR, La longitud del texto supera los 1024 carcateres',0 
-000014BD                           394  
-000014BD                           395      END    START
+0000101C                           355  * ASSIGNATION VARIABLE *
+0000101C                           356  * Intermediate code => [assign, [OPERATOR. Type operator: int_value, value: 20], null, [OPERATOR. Type operator: variable, value: 2]]
+0000101C                           357m     ASSIGNATION_INTEGER #20, -4
+0000101C                           358m * MACRO TO ADD.
+0000101C                           359m * PARAMETERS: \1: PARAM1   ;VALUE OF INT OR BOOLEAN
+0000101C                           360m *             \2: PARAM2   ;OFFSET OF DESTINATION VARIABLE
+0000101C                           361m * MODIFIES  : NOTHING
+0000101C                           362m *-----------------------------------------------------------
+00001024                           363  
+00001024                           364  * ARITHMETIC OPERATION *
+00001024                           365  * Intermediate code => [sum, [OPERATOR. Type operator: variable, value: 0], [OPERATOR. Type operator: variable, value: 2], [OPERATOR. Type operator: variable, value: 3]]
+00001024                           366m     OP_SUMA_VAR_VAR -8, 4, -4
+00001024                           367m * MACRO TO ADD.                          
+00001024                           368m * PARAMETERS: \1: PARAM1 DESTI                        
+00001024                           369m *             \2: PARAM2 OP1
+00001024                           370m *             \3: PARAM3 OP2
+00001024                           371m * MODIFIES  : D0
+00001024                           372m *-----------------------------------------------------------
+00001036                           373  
+00001036                           374  * ASSIGNATION VARIABLE *
+00001036                           375  * Intermediate code => [assign, [OPERATOR. Type operator: variable, value: 3], null, [OPERATOR. Type operator: variable, value: 4]]
+00001036                           376m     ASSIGNATION_VARIABLE_INTEGER -8, -12
+00001036                           377m * MACRO TO ADD.                          
+00001036                           378m * PARAMETERS: \1: PARAM1   ;SOURCE1
+00001036                           379m *             \2: PARAM2   ;DESTINATION
+00001036                           380m * MODIFIES  : NOTHING
+00001036                           381m *-----------------------------------------------------------
+0000103C                           382  
+0000103C                           383  * STANDARD OUTPUT *
+0000103C                           384  * Intermediate code => [standardOutput, null, null, [OPERATOR. Type operator: variable, value: 4]]
+0000103C                           385m     OUTPUT_INTEGER -12
+0000103C                           386m ; INPUT    - -12  ; OFFSET's variable with integer value
+0000103C                           387m ; MODIFIES - 
+0000103C                           388m ; -----------------------------------------------------------------------------
+0000104A                           389  
+0000104A                           390  * PRINT BUFFER *
+0000104A                           391m     PRINT_BUFFER #buffer, #0 
+0000104A                           392m ; INPUT    - #BUFFER  : SIZE STRING
+0000104A                           393m ; -----------------------------------------------------------------------------
+00001058                           394  
+00001058                           395  * PREAMBLE END (PROCEDURE) *
+00001058                           396  * Intermediate code => [procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+00001058  DFFC 0000000C            397      ADD.L #12, A7
+0000105E  4E75                     398      RTS
+00001060                           399  
+00001060                           400  * INITIAL LABEL (PROCEDURE) *
+00001060                           401  * Intermediate code => [procedureName, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+00001060                           402  PROCEDURE_ASE:
+00001060                           403  
+00001060                           404  * PREAMBLE (PROCEDURE) *
+00001060                           405  * Intermediate code => [procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+00001060  518F                     406      SUB.L #8, A7
+00001062  598F                     407      SUB.L #4, A7 ; Block pointer
+00001064  2EBC 00000000            408      MOVE.L #0, (A7)
+0000106A  2C4F                     409      MOVE.L A7, A6
+0000106C  9DFC 00000000            410      SUB.L #0, A6 ; Update stack pointer for a new activation block
+00001072                           411  
+00001072                           412  * CALL PROCEDURE *
+00001072                           413  * Intermediate code => [procedureCall, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+00001072  2A4F                     414      MOVE.L A7, A5
+00001074  2E4E                     415      MOVE.L A6, A7
+00001076  2F0D                     416      MOVE.L A5, -(A7)  ;previous block pointer
+00001078  598F                     417      SUB.L #4, A7 ; Memory space for PC
+0000107A                           418      ************
+0000107A                           419      *   PARAM  *
+0000107A                           420      ************
+0000107A  4280                     421      CLR.L D0 
+0000107C  284F                     422      MOVE.L A7, A4 
+0000107E  2E4D                     423      MOVE.L A5, A7 
+00001080  202F 0008                424      MOVE.L 8(A7), D0
+00001084  2E4C                     425      MOVE.L A4, A7 
+00001086  2F00                     426      MOVE.L D0, -(A7) 
+00001088                           427      ************
+00001088                           428      *   PARAM  *
+00001088                           429      ************
+00001088  4280                     430      CLR.L D0 
+0000108A  284F                     431      MOVE.L A7, A4 
+0000108C  2E4D                     432      MOVE.L A5, A7 
+0000108E  202F 0004                433      MOVE.L 4(A7), D0
+00001092  2E4C                     434      MOVE.L A4, A7 
+00001094  2F00                     435      MOVE.L D0, -(A7) 
+00001096  DFFC 0000000C            436      ADD.L #12, A7  ;Regresamos para poner el pc en el salto
+0000109C  4EB8 100A                437      JSR PROCEDURE_ASE2
+000010A0  DFFC 00000000            438      ADD.L #0, A7 ;Jump return
+000010A6  2A5F                     439      MOVE.L (A7)+, A5 ;Get block pointer
+000010A8  2C4F                     440      MOVE.L A7, A6  ;A6 => Stack pointer
+000010AA  2E4D                     441      MOVE.L A5, A7 ;Update out block pointer
+000010AC                           442  
+000010AC                           443  * PREAMBLE END (PROCEDURE) *
+000010AC                           444  * Intermediate code => [procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+000010AC  DFFC 0000000C            445      ADD.L #12, A7
+000010B2  4E75                     446      RTS
+000010B4                           447  
+000010B4                           448  * INITIAL LABEL (PROCEDURE) *
+000010B4                           449  * Intermediate code => [procedureName, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+000010B4                           450  PROCEDURE_MAIN:
+000010B4                           451  
+000010B4                           452  * PREAMBLE (PROCEDURE) *
+000010B4                           453  * Intermediate code => [procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+000010B4  9FFC 00000000            454      SUB.L #0, A7
+000010BA  598F                     455      SUB.L #4, A7 ; Block pointer
+000010BC  2EBC 00000000            456      MOVE.L #0, (A7)
+000010C2  2C4F                     457      MOVE.L A7, A6
+000010C4  518E                     458      SUB.L #8, A6 ; Update stack pointer for a new activation block
+000010C6                           459  
+000010C6                           460  * ASSIGNATION VARIABLE *
+000010C6                           461  * Intermediate code => [assign, [OPERATOR. Type operator: int_value, value: 5], null, [OPERATOR. Type operator: variable, value: 7]]
+000010C6                           462m     ASSIGNATION_INTEGER #5, -4
+000010C6                           463m * MACRO TO ADD.
+000010C6                           464m * PARAMETERS: \1: PARAM1   ;VALUE OF INT OR BOOLEAN
+000010C6                           465m *             \2: PARAM2   ;OFFSET OF DESTINATION VARIABLE
+000010C6                           466m * MODIFIES  : NOTHING
+000010C6                           467m *-----------------------------------------------------------
+000010CE                           468  
+000010CE                           469  * ASSIGNATION VARIABLE *
+000010CE                           470  * Intermediate code => [assign, [OPERATOR. Type operator: int_value, value: 10], null, [OPERATOR. Type operator: variable, value: 8]]
+000010CE                           471m     ASSIGNATION_INTEGER #10, -8
+000010CE                           472m * MACRO TO ADD.
+000010CE                           473m * PARAMETERS: \1: PARAM1   ;VALUE OF INT OR BOOLEAN
+000010CE                           474m *             \2: PARAM2   ;OFFSET OF DESTINATION VARIABLE
+000010CE                           475m * MODIFIES  : NOTHING
+000010CE                           476m *-----------------------------------------------------------
+000010D6                           477  
+000010D6                           478  * CALL PROCEDURE *
+000010D6                           479  * Intermediate code => [procedureCall, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+000010D6  2A4F                     480      MOVE.L A7, A5
+000010D8  2E4E                     481      MOVE.L A6, A7
+000010DA  2F0D                     482      MOVE.L A5, -(A7)  ;previous block pointer
+000010DC  598F                     483      SUB.L #4, A7 ; Memory space for PC
+000010DE                           484      ************
+000010DE                           485      *   PARAM  *
+000010DE                           486      ************
+000010DE  4280                     487      CLR.L D0 
+000010E0  284F                     488      MOVE.L A7, A4 
+000010E2  2E4D                     489      MOVE.L A5, A7 
+000010E4  202F FFF8                490      MOVE.L -8(A7), D0
+000010E8  2E4C                     491      MOVE.L A4, A7 
+000010EA  2F00                     492      MOVE.L D0, -(A7) 
+000010EC                           493      ************
+000010EC                           494      *   PARAM  *
+000010EC                           495      ************
+000010EC  4280                     496      CLR.L D0 
+000010EE  284F                     497      MOVE.L A7, A4 
+000010F0  2E4D                     498      MOVE.L A5, A7 
+000010F2  202F FFFC                499      MOVE.L -4(A7), D0
+000010F6  2E4C                     500      MOVE.L A4, A7 
+000010F8  2F00                     501      MOVE.L D0, -(A7) 
+000010FA  DFFC 0000000C            502      ADD.L #12, A7  ;Regresamos para poner el pc en el salto
+00001100  4EB8 1060                503      JSR PROCEDURE_ASE
+00001104  DFFC 00000000            504      ADD.L #0, A7 ;Jump return
+0000110A  2A5F                     505      MOVE.L (A7)+, A5 ;Get block pointer
+0000110C  2C4F                     506      MOVE.L A7, A6  ;A6 => Stack pointer
+0000110E  2E4D                     507      MOVE.L A5, A7 ;Update out block pointer
+00001110                           508  
+00001110                           509  * PREAMBLE END (PROCEDURE) *
+00001110                           510  * Intermediate code => [procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+00001110  588F                     511      ADD.L #4, A7
+00001112  4E75                     512      RTS
+00001114                           513  
+00001114                           514  *Put variables and constants here
+00001114                           515  buffer ds.b 1024
+00001514                           516  ;variables para mensajes 
+00001514= 49 6E 74 72 6F 64 ...    517  informacion dc.b 'Introduzca un texto que no supere los 1024 caracteres:',0  
+0000154B= 45 52 52 4F 52 2C ...    518  errorstring dc.b 'ERROR, La longitud del texto supera los 1024 carcateres',0 
+00001583                           519  
+00001583                           520      END    START
 
 No errors detected
 No warnings generated
@@ -411,9 +536,9 @@ ASSIGNATION_STRING  1EC
 ASSIGNATION_VARIABLE_BOOLEAN  4FE
 ASSIGNATION_VARIABLE_INTEGER  408
 ASSIGNATION_VARIABLE_STRING  5F4
-BUFFER              104E
-ERRORSTRING         1485
-INFORMACION         144E
+BUFFER              1114
+ERRORSTRING         154B
+INFORMACION         1514
 OP_DIV_VAR_VAR      1BB2
 OP_MULTI_VAR_VAR    1A3E
 OP_RESTA_VAR_VAR    18C9
@@ -422,7 +547,9 @@ OUTPUT_BOOLEAN      1138
 OUTPUT_INTEGER      1046
 PRINT_BUFFER        14A2
 PRINT_STRING        122A
-PROCEDURE_MAIN      100A
+PROCEDURE_ASE       1060
+PROCEDURE_ASE2      100A
+PROCEDURE_MAIN      10B4
 RETURN_GET_BOOLEAN  AD7
 RETURN_GET_INTEGER  99E
 RETURN_GET_STRING   C08

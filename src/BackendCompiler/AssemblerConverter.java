@@ -7,6 +7,7 @@ package BackendCompiler;
 
 import BackendCompiler.Quadruple.OpCode;
 import SymbolsTable.TypeDescription;
+import SymbolsTable.TypeDescription.BASIC_SUBJACENT_TYPE;
 import Utils.FilesManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,16 +40,18 @@ public class AssemblerConverter {
     }
     
     private int getOffsetFromVariable (VariableBackend variableBackend) {
-        // Parameters
-        if (variableBackend.offset > 0) {
-            switch(variableBackend.basicSubjacentType) {
-                case ts_integer: return variableBackend.offset;
-                default: return variableBackend.offset + 2; // String or booleans
-            }
-        } else {
-            // Variable
-            return variableBackend.offset;
-        }   
+        BASIC_SUBJACENT_TYPE bstVariable = variableBackend.basicSubjacentType;
+        
+        // If it's an argument and basic subjacent type is string or boolean
+        if (variableBackend.offset > 0 && 
+                (bstVariable == BASIC_SUBJACENT_TYPE.ts_string
+                || bstVariable == BASIC_SUBJACENT_TYPE.ts_boolean)
+            ) {
+            return variableBackend.offset + 2;
+        }
+        
+        // If it's a local variable or an integer argument
+        return variableBackend.offset;
     }
 
     public void generateAssemblerCode() {
@@ -66,7 +69,7 @@ public class AssemblerConverter {
                     assemblerCode += getProcedureCallMain(c3dInstruction);
                     break;
                 case procedureCall:
-                    assemblerCode += getProcedureCall(c3dInstruction);
+                    assemblerCode += getProcedureCall(c3dInstruction, i);
                     break;
                 case procedureName:
                     assemblerCode += getProcedureInitialLabel(c3dInstruction);
@@ -152,7 +155,7 @@ public class AssemblerConverter {
         return result;
     }
     
-    private String getProcedureCall(Quadruple c3dInstruction) {
+    private String getProcedureCall(Quadruple c3dInstruction, int indexC3DInstr) {
         int idProcedure = Integer.parseInt(c3dInstruction.destination.value);
         ProcedureBackend procedure = this.tablesManager.getProcedure(idProcedure);
         
@@ -168,10 +171,51 @@ public class AssemblerConverter {
         result += "    SUB.L #4, A7 ; Memory space for PC\n";
         
         if (procedure.numParams > 0) {
-            System.out.println("OKI");
+
+        
+            boolean areAllParamsTreated = true;
+            for (int j = indexC3DInstr-1; areAllParamsTreated; j--) {
+                if(this.c3dList.get(j).opCode == OpCode.procedureParam){
+                    int idVariable = Integer.parseInt(this.c3dList.get(j).source1.value);
+                    VariableBackend nvar = this.tablesManager.getVariable(idVariable);
+                    result +=  "    ************\n" +
+                                    "    *   PARAM  *\n" +
+                                    "    ************\n";
+                        result += "    CLR.L D0 \n";
+                    if(nvar.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_integer){
+                        int offsetVariable = this.getOffsetFromVariable(nvar);
+                        result += "    MOVE.L A7, A4 \n";
+                        result += "    MOVE.L A5, A7 \n";
+                        result += "    MOVE.L "+offsetVariable+"(A7), D0\n";
+                        result += "    MOVE.L A4, A7 \n";
+                        result += "    MOVE.L D0, -(A7) \n";
+                    }else if (nvar.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_boolean){
+                        int offsetVariable = this.getOffsetFromVariable(nvar);
+                        result += "    MOVE.L A7, A4 \n";
+                        result += "    MOVE.L A5, A7 \n";
+                        result += "    MOVE.W "+offsetVariable+"(A7), D0 \n";
+                        result += "    MOVE.L A4, A7 \n";
+                        result += "    MOVE.W D0, -(A7) \n";
+                    }else { //String
+                        int offsetParamString = IdentifyStringArg(Integer.parseInt(this.c3dList.get(j).source1.value));
+                        if(offsetParamString == 0){
+                            offsetParamString = this.tablesManager.getVariable(Integer.parseInt(this.c3dList.get(j).source1.value)).offset;
+                        }
+                        int ocupRest = Math.abs(nvar.size - 2048);
+                        result += "    SUB.L #2048, A7 ;nos situamos arriba\n";
+                        result += "    MOVE.L A7, A4 ;guardamos cima\n";
+                        result += "    MOVE.L A5, A7 ; nos situamos en BP actual\n";
+                        result += "    PONER_PARAM_STRING #"+offsetParamString+", #"+nvar.size+", #"+ocupRest+"  \n";
+                        result += "    MOVE.L A4, A7 ;nos situamos en la cima\n";
+                    }
+                    if(Integer.parseInt(this.c3dList.get(j).source2.value) == 1){
+                        areAllParamsTreated = false;
+                    }
+                }
+            }
         }
         //Llamamos al metodo
-        int offsetProcedure = Math.abs(procedure.sizeTemporalArgs)+4;
+        int offsetProcedure = Math.abs(procedure.sizeParameters)+4;
         result += "    ADD.L #"+offsetProcedure+", A7  ;Regresamos para poner el pc en el salto\n";
         result += "    JSR " + procedure.initialLabel + "\n";
         // Come back from procedure
@@ -199,7 +243,7 @@ public class AssemblerConverter {
         String result = "";
         result += "\n* PREAMBLE (PROCEDURE) *\n"+
                 "* Intermediate code => " + c3dInstruction.toString() + "\n"+
-                "    SUB.L #"+Math.abs(procedure.sizeTemporalArgs)+", A7\n"+
+                "    SUB.L #"+Math.abs(procedure.sizeParameters)+", A7\n"+
                 "    SUB.L #4, A7 ; Block pointer\n"+
                 "    MOVE.L #0, (A7)\n"+
                 "    MOVE.L A7, A6\n"+
@@ -217,7 +261,7 @@ public class AssemblerConverter {
         
         int pcSize = 4; // bytes;
         int blockPointerSize = 4; // bytes
-        int offsetReturn = Math.abs(procedure.sizeTemporalArgs) + blockPointerSize + pcSize;
+        int offsetReturn = Math.abs(procedure.sizeParameters) + blockPointerSize + pcSize;
         
         String result = "";
         result += "\n* RETURN (PROCEDURE) *\n"+
@@ -233,7 +277,7 @@ public class AssemblerConverter {
                 result += "    MOVE.W D0, " + offsetReturn + "(A7)\n";
                 break;
             case ts_string:
-                int putStringInReturn = IdentificarStringArg(idVariable);
+                int putStringInReturn = IdentifyStringArg(idVariable);
                 if(putStringInReturn==0){
                     putStringInReturn = variable.offset;
                 }
@@ -248,7 +292,7 @@ public class AssemblerConverter {
         int idProcedure = Integer.parseInt(c3dInstruction.destination.value);
         ProcedureBackend procedure = this.tablesManager.getProcedure(idProcedure);
         int sizeBlockPointer = 4;
-        int offsetToGetOutOfProcedure = Math.abs(procedure.sizeTemporalArgs) + sizeBlockPointer; 
+        int offsetToGetOutOfProcedure = Math.abs(procedure.sizeParameters) + sizeBlockPointer; 
         String result = "";
         result += "\n* PREAMBLE END (PROCEDURE) *\n"+
                 "* Intermediate code => " + c3dInstruction.toString() + "\n"+
@@ -294,11 +338,11 @@ public class AssemblerConverter {
                     case ts_string:
                         
                         int differenceStringSize = Math.abs(variableBackendSource1.size - variableBackendDestination.size);
-                        int offsetSource1 = IdentificarStringArg(variableSource1Value);
+                        int offsetSource1 = IdentifyStringArg(variableSource1Value);
                         if(offsetSource1==0){
                             offsetSource1 = variableBackendSource1.offset;
                         }
-                        int offsetDestination = IdentificarStringArg(idVariableDestination);
+                        int offsetDestination = IdentifyStringArg(idVariableDestination);
                         if(offsetDestination==0){
                             offsetDestination = variableBackendDestination.offset;
                         }
@@ -317,7 +361,7 @@ public class AssemblerConverter {
                         result += "    RETURN_GET_BOOLEAN " + this.getOffsetFromVariable(variableBackendDestination) + "\n";
                         break;
                     case ts_string:
-                        int offsetDestinationReturn = IdentificarStringArg(idVariableDestination);
+                        int offsetDestinationReturn = IdentifyStringArg(idVariableDestination);
                         if(offsetDestinationReturn==0){
                             offsetDestinationReturn = variableBackendDestination.offset;
                         }
@@ -348,7 +392,7 @@ public class AssemblerConverter {
 
                 String labelString = "string_id_" + this.variablesString.size();
                 this.variablesString.add(textString);
-                int offsetParameters = IdentificarStringArg(idVariableDestination);
+                int offsetParameters = IdentifyStringArg(idVariableDestination);
                 if(offsetParameters == 0){
                     offsetParameters = variableBackendDestination.offset;
                  }
@@ -364,7 +408,7 @@ public class AssemblerConverter {
         return result;
     }
     
-    private int IdentificarStringArg(int param1){
+    private int IdentifyStringArg(int param1){
         VariableBackend actual = this.tablesManager.getVariable(param1);
         VariableBackend anterior= null;
         if(param1 != 0){
@@ -402,7 +446,7 @@ public class AssemblerConverter {
                 break;
             case ts_string:
                 int variableSize = variableBackendDestination.size / 2;
-                int offsetVariable= IdentificarStringArg(idVariableDestination);
+                int offsetVariable= IdentifyStringArg(idVariableDestination);
                 if(offsetVariable == 0){
                     offsetVariable= variableBackendDestination.offset;
                 }

@@ -63,14 +63,18 @@ public class TablesManager {
                 this.variablesTable.get(i).offset = this.proceduresTable.get(idProcedure).sizeLocalVariables;
             } else {
                 //Argument
-                this.proceduresTable.get(idProcedure).sizeTemporalArgs += sizeVariable;
-                this.variablesTable.get(i).offset = this.proceduresTable.get(idProcedure).sizeTemporalArgs;
+                this.proceduresTable.get(idProcedure).sizeParameters += sizeVariable;
+                this.variablesTable.get(i).offset = this.proceduresTable.get(idProcedure).sizeParameters;
             }
         }
-        //Añadimos la ocupacion temporal de los argumentos
-        for (int i = 0; i < this.proceduresTable.size(); i++) {
-            this.proceduresTable.get(i).sizeLocalVariables = (this.proceduresTable.get(i).sizeTemporalArgs) - (this.proceduresTable.get(i).sizeLocalVariables);
-        }      
+        // TODO: DELETE THIS
+        //for (int i = 0; i < this.proceduresTable.size(); i++) {
+            //this.proceduresTable.get(i).sizeLocalVariables = (this.proceduresTable.get(i).sizeParameters) - (this.proceduresTable.get(i).sizeLocalVariables);
+        //}      
+    }
+    
+    public void updateNumParametersInProcedure(int idProcedure, int numParameters) {
+        this.proceduresTable.get(idProcedure).numParams = numParameters;
     }
     
     public int getActualProcedure() {

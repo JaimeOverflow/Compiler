@@ -1,11 +1,14 @@
+function none ase2(n1 : int, n2 : int){
+	n3 : int = (n1 + 20).
+	output(n3).
+}
 
-
+function none ase(n1 : int, n2 : int){
+	call(ase2, n1, n2).
+}
 
 function none main() {
-	
-	n : int = input().
-	output(n).
-
+	call(ase, 5, 10).
 }
 
 call_main(main).

@@ -1038,6 +1038,7 @@ class CUP$Parser$actions {
                 symbolsTable.add(id_variable, typeDescriptionForNewVariables);
 
                 SymbolDecls symbolDecls = new SymbolDecls(typeDescriptionForNewVariables);
+                
                 // ================ INTERMEDIATE CODE ======================
                 //variablesTable.addVariable(id_variable);
                 //Quadruple quadruple = new Quadruple(OP_CODE.assignRef, symbol_value.idVariable, "", id_variable);
@@ -1045,7 +1046,6 @@ class CUP$Parser$actions {
 
                 //symbolDecls.idVariable = symbolValue.idVariable;
                 // =======================================================
-
 
                 // ===========================================================
                     symbolDecls.idVariable = symbolValue.idVariable;
@@ -3214,7 +3214,16 @@ class CUP$Parser$actions {
                     }
 
                     for (int i = 0; i < listVariableIds.size(); i++) {
-                        symbolsTable.addParam(id_function, listVariableIds.get(i), listVariableTypeDescription.get(i));
+                        TypeDescription typeDescriptionParam = symbolsTable.query(listVariableTypeDescription.get(i).nameType);
+                        // ================ INTERMEDIATE CODE ======================
+                        int isArgument = -1; // Is an argument
+                        int idVar = backendManager.tablesManager.addVariable(listVariableIds.get(i), backendManager.tablesManager.getActualProcedure(),  typeDescriptionParam.size, isArgument,  typeDescriptionParam.basicSubjacentType);
+                        
+                        // =========================================================
+                        TypeDescription typeDescriptionVariable = listVariableTypeDescription.get(i);
+                        typeDescriptionVariable.idBackend = idVar;
+                        symbolsTable.addParam(id_function, listVariableIds.get(i), typeDescriptionVariable);
+                        
                     }
                     // ==================================================================================================
 
@@ -3534,6 +3543,15 @@ class CUP$Parser$actions {
                 );
 
             }
+            backendManager.tablesManager.updateNumParametersInProcedure(symbolCallBody.idBackend, symbolCallBody.counter);
+            // ================ INTERMEDIATE CODE ======================
+            backendManager.generateC3DInst(
+                OpCode.procedureCall
+                , null
+                , null
+                , new Operator(symbolCallBody.idBackend + "", TypeOperator.procedure)
+            );
+            // =========================================================
 
             RESULT = new SymbolCall(symbolCallBody.idFunction, symbolCallBody.idBackend);
         
@@ -3596,6 +3614,15 @@ class CUP$Parser$actions {
                         );
                     }
 
+                    // ================ INTERMEDIATE CODE ======================
+                    backendManager.generateC3DInst(
+                        OpCode.procedureParam
+                        , new Operator(symbolValue.idVariable + "", TypeOperator.variable)
+                        , new Operator(symbolCallBody.counter + 1 + "", TypeOperator.numParam)
+                        , new Operator(symbolCallBody.idBackend + "", TypeOperator.procedure)
+                    );
+                    // =========================================================
+
                     RESULT = new SymbolCallBody(symbolCallBody.idFunction, symbolCallBody.counter + 1, symbolCallBody.idBackend);
                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("CALL_BODY",38, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -3619,17 +3646,7 @@ class CUP$Parser$actions {
 
                     // Only to know if exists our function
                     symbolsTable.query(id_function);
-
-                // ================ INTERMEDIATE CODE ======================
-                TypeDescription typeDescriptionFunction = symbolsTable.query(id_function);
-
-                backendManager.generateC3DInst(
-                    OpCode.procedureCall
-                    , null
-                    , null
-                    , new Operator(typeDescriptionFunction.idBackend + "", TypeOperator.procedure)
-                );
-                // =========================================================
+                    TypeDescription typeDescriptionFunction = symbolsTable.query(id_function);
 
                     RESULT = new SymbolCallBody(id_function, 0, typeDescriptionFunction.idBackend);
                 

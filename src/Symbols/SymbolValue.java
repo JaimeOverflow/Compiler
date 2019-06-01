@@ -49,7 +49,6 @@ public class SymbolValue extends SymbolBase{
         this.valueType = valueType;
     }
     
-    
     public SymbolValue(CONTENT_DESCRIPTION contentDescription, String nameType) {
         super("value", 0);
         this.contentDescription = contentDescription;

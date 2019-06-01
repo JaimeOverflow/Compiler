@@ -19,7 +19,7 @@ public class ProcedureBackend {
     public String initialLabel;
     public int numParams;
     public int sizeLocalVariables;
-    public int sizeTemporalArgs;
+    public int sizeParameters;
     public int size;
     public BASIC_SUBJACENT_TYPE basicSubjacentType;
 
@@ -29,7 +29,7 @@ public class ProcedureBackend {
         this.initialLabel = initialLabel.toUpperCase();
         this.numParams = numParams;
         this.sizeLocalVariables = sizeLocalVariables;
-        this.sizeTemporalArgs = 0;
+        this.sizeParameters = 0;
         this.size = size;
         this.basicSubjacentType = basicSubjacentType;
     }
@@ -42,7 +42,7 @@ public class ProcedureBackend {
                 + ", initalLabel=" + initialLabel 
                 + ", numParams=" + numParams 
                 + ", sizeLocalVariables=" + sizeLocalVariables 
-                + ", sizeTemporalArgs=" + sizeTemporalArgs 
+                + ", sizeTemporalArgs=" + sizeParameters 
                 + ", size=" + size 
                 + ", basicSubjacentType=" + basicSubjacentType 
                 + '}';

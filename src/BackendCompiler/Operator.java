@@ -15,7 +15,7 @@ public class Operator {
         label,
         variable,
         procedure,
-        param,
+        numParam,
         string_value,
         int_value,
         bool_value   

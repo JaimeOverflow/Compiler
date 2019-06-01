@@ -31,6 +31,9 @@ public class Quadruple {
         procedureCall,
         procedureCallMain,
         
+        // parameters
+        procedureParam,
+        
         // Standard Keyboard actions
         standardInput,
         standardOutput,
