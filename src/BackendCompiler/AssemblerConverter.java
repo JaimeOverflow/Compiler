@@ -110,6 +110,19 @@ public class AssemblerConverter {
                 case condFalse:
                     assemblerCode += getCondFalse(c3dInstruction);
                     break;
+                case and:
+                case or:
+                    assemblerCode += getLogicalOperation(c3dInstruction);
+                    break;
+
+                case equal:
+                case notEqual:
+                case greater:
+                case greaterOrEqual:
+                case lower:
+                case lowerOrEqual:
+                    assemblerCode += getComparationOperation(c3dInstruction);
+                    break;
             }
         }
         
@@ -489,7 +502,7 @@ public class AssemblerConverter {
                 result += "    OP_SUMA_VAR_VAR ";
                 break;
             case sub:
-                result += "    OP_SUMA_VAR_VAR ";
+                result += "    OP_RESTA_VAR_VAR ";
                 break;
             case mult:
                 result += "    OP_MULTI_VAR_VAR ";
@@ -500,7 +513,6 @@ public class AssemblerConverter {
         }
         result += this.getOffsetFromVariable(variableBackendDestination)+", "+this.getOffsetFromVariable(variableBackendSource1)+", "+this.getOffsetFromVariable(variableBackendSource2)+"\n";   
                 
-        
         return result;
     }
 
@@ -563,30 +575,128 @@ public class AssemblerConverter {
         
         return result;
     }
+    
+    private String getLogicalOperation(Quadruple c3dInstruction){
+        int idVariableSource1 = Integer.parseInt(c3dInstruction.source1.value);
+        VariableBackend variableBackendSource1 = this.tablesManager.getVariable(idVariableSource1);
         
+        int idVariableDestination = Integer.parseInt(c3dInstruction.destination.value);
+        VariableBackend variableBackendDestination = this.tablesManager.getVariable(idVariableDestination);
+
+        String result = "";
+        result += "\n* LOGICAL OPERATION: " + c3dInstruction.opCode + " *\n"+
+                "* Intermediate code => " + c3dInstruction.toString() + "\n";
+        
+        switch(c3dInstruction.opCode) {
+            case and:
+                result += "    LOGICAL_OPERATION_AND ";
+                break;
+            case or:
+                result += "    LOGICAL_OPERATION_OR ";
+                break;
+        }
+        result += this.getOffsetFromVariable(variableBackendDestination)+", "+this.getOffsetFromVariable(variableBackendSource1)+"\n";   
+                
+        return result;
+    }
+    
+    private String getComparationOperation(Quadruple c3dInstruction){
+        int idVariableSource1 = Integer.parseInt(c3dInstruction.source1.value);
+        VariableBackend variableBackendSource1 = this.tablesManager.getVariable(idVariableSource1);
+
+        int idVariableSource2 = Integer.parseInt(c3dInstruction.source2.value);
+        VariableBackend variableBackendSource2 = this.tablesManager.getVariable(idVariableSource2);
+
+        int idVariableDestination = Integer.parseInt(c3dInstruction.destination.value);
+        VariableBackend variableBackendDestination = this.tablesManager.getVariable(idVariableDestination);
+
+        String result = "";
+        result += "\n* COMPARISON OPERATION: " + c3dInstruction.opCode + " *\n"+
+                "* Intermediate code => " + c3dInstruction.toString() + "\n";
+        
+        switch(c3dInstruction.opCode) {
+            case equal:
+                if (variableBackendSource2.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_integer) {
+                    result += "    COMPARISON_EQUAL_INT ";
+                } else if (variableBackendSource2.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_boolean) {
+                    result += "    COMPARISON_EQUAL_BOOL ";
+                }
+                break;
+            case notEqual:
+                if (variableBackendSource2.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_integer) {
+                    result += "    COMPARISON_NOT_EQUAL_INT ";
+                } else if (variableBackendSource2.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_boolean) {
+                    result += "    COMPARISON_NOT_EQUAL_BOOL ";
+                }
+                break;
+            case greater:
+                result += "    COMPARISON_GREATER ";
+                break;
+            case greaterOrEqual:
+                result += "    COMPARISON_GREATER_OR_EQUAL ";
+                break;
+            case lower:
+                result += "    COMPARISON_LOWER ";
+                break;
+            case lowerOrEqual:
+                result += "    COMPARISON_LOWER_OR_EQUAL ";
+                break;
+        }
+        result += this.getOffsetFromVariable(variableBackendDestination) + ", " + this.getOffsetFromVariable(variableBackendSource1) + ", " + this.getOffsetFromVariable(variableBackendSource2) + "\n";   
+
+        return result;
+    }
+    
     private void generateMacros() {
         String macros = getMacrosHeadboard();
+        
+        // PRIMITIVE TYPES TO VARIABLE
         macros += getMacroAssignationInteger();
         macros += getMacroAssignationBoolean();
         macros += getMacroAssignationString();
+        
+        // VARIABLE TO VARIABLE
         macros += getMacroAssignationVariableInteger();
         macros += getMacroAssignationVariableBoolean();
         macros += getMacroAssignationVariableString();
+        
+        // GET VALUES FROM RETURN
         macros += getMacroRecoverIntegerFromReturn();
         macros += getMacroRecoverBooleanFromReturn();
         macros += getMacroRecoverStringFromReturn();
+        
+        // STANDARD INPUT
         macros += getMacroStandardInput();
+        
+        // STANDARD OUTPUT
         macros += getMacroOutputInteger();
         macros += getMacroOutputBoolean();
         macros += getMacroOutputString();
         macros += getMacroPrintNewLine();
+        
         macros += getMacroReturnString();
-        macros += getMacroOperationArithmeticSum();
-        macros += getMacroOperationArithmeticSub();
-        macros += getMacroOperationArithmeticMult();
-        macros += getMacroOperationArithmeticDiv();
         
+        //ARITHMETIC OPERATIONS
+        macros += getMacroArithmeticOperationSum();
+        macros += getMacroArithmeticOperationSub();
+        macros += getMacroArithmeticOperationMult();
+        macros += getMacroArithmeticOperationDiv();
         
+        // LOGICAL OPERATIONS
+        macros += getMacroLogicalOperationAnd();
+        macros += getMacroLogicalOperationOr();
+        
+        // COMPARISON OPERATIONS
+        macros += getMacroComparisonOperationEqualWithIntegersType();
+        macros += getMacroComparisonOperationEqualWithBooleansType();
+        macros += getMacroComparisonOperationNotEqualWithIntegersType();
+        macros += getMacroComparisonOperationNotEqualWithBooleansType();
+        macros += getMacroComparisonOperationGreater();        
+        macros += getMacroComparisonOperationGreaterOrEqual();
+        macros += getMacroComparisonOperationLower();
+        macros += getMacroComparisonOperationLowerOrEqual(); 
+
+
         filesManager.writeFile(MACROS_FILENAME, macros);
     }
     
@@ -914,7 +1024,7 @@ public class AssemblerConverter {
         return result; 
     }
     
-    private String getMacroOperationArithmeticSum() {
+    private String getMacroArithmeticOperationSum() {
         String result = "*-----------------------------------------------------------\n" +
             "OP_SUMA_VAR_VAR 	MACRO\n" +
             "* Macro to add.                          \n" +
@@ -923,21 +1033,21 @@ public class AssemblerConverter {
             "*             \\3: Param3 op2\n" +
             "* Modifies  : D0\n" +
             "*-----------------------------------------------------------\n" +
-            "   CLR.L D0\n" +
-            "   CLR.L D1\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
             "\n" +
-            "   MOVE.L \\2(A7), D0\n" +
-            "   MOVE.L \\3(A7), D1\n" +
-            "   \n" +
-            "   ADD.L D1,D0\n" +
-            "   \n" +
-            "   MOVE.L D0, \\1(A7)\n" +
-            "   \n" +
-            "   ENDM\n";
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    ADD.L D1,D0\n" +
+            "    \n" +
+            "    MOVE.L D0, \\1(A7)\n" +
+            "    \n" +
+            "    ENDM\n";
         return result; 
     }
     
-    private String getMacroOperationArithmeticSub() {
+    private String getMacroArithmeticOperationSub() {
         String result = "*-----------------------------------------------------------\n" +
             "OP_RESTA_VAR_VAR  	MACRO\n" +
             "* Macro to add.                          \n" +
@@ -946,21 +1056,21 @@ public class AssemblerConverter {
             "*             \\3: Param3 op2\n" +
             "* Modifies  : D0\n" +
             "*-----------------------------------------------------------\n" +
-            "   CLR.L D0\n" +
-            "   CLR.L D1\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
             "\n" +
-            "   MOVE.L \\2(A7), D0\n" +
-            "   MOVE.L \\3(A7), D1\n" +
-            "   \n" +
-            "   SUB.L D1,D0\n" +
-            "   \n" +
-            "   MOVE.L D0, \\1(A7)\n" +
-            "   \n" +
-            "   ENDM\n";
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    SUB.L D1,D0\n" +
+            "    \n" +
+            "    MOVE.L D0, \\1(A7)\n" +
+            "    \n" +
+            "    ENDM\n";
         return result; 
     }
     
-    private String getMacroOperationArithmeticMult() {
+    private String getMacroArithmeticOperationMult() {
         String result = "*-----------------------------------------------------------\n" +
             "OP_MULTI_VAR_VAR  	MACRO\n" +
             "* Macro to add.                          \n" +
@@ -969,21 +1079,21 @@ public class AssemblerConverter {
             "*             \\3: Param3 op2\n" +
             "* Modifies  : D0\n" +
             "*-----------------------------------------------------------\n" +
-            "   CLR.L D0\n" +
-            "   CLR.L D1\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
             "\n" +
-            "   MOVE.L \\2(A7), D0\n" +
-            "   MOVE.L \\3(A7), D1\n" +
-            "   \n" +
-            "   MULS D1,D0\n" +
-            "   \n" +
-            "   MOVE.L D0, \\1(A7)\n" +
-            "   \n" +
-            "   ENDM\n";
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    MULS D1,D0\n" +
+            "    \n" +
+            "    MOVE.L D0, \\1(A7)\n" +
+            "    \n" +
+            "    ENDM\n";
         return result; 
     }
     
-    private String getMacroOperationArithmeticDiv() {
+    private String getMacroArithmeticOperationDiv() {
         String result = "*-----------------------------------------------------------\n" +
             "OP_DIV_VAR_VAR  	MACRO\n" +
             "* Macro to add.                          \n" +
@@ -992,17 +1102,17 @@ public class AssemblerConverter {
             "*             \\3: Param3 op2\n" +
             "* Modifies  : D0\n" +
             "*-----------------------------------------------------------\n" +
-            "   CLR.L D0\n" +
-            "   CLR.L D1\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
             "\n" +
-            "   MOVE.L \\2(A7), D0\n" +
-            "   MOVE.L \\3(A7), D1\n" +
-            "   \n" +
-            "   DIVU D1,D0\n" +
-            "   \n" +
-            "   MOVE.L D0, \\1(A7)\n" +
-            "   \n" +
-            "   ENDM\n";
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    DIVU D1,D0\n" +
+            "    \n" +
+            "    MOVE.L D0, \\1(A7)\n" +
+            "    \n" +
+            "    ENDM\n";
         return result; 
     }
     
@@ -1023,4 +1133,256 @@ public class AssemblerConverter {
         
     }
     
+    
+    private String getMacroLogicalOperationAnd() {
+        String result = "*-----------------------------------------------------------\n" +
+            "LOGICAL_OPERATION_AND  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "* Modifies  : D0\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.W \\1(A7), D0\n" +
+            "    MOVE.W \\2(A7), D1\n" +
+            "    \n" +
+            "    AND.W D1,D0\n" +
+            "    \n" +
+            "    MOVE.W D0, \\1(A7)\n" +
+            "    \n" +
+            "    ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroLogicalOperationOr() {
+        String result = "*-----------------------------------------------------------\n" +
+            "LOGICAL_OPERATION_OR  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "* Modifies  : D0\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.W \\1(A7), D0\n" +
+            "    MOVE.W \\2(A7), D1\n" +
+            "    \n" +
+            "    OR.W D1,D0\n" +
+            "    \n" +
+            "    MOVE.W D0, \\1(A7)\n" +
+            "    \n" +
+            "    ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroComparisonOperationEqualWithIntegersType() {
+        String result = "*-----------------------------------------------------------\n" +
+            "COMPARISON_EQUAL_INT  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    CMP.L D1, D0\n" +
+            "    BEQ IS_TRUE\\@\n" +
+            "    MOVE.W  #0, \\1(A7)\n" +
+            "    BRA END_COMPARISON\\@\n" +
+            "IS_TRUE\\@\n" +
+            "    MOVE.W  #1, \\1(A7)\n" +
+            "END_COMPARISON\\@\n" +
+            "    ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroComparisonOperationEqualWithBooleansType() {
+        String result = "*-----------------------------------------------------------\n" +
+            "COMPARISON_EQUAL_BOOL  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.W \\2(A7), D0\n" +
+            "    MOVE.W \\3(A7), D1\n" +
+            "    \n" +
+            "    CMP.W D1, D0\n" +
+            "    BEQ IS_TRUE\\@\n" +
+            "    MOVE.W  #0, \\1(A7)\n" +
+            "    BRA END_COMPARISON\\@\n" +
+            "IS_TRUE\\@\n" +
+            "    MOVE.W  #1, \\1(A7)\n" +
+            "END_COMPARISON\\@\n" +
+            "    ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroComparisonOperationNotEqualWithIntegersType() {
+        String result = "*-----------------------------------------------------------\n" +
+            "COMPARISON_NOT_EQUAL_INT  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    CMP.L D1, D0\n" +
+            "    BNE IS_TRUE\\@\n" +
+            "    MOVE.W  #0, \\1(A7)\n" +
+            "    BRA END_COMPARISON\\@\n" +
+            "IS_TRUE\\@\n" +
+            "    MOVE.W  #1, \\1(A7)\n" +
+            "END_COMPARISON\\@\n" +
+            "   ENDM\n";
+        return result; 
+    }
+    
+        private String getMacroComparisonOperationNotEqualWithBooleansType() {
+        String result = "*-----------------------------------------------------------\n" +
+            "COMPARISON_NOT_EQUAL_BOOL  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.W \\2(A7), D0\n" +
+            "    MOVE.W \\3(A7), D1\n" +
+            "    \n" +
+            "    CMP.W D1, D0\n" +
+            "    BNE IS_TRUE\\@\n" +
+            "    MOVE.W  #0, \\1(A7)\n" +
+            "    BRA END_COMPARISON\\@\n" +
+            "IS_TRUE\\@\n" +
+            "    MOVE.W  #1, \\1(A7)\n" +
+            "END_COMPARISON\\@\n" +
+            "   ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroComparisonOperationGreater() {
+        String result = "*-----------------------------------------------------------\n" +
+            "COMPARISON_GREATER  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    CMP.L D1, D0\n" +
+            "    BGT IS_TRUE\\@\n" +
+            "    MOVE.W  #0, \\1(A7)\n" +
+            "    BRA END_COMPARISON\\@\n" +
+            "IS_TRUE\\@\n" +
+            "    MOVE.W  #1, \\1(A7)\n" +
+            "END_COMPARISON\\@\n" +
+            "   ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroComparisonOperationGreaterOrEqual() {
+        String result = "*-----------------------------------------------------------\n" +
+            "COMPARISON_GREATER_OR_EQUAL  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    CMP.L D1, D0\n" +
+            "    BGE IS_TRUE\\@\n" +
+            "    MOVE.W  #0, \\1(A7)\n" +
+            "    BRA END_COMPARISON\\@\n" +
+            "IS_TRUE\\@\n" +
+            "    MOVE.W  #1, \\1(A7)\n" +
+            "END_COMPARISON\\@\n" +
+            "   ENDM\n";
+        return result; 
+    }
+  
+    private String getMacroComparisonOperationLower() {
+        String result = "*-----------------------------------------------------------\n" +
+            "COMPARISON_LOWER  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    CMP.L D1, D0\n" +
+            "    BLT IS_TRUE\\@\n" +
+            "    MOVE.W  #0, \\1(A7)\n" +
+            "    BRA END_COMPARISON\\@\n" +
+            "IS_TRUE\\@\n" +
+            "    MOVE.W  #1, \\1(A7)\n" +
+            "END_COMPARISON\\@\n" +
+            "   ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroComparisonOperationLowerOrEqual() {
+        String result = "*-----------------------------------------------------------\n" +
+            "COMPARISON_LOWER_OR_EQUAL  	MACRO\n" +
+            "* Macro to add.                          \n" +
+            "* Parameters: \\1: Param1 destination                        \n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
+            "* Modifies  : D0, D1\n" +
+            "*-----------------------------------------------------------\n" +
+            "    CLR.L D0\n" +
+            "    CLR.L D1\n" +
+            "\n" +
+            "    MOVE.L \\2(A7), D0\n" +
+            "    MOVE.L \\3(A7), D1\n" +
+            "    \n" +
+            "    CMP.L D1, D0\n" +
+            "    BLE IS_TRUE\\@\n" +
+            "    MOVE.W  #0, \\1(A7)\n" +
+            "    BRA END_COMPARISON\\@\n" +
+            "IS_TRUE\\@\n" +
+            "    MOVE.W  #1, \\1(A7)\n" +
+            "END_COMPARISON\\@\n" +
+            "   ENDM\n";
+        return result; 
+    }
 }

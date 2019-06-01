@@ -2075,6 +2075,28 @@ class CUP$Parser$actions {
                         symbolOpBoolean.indexQuadruples = quadruples.size();
                         symbolOpBoolean.isSingleBoolean = false;
                         */
+                        // ==================== INTERMEDIATE CODE ====================
+                            backendManager.generateC3DInst(
+                                opCodeConditional
+                                , new Operator(symbolOpBooleanVal1.idVariable + "", TypeOperator.variable)
+                                , null
+                                , new Operator(symbolOpBooleanVal1.idLabel + "", TypeOperator.label)
+                            );
+
+                            backendManager.generateC3DInst(
+                                opCodeVariable
+                                , new Operator(symbolOpBoolVal2.idVariable + "", TypeOperator.variable)
+                                , null
+                                , new Operator(symbolOpBooleanVal1.idVariable + "", TypeOperator.variable)
+                            );
+
+                            symbolOpBoolean.idLabel = symbolOpBooleanVal1.idLabel;
+                            symbolOpBoolean.idVariable = symbolOpBooleanVal1.idVariable;
+                            symbolOpBoolean.indexQuadruples = backendManager.getSizeOfC3DList();
+                            symbolOpBoolean.isSingleBoolean = false;
+                            
+                        // ===========================================================
+
                         RESULT = symbolOpBoolean;
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_BOOLEAN",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2115,7 +2137,10 @@ class CUP$Parser$actions {
                         symbolOpBoolean.isSingleBoolean = true;
                         */
                         // ==================== INTERMEDIATE CODE ====================
+                            int idLabel = backendManager.tablesManager.addLabel();
                             symbolOpBoolean.idVariable = symbolOpBoolValue.idVariable;
+                            symbolOpBoolean.idLabel = idLabel + "";
+                            symbolOpBoolean.indexQuadruples = backendManager.getSizeOfC3DList();
                             symbolOpBoolean.isSingleBoolean = true;
                         // ===========================================================
                         RESULT = symbolOpBoolean;
@@ -2199,6 +2224,13 @@ class CUP$Parser$actions {
 
                         symbolOpBoolValue.idVariable = symbolOpBoolean.idVariable;
                         */
+                        backendManager.generateC3DInst(
+                                OpCode.skip
+                                , null
+                                , null
+                                , new Operator(symbolOpBoolean.idLabel + "", TypeOperator.variable)
+                            );
+                        symbolOpBoolValue.idVariable = symbolOpBoolean.idVariable;
                         RESULT = symbolOpBoolValue;
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_BOOL_VALUE",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2256,6 +2288,9 @@ class CUP$Parser$actions {
           case 42: // OP_BOOL_VALUE ::= RELATIONAL_COMP 
             {
               SymbolOpBoolValue RESULT =null;
+		int relational_compleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int relational_compright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		SymbolRelationalComp relational_comp = (SymbolRelationalComp)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                         // ============== GENERATE NODE FOR DIGRAPH ==============
                         String description ="[OP_BOOL_VALUE => RELATIONAL_COMP]";
@@ -2266,8 +2301,10 @@ class CUP$Parser$actions {
                         NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.OP_BOOL_VALUE);
                         digraph.addNode(nodeGraph, childs);
                         // =======================================================
-
-                        RESULT = new SymbolOpBoolValue(); 
+                        SymbolRelationalComp symbolRelationalComp = relational_comp;
+                        SymbolOpBoolValue symbolOpBoolValue = new SymbolOpBoolValue();
+                        symbolOpBoolValue.idVariable = symbolRelationalComp.idVariable;
+                        RESULT = symbolOpBoolValue;
                     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OP_BOOL_VALUE",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2446,6 +2483,41 @@ class CUP$Parser$actions {
                             symbolRelationalComp.isConstant = true;
                             symbolRelationalComp.valueType = newValue;
                         }
+
+                        OpCode opCode = OpCode.equal;
+                        switch(op_relational) {
+                                case "==": opCode = OpCode.equal; break;
+                                case "!=": opCode = OpCode.notEqual; break;
+                                case "<" : opCode = OpCode.lower; break;
+                                case "<=": opCode = OpCode.lowerOrEqual; break;
+                                case ">" : opCode = OpCode.greater; break;
+                                case ">=": opCode = OpCode.greaterOrEqual; break;
+                        }
+
+                        TypeOperator typeOperator = TypeOperator.int_value;
+                        int sizeNewVariable = 4;
+                        if (value1SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_integer) {
+                            typeOperator = TypeOperator.int_value;
+
+                        } else if (value1SubjacenBasicType == BASIC_SUBJACENT_TYPE.ts_boolean) {
+                            typeOperator = TypeOperator.bool_value;
+  
+                        }
+
+                        // ==================== INTERMEDIATE CODE ====================
+                            TypeDescription typeDescriptionBoolean = symbolsTable.query("boolean");
+                            int isArgument = 0; // Is not an argument
+                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeDescriptionBoolean.size, 0, typeDescriptionBoolean.basicSubjacentType);
+                            symbolRelationalComp.idVariable = idVar + "";
+
+                            backendManager.generateC3DInst(
+                                opCode
+                                , new Operator(symbolValue1.idVariable, typeOperator)
+                                , new Operator(symbolValue2.idVariable, typeOperator)
+                                , new Operator(idVar + "", TypeOperator.variable)
+                            );
+                            
+                        // ===========================================================
 
                         RESULT = symbolRelationalComp; 
 

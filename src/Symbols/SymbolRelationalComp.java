@@ -14,6 +14,8 @@ public class SymbolRelationalComp extends SymbolBase{
     public boolean isConstant;
     public Object valueType;
     
+    public String idVariable = "";
+    
     public SymbolRelationalComp() {
         super("SymbolRelationalComp", 0);
         this.isConstant = false;

@@ -274,17 +274,17 @@ OP_SUMA_VAR_VAR 	MACRO
 *             \3: Param3 op2
 * Modifies  : D0
 *-----------------------------------------------------------
-   CLR.L D0
-   CLR.L D1
+    CLR.L D0
+    CLR.L D1
 
-   MOVE.L \2(A7), D0
-   MOVE.L \3(A7), D1
-   
-   ADD.L D1,D0
-   
-   MOVE.L D0, \1(A7)
-   
-   ENDM
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    ADD.L D1,D0
+    
+    MOVE.L D0, \1(A7)
+    
+    ENDM
 *-----------------------------------------------------------
 OP_RESTA_VAR_VAR  	MACRO
 * Macro to add.                          
@@ -293,17 +293,17 @@ OP_RESTA_VAR_VAR  	MACRO
 *             \3: Param3 op2
 * Modifies  : D0
 *-----------------------------------------------------------
-   CLR.L D0
-   CLR.L D1
+    CLR.L D0
+    CLR.L D1
 
-   MOVE.L \2(A7), D0
-   MOVE.L \3(A7), D1
-   
-   SUB.L D1,D0
-   
-   MOVE.L D0, \1(A7)
-   
-   ENDM
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    SUB.L D1,D0
+    
+    MOVE.L D0, \1(A7)
+    
+    ENDM
 *-----------------------------------------------------------
 OP_MULTI_VAR_VAR  	MACRO
 * Macro to add.                          
@@ -312,17 +312,17 @@ OP_MULTI_VAR_VAR  	MACRO
 *             \3: Param3 op2
 * Modifies  : D0
 *-----------------------------------------------------------
-   CLR.L D0
-   CLR.L D1
+    CLR.L D0
+    CLR.L D1
 
-   MOVE.L \2(A7), D0
-   MOVE.L \3(A7), D1
-   
-   MULS D1,D0
-   
-   MOVE.L D0, \1(A7)
-   
-   ENDM
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    MULS D1,D0
+    
+    MOVE.L D0, \1(A7)
+    
+    ENDM
 *-----------------------------------------------------------
 OP_DIV_VAR_VAR  	MACRO
 * Macro to add.                          
@@ -331,14 +331,226 @@ OP_DIV_VAR_VAR  	MACRO
 *             \3: Param3 op2
 * Modifies  : D0
 *-----------------------------------------------------------
-   CLR.L D0
-   CLR.L D1
+    CLR.L D0
+    CLR.L D1
 
-   MOVE.L \2(A7), D0
-   MOVE.L \3(A7), D1
-   
-   DIVU D1,D0
-   
-   MOVE.L D0, \1(A7)
-   
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    DIVU D1,D0
+    
+    MOVE.L D0, \1(A7)
+    
+    ENDM
+*-----------------------------------------------------------
+LOGICAL_OPERATION_AND  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+* Modifies  : D0
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.W \1(A7), D0
+    MOVE.W \2(A7), D1
+    
+    AND.W D1,D0
+    
+    MOVE.W D0, \1(A7)
+    
+    ENDM
+*-----------------------------------------------------------
+LOGICAL_OPERATION_OR  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+* Modifies  : D0
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.W \1(A7), D0
+    MOVE.W \2(A7), D1
+    
+    OR.W D1,D0
+    
+    MOVE.W D0, \1(A7)
+    
+    ENDM
+*-----------------------------------------------------------
+COMPARISON_EQUAL_INT  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+*             \3: Param3 source2
+* Modifies  : D0, D1
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    CMP.L D1, D0
+    BEQ IS_TRUE\@
+    MOVE.W  #0, \1(A7)
+    BRA END_COMPARISON\@
+IS_TRUE\@
+    MOVE.W  #1, \1(A7)
+END_COMPARISON\@
+    ENDM
+*-----------------------------------------------------------
+COMPARISON_EQUAL_BOOL  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+*             \3: Param3 source2
+* Modifies  : D0, D1
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.W \2(A7), D0
+    MOVE.W \3(A7), D1
+    
+    CMP.W D1, D0
+    BEQ IS_TRUE\@
+    MOVE.W  #0, \1(A7)
+    BRA END_COMPARISON\@
+IS_TRUE\@
+    MOVE.W  #1, \1(A7)
+END_COMPARISON\@
+    ENDM
+*-----------------------------------------------------------
+COMPARISON_NOT_EQUAL_INT  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+*             \3: Param3 source2
+* Modifies  : D0, D1
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    CMP.L D1, D0
+    BNE IS_TRUE\@
+    MOVE.W  #0, \1(A7)
+    BRA END_COMPARISON\@
+IS_TRUE\@
+    MOVE.W  #1, \1(A7)
+END_COMPARISON\@
+   ENDM
+*-----------------------------------------------------------
+COMPARISON_NOT_EQUAL_BOOL  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+*             \3: Param3 source2
+* Modifies  : D0, D1
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.W \2(A7), D0
+    MOVE.W \3(A7), D1
+    
+    CMP.W D1, D0
+    BNE IS_TRUE\@
+    MOVE.W  #0, \1(A7)
+    BRA END_COMPARISON\@
+IS_TRUE\@
+    MOVE.W  #1, \1(A7)
+END_COMPARISON\@
+   ENDM
+*-----------------------------------------------------------
+COMPARISON_GREATER  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+*             \3: Param3 source2
+* Modifies  : D0, D1
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    CMP.L D1, D0
+    BGT IS_TRUE\@
+    MOVE.W  #0, \1(A7)
+    BRA END_COMPARISON\@
+IS_TRUE\@
+    MOVE.W  #1, \1(A7)
+END_COMPARISON\@
+   ENDM
+*-----------------------------------------------------------
+COMPARISON_GREATER_OR_EQUAL  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+*             \3: Param3 source2
+* Modifies  : D0, D1
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    CMP.L D1, D0
+    BGE IS_TRUE\@
+    MOVE.W  #0, \1(A7)
+    BRA END_COMPARISON\@
+IS_TRUE\@
+    MOVE.W  #1, \1(A7)
+END_COMPARISON\@
+   ENDM
+*-----------------------------------------------------------
+COMPARISON_LOWER  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+*             \3: Param3 source2
+* Modifies  : D0, D1
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    CMP.L D1, D0
+    BLT IS_TRUE\@
+    MOVE.W  #0, \1(A7)
+    BRA END_COMPARISON\@
+IS_TRUE\@
+    MOVE.W  #1, \1(A7)
+END_COMPARISON\@
+   ENDM
+*-----------------------------------------------------------
+COMPARISON_LOWER_OR_EQUAL  	MACRO
+* Macro to add.                          
+* Parameters: \1: Param1 destination                        
+*             \2: Param2 source1
+*             \3: Param3 source2
+* Modifies  : D0, D1
+*-----------------------------------------------------------
+    CLR.L D0
+    CLR.L D1
+
+    MOVE.L \2(A7), D0
+    MOVE.L \3(A7), D1
+    
+    CMP.L D1, D0
+    BLE IS_TRUE\@
+    MOVE.W  #0, \1(A7)
+    BRA END_COMPARISON\@
+IS_TRUE\@
+    MOVE.W  #1, \1(A7)
+END_COMPARISON\@
    ENDM

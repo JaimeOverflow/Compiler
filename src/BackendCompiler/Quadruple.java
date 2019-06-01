@@ -45,6 +45,14 @@ public class Quadruple {
         and, or,
         condTrue, condFalse,
         
+        // comparations
+        equal, 
+        notEqual, 
+        greater,
+        greaterOrEqual,
+        lower,
+        lowerOrEqual,
+        
         // jumps
         skip, jump
     }

@@ -33,6 +33,10 @@ public class BackendManager {
         c3dList.add(index, quadruple);        
     }
     
+    public int getSizeOfC3DList() {
+        return this.c3dList.size();
+    }
+    
     public void generateAssemblerCode() {
         for (int i = 0; i < this.c3dList.size(); i++) {
             System.out.println(this.c3dList.get(i));
