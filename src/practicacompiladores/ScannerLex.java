@@ -329,7 +329,7 @@ public class ScannerLex implements java_cup.runtime.Scanner {
   private int zzFinalHighSurrogate = 0;
 
   /* user code: */
-    public static final String TOKENS_OUTPUT_FILENAME = "src/practicacompiladores/files/output/tokens.txt";
+    public static final String TOKENS_OUTPUT_FILENAME = "src/practicacompiladores/files/output/Tokens.txt";
 
     public static ArrayList<TokenLex> tokens = new ArrayList<TokenLex>();
 

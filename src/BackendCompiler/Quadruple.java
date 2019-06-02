@@ -10,15 +10,7 @@ package BackendCompiler;
  * @author Jaime
  */
 public class Quadruple {
-/*
-        assignVal, assignRef,
-        sum, sub, mult, div, mod,
-        output,
-        skip,
-        jump,
-        and, or,
-        condTrue, condFalse
-*/
+
     public static enum OpCode {
         // variables
         assign,

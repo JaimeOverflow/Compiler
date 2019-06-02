@@ -25,7 +25,7 @@ public class SymbolsTable {
     // If we want to write each change of symbols table
     public static final boolean WRITE_CHANGES_IN_FILE = true;
     private BufferedWriter out;
-    public static final String SYMBOLS_TABLE_OUTPUT_FILENAME = Main.FOLDER_OUTPUT + "symbols_table.txt";
+    public static final String SYMBOLS_TABLE_OUTPUT_FILENAME = Main.FOLDER_OUTPUT + "Symbols_table.txt";
 
     public int currentScope;
     public ArrayList<Integer> scopeTable;

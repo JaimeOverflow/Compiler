@@ -28,7 +28,7 @@ import java.util.Date;
 %column
 
 %{
-    public static final String TOKENS_OUTPUT_FILENAME = "src/practicacompiladores/files/output/tokens.txt";
+    public static final String TOKENS_OUTPUT_FILENAME = "src/practicacompiladores/files/output/Tokens.txt";
 
     public static ArrayList<TokenLex> tokens = new ArrayList<TokenLex>();
 

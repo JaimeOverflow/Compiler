@@ -415,7 +415,6 @@ public class Parser extends java_cup.runtime.lr_parser {
     private boolean hasToGenerateDigraph;
     private SymbolsTable symbolsTable;
     private Digraph digraph;
-    //private ArrayList<Quadruple> quadruples;
 
     private Stack<String> stackTrueCond;
     private Stack<String> stackFalseCond;
@@ -428,7 +427,7 @@ public class Parser extends java_cup.runtime.lr_parser {
         this.hasToGenerateDigraph = hasToGenerateDigraph;
         this.symbolsTable = new SymbolsTable();
         this.digraph = new Digraph();
-        //this.quadruples = new ArrayList<Quadruple>();
+
         this.stackTrueCond = new Stack<String>();
         this.stackFalseCond = new Stack<String>();
 
@@ -582,20 +581,12 @@ class CUP$Parser$actions {
                 symbolsTable.closeFile(); 
 
                 backendManager.tablesManager.updateOffsetOfTables();
-                backendManager.generateAssemblerCode();
 
-                /*
-                System.out.println("QUADRUPLES: ");
-                for (int i = 0; i < quadruples.size(); i++) {
-                    System.out.println(quadruples.get(i));
-                }
+                backendManager.storeC3DInstInALogFile();
+                backendManager.storeTablesInALogFile();
 
-                System.out.println("\nVARIABLE'S TABLE:");
-                variablesTable.showInfo();
-                */
-
-
-
+                backendManager.generateAssemblerCodeWithoutOptimization();
+                backendManager.generateAssemblerCodeOptimized();
 
                 boolean hasFinished = true;
                 RESULT = new SymbolRoot(hasFinished);

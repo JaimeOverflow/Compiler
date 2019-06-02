@@ -130,9 +130,6 @@ public class AssemblerConverter {
         for (int i = 0; i < this.variablesString.size(); i++) {
             assemblerCode += "string_id_" + i + " dc.b " + this.variablesString.get(i).replace("\"", "'") + ", 0\n";  
         }
-        assemblerCode += ";variables para mensajes \n";
-        assemblerCode += "informacion dc.b 'Introduzca un texto que no supere los 1024 caracteres:',0  \n" +
-                       "errorstring dc.b 'ERROR, La longitud del texto supera los 1024 carcateres',0 \n";
         assemblerCode +=  "\n    END    START\n";
         
         filesManager.writeFile(filename, assemblerCode);
@@ -141,7 +138,7 @@ public class AssemblerConverter {
     private String getAssemblerHeadboard() {
         String result = "*-----------------------------------------------------------\n" +
                         "* Title      : Practice compilers II.\n" +
-                        "* Written by : Andrés Ramos Seguí, Alex Mateo Fiol, Jaime Crespí Valero.\n" +
+                        "* Written by : Andres Ramos Segui, Alex Mateo Fiol, Jaime Crespi Valero.\n" +
                         "* Date       : 17/06/2019\n" +
                         "* Description: Assembler code for compilers II practice.\n" +
                         "*-----------------------------------------------------------\n"+
@@ -183,26 +180,22 @@ public class AssemblerConverter {
         result += "    SUB.L #4, A7 ; Memory space for PC\n";
         
         if (procedure.numParams > 0) {
-
-        
-            boolean areAllParamsTreated = true;
-            for (int j = indexC3DInstr-1; areAllParamsTreated; j--) {
+            boolean stillHaveParametersToDealWith = true;
+            result +=  "    * ---- BEGIN PARAMETERS  ----*\n";
+            for (int j = indexC3DInstr-1; stillHaveParametersToDealWith; j--) {
                 if(this.c3dList.get(j).opCode == OpCode.procedureParam){
                     int idVariable = Integer.parseInt(this.c3dList.get(j).source1.value);
-                    VariableBackend nvar = this.tablesManager.getVariable(idVariable);
-                    result +=  "    ************\n" +
-                                    "    *   PARAM  *\n" +
-                                    "    ************\n";
+                    VariableBackend variable = this.tablesManager.getVariable(idVariable);
                         result += "    CLR.L D0 \n";
-                    if(nvar.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_integer){
-                        int offsetVariable = this.getOffsetFromVariable(nvar);
+                    if(variable.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_integer){
+                        int offsetVariable = this.getOffsetFromVariable(variable);
                         result += "    MOVE.L A7, A4 \n";
                         result += "    MOVE.L A5, A7 \n";
                         result += "    MOVE.L "+offsetVariable+"(A7), D0\n";
                         result += "    MOVE.L A4, A7 \n";
                         result += "    MOVE.L D0, -(A7) \n";
-                    }else if (nvar.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_boolean){
-                        int offsetVariable = this.getOffsetFromVariable(nvar);
+                    }else if (variable.basicSubjacentType == BASIC_SUBJACENT_TYPE.ts_boolean){
+                        int offsetVariable = this.getOffsetFromVariable(variable);
                         result += "    MOVE.L A7, A4 \n";
                         result += "    MOVE.L A5, A7 \n";
                         result += "    MOVE.W "+offsetVariable+"(A7), D0 \n";
@@ -213,22 +206,23 @@ public class AssemblerConverter {
                         if(offsetParamString == 0){
                             offsetParamString = this.tablesManager.getVariable(Integer.parseInt(this.c3dList.get(j).source1.value)).offset;
                         }
-                        int ocupRest = Math.abs(nvar.size - 2048);
+                        int sizeRemaining = Math.abs(variable.size - 2048);
                         result += "    SUB.L #2048, A7 ;nos situamos arriba\n";
                         result += "    MOVE.L A7, A4 ;guardamos cima\n";
                         result += "    MOVE.L A5, A7 ; nos situamos en BP actual\n";
-                        result += "    PONER_PARAM_STRING #"+offsetParamString+", #"+nvar.size+", #"+ocupRest+"  \n";
+                        result += "    PONER_PARAM_STRING #"+offsetParamString+", #"+variable.size+", #"+sizeRemaining+"  \n";
                         result += "    MOVE.L A4, A7 ;nos situamos en la cima\n";
                     }
                     if(Integer.parseInt(this.c3dList.get(j).source2.value) == 1){
-                        areAllParamsTreated = false;
+                        stillHaveParametersToDealWith = false;
                     }
                 }
             }
+            result +=  "    * ---- END PARAMETERS  ----*\n";
         }
-        //Llamamos al metodo
+
         int offsetProcedure = Math.abs(procedure.sizeParameters)+4;
-        result += "    ADD.L #"+offsetProcedure+", A7  ;Regresamos para poner el pc en el salto\n";
+        result += "    ADD.L #"+offsetProcedure+", A7\n";
         result += "    JSR " + procedure.initialLabel + "\n";
         // Come back from procedure
         result += "    ADD.L #" + procedure.size + ", A7 ;Jump return\n";
@@ -421,25 +415,26 @@ public class AssemblerConverter {
     }
     
     private int IdentifyStringArg(int param1){
-        VariableBackend actual = this.tablesManager.getVariable(param1);
-        VariableBackend anterior= null;
+        VariableBackend actualVariable = this.tablesManager.getVariable(param1);
+        VariableBackend previoursVariable= null;
         if(param1 != 0){
-            anterior = this.tablesManager.getVariable(param1-1);
+            previoursVariable = this.tablesManager.getVariable(param1-1);
         }
-        //ES un argumento por que si es String no son 0, son 2048
-        if(actual.offset > 0){
-            //Mirar si es el primero
-            if(anterior == null || actual.idProcedure != anterior.idProcedure){ //Es el primer arg
+        
+        if(actualVariable.offset > 0){
+            //Check if it's first
+            if(previoursVariable == null || actualVariable.idProcedure != previoursVariable.idProcedure){
                 return 4;
             }else{
-                if(anterior.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_integer){
-                    return anterior.offset+anterior.size;
+                if(previoursVariable.basicSubjacentType == TypeDescription.BASIC_SUBJACENT_TYPE.ts_integer){
+                    return previoursVariable.offset + previoursVariable.size;
                 }else{
-                    return anterior.offset+4; //tanto para string como boolean es +2 para el bp y los dos ocupan 2 bytes = 4
+                    return previoursVariable.offset + 4;
                 }
             }
         }
-        return 0; //NO es arg
+        // Not a parameter
+        return 0;
     }
     
     private String getStandardOutput(Quadruple c3dInstruction){
@@ -498,16 +493,16 @@ public class AssemblerConverter {
         
         switch(c3dInstruction.opCode) {
             case sum:
-                result += "    OP_SUMA_VAR_VAR ";
+                result += "    ARITH_OPERATION_SUM ";
                 break;
             case sub:
-                result += "    OP_RESTA_VAR_VAR ";
+                result += "    ARITH_OPERATION_SUB ";
                 break;
             case mult:
-                result += "    OP_MULTI_VAR_VAR ";
+                result += "    ARITH_OPERATION_MULT ";
                 break;
             case div:
-                result += "    OP_DIV_VAR_VAR ";
+                result += "    ARITH_OPERATION_DIV ";
                 break;
         }
         result += this.getOffsetFromVariable(variableBackendDestination)+", "+this.getOffsetFromVariable(variableBackendSource1)+", "+this.getOffsetFromVariable(variableBackendSource2)+"\n";   
@@ -702,7 +697,7 @@ public class AssemblerConverter {
     private String getMacrosHeadboard() {
         String result = "*-----------------------------------------------------------\n" +
                         "* Title      : Practice compilers II.\n" +
-                        "* Written by : Andrés Ramos Seguí, Alex Mateo Fiol, Jaime Crespí Valero.\n" +
+                        "* Written by : Andrés Ramos Segui, Alex Mateo Fiol, Jaime Crespi Valero.\n" +
                         "* Date       : 17/06/2019\n" +
                         "* Description: Assembler code for compilers II practice.\n" +
                         "*-----------------------------------------------------------\n"+
@@ -1025,11 +1020,11 @@ public class AssemblerConverter {
     
     private String getMacroArithmeticOperationSum() {
         String result = "*-----------------------------------------------------------\n" +
-            "OP_SUMA_VAR_VAR 	MACRO\n" +
-            "* Macro to add.                          \n" +
-            "* Parameters: \\1: Param1 desti                        \n" +
-            "*             \\2: Param2 op1\n" +
-            "*             \\3: Param3 op2\n" +
+            "ARITH_OPERATION_SUM 	MACRO\n" +
+            "* Macro to add.\n" +
+            "* Parameters: \\1: Param1 destination\n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
             "* Modifies  : D0\n" +
             "*-----------------------------------------------------------\n" +
             "    CLR.L D0\n" +
@@ -1048,11 +1043,11 @@ public class AssemblerConverter {
     
     private String getMacroArithmeticOperationSub() {
         String result = "*-----------------------------------------------------------\n" +
-            "OP_RESTA_VAR_VAR  	MACRO\n" +
+            "ARITH_OPERATION_SUB  	MACRO\n" +
             "* Macro to add.                          \n" +
-            "* Parameters: \\1: Param1 desti                        \n" +
-            "*             \\2: Param2 op1\n" +
-            "*             \\3: Param3 op2\n" +
+            "* Parameters: \\1: Param1 destination\n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
             "* Modifies  : D0\n" +
             "*-----------------------------------------------------------\n" +
             "    CLR.L D0\n" +
@@ -1071,11 +1066,11 @@ public class AssemblerConverter {
     
     private String getMacroArithmeticOperationMult() {
         String result = "*-----------------------------------------------------------\n" +
-            "OP_MULTI_VAR_VAR  	MACRO\n" +
+            "ARITH_OPERATION_MULT  	MACRO\n" +
             "* Macro to add.                          \n" +
-            "* Parameters: \\1: Param1 desti                        \n" +
-            "*             \\2: Param2 op1\n" +
-            "*             \\3: Param3 op2\n" +
+            "* Parameters: \\1: Param1 destination\n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
             "* Modifies  : D0\n" +
             "*-----------------------------------------------------------\n" +
             "    CLR.L D0\n" +
@@ -1094,11 +1089,11 @@ public class AssemblerConverter {
     
     private String getMacroArithmeticOperationDiv() {
         String result = "*-----------------------------------------------------------\n" +
-            "OP_DIV_VAR_VAR  	MACRO\n" +
-            "* Macro to add.                          \n" +
-            "* Parameters: \\1: Param1 desti                        \n" +
-            "*             \\2: Param2 op1\n" +
-            "*             \\3: Param3 op2\n" +
+            "ARITH_OPERATION_DIV  	MACRO\n" +
+            "* Macro to add.\n" +
+            "* Parameters: \\1: Param1 destination\n" +
+            "*             \\2: Param2 source1\n" +
+            "*             \\3: Param3 source2\n" +
             "* Modifies  : D0\n" +
             "*-----------------------------------------------------------\n" +
             "    CLR.L D0\n" +

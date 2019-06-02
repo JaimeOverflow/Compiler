@@ -6,6 +6,7 @@
 package BackendCompiler;
 
 import SymbolsTable.TypeDescription.BASIC_SUBJACENT_TYPE;
+import Utils.FilesManager;
 import java.util.ArrayList;
 
 /**
@@ -13,15 +14,17 @@ import java.util.ArrayList;
  * @author Jaime
  */
 public class TablesManager {
-    
+        
     private ArrayList<VariableBackend> variablesTable;
     private ArrayList<ProcedureBackend> proceduresTable;
     private ArrayList<LabelBackend> labelsTable;
+    private FilesManager filesManager;
     
     public TablesManager() {
         this.variablesTable = new ArrayList<VariableBackend>();
         this.proceduresTable = new ArrayList<ProcedureBackend>();
         this.labelsTable = new ArrayList<LabelBackend>();
+        this.filesManager = new FilesManager();
     }
     
     public int addVariable(String name, int idProcedure, int size, int isArgument, BASIC_SUBJACENT_TYPE basicSubjacentType) {
@@ -120,6 +123,30 @@ public class TablesManager {
         for (int i = 0; i < labelsTable.size(); i++) {
             System.out.println("ID: " + i + " => " + labelsTable.get(i));
         }
+    }
+    
+    public void storeTablesInLogFile(String filename){
+        String result = 
+                "=====================\n"+
+                "TABLES MANAGER\n"+
+                "=====================\n"+
+                "Variables:\n";
+        
+        for (int i = 0; i < variablesTable.size(); i++) {
+            result += "ID: " + i + " => " + variablesTable.get(i) + "\n";
+        }
+
+        result += "\nProcedures:\n";
+        for (int i = 0; i < proceduresTable.size(); i++) {
+            result += "ID: " + i + " => " + proceduresTable.get(i) + "\n";
+        }
+
+        result += "\nLabels:\n";
+        for (int i = 0; i < labelsTable.size(); i++) {
+            result += "ID: " + i + " => " + labelsTable.get(i) + "\n";
+        }
+        
+        this.filesManager.writeFile(filename, result);
     }
     
 }

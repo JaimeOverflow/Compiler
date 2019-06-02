@@ -1,6 +1,6 @@
 ========================= INFO =========================
-DATE: 01/06/2019 17:27:48
-NUMBER OF TOKENS: 23========================================================
+DATE: 02/06/2019 19:03:18
+NUMBER OF TOKENS: 42========================================================
 ======================== TOKENS ========================
 TOKEN: [INST_FUNCTION]
 LINE: [2] - COLUMN: [0]
@@ -16,43 +16,82 @@ LINE: [2] - COLUMN: [18]
 LINE: [2] - COLUMN: [19]
 TOKEN: [LBRACKET]
 LINE: [2] - COLUMN: [21]
-TOKEN: [ID]
-LEXEME: [n1]
+TOKEN: [INST_IF]
 LINE: [3] - COLUMN: [1]
-TOKEN: [TWO_POINTS]
+TOKEN: [LPAREN]
 LINE: [3] - COLUMN: [4]
-TOKEN: [ID]
-LEXEME: [boolean]
-LINE: [3] - COLUMN: [6]
-TOKEN: [OP_ASSIGN]
-LINE: [3] - COLUMN: [14]
 TOKEN: [BOOL]
 LEXEME: [true]
-LINE: [3] - COLUMN: [16]
-TOKEN: [FINAL_SENTENCE]
-LINE: [3] - COLUMN: [20]
-TOKEN: [INST_OUTPUT]
-LINE: [4] - COLUMN: [1]
-TOKEN: [LPAREN]
-LINE: [4] - COLUMN: [7]
-TOKEN: [ID]
-LEXEME: [n1]
-LINE: [4] - COLUMN: [8]
+LINE: [3] - COLUMN: [5]
 TOKEN: [RPAREN]
-LINE: [4] - COLUMN: [10]
-TOKEN: [FINAL_SENTENCE]
-LINE: [4] - COLUMN: [11]
-TOKEN: [RBRACKET]
-LINE: [5] - COLUMN: [0]
-TOKEN: [INST_CALL_MAIN]
-LINE: [7] - COLUMN: [0]
+LINE: [3] - COLUMN: [9]
+TOKEN: [LBRACKET]
+LINE: [3] - COLUMN: [11]
+TOKEN: [INST_OUTPUT]
+LINE: [4] - COLUMN: [2]
 TOKEN: [LPAREN]
-LINE: [7] - COLUMN: [9]
+LINE: [4] - COLUMN: [8]
+TOKEN: [TEXT]
+LEXEME: ["hola"]
+LINE: [4] - COLUMN: [9]
+TOKEN: [RPAREN]
+LINE: [4] - COLUMN: [15]
+TOKEN: [FINAL_SENTENCE]
+LINE: [4] - COLUMN: [16]
+TOKEN: [RBRACKET]
+LINE: [5] - COLUMN: [1]
+TOKEN: [INST_ELIF]
+LINE: [5] - COLUMN: [3]
+TOKEN: [LPAREN]
+LINE: [5] - COLUMN: [8]
+TOKEN: [BOOL]
+LEXEME: [true]
+LINE: [5] - COLUMN: [9]
+TOKEN: [RPAREN]
+LINE: [5] - COLUMN: [13]
+TOKEN: [LBRACKET]
+LINE: [5] - COLUMN: [15]
+TOKEN: [INST_OUTPUT]
+LINE: [6] - COLUMN: [2]
+TOKEN: [LPAREN]
+LINE: [6] - COLUMN: [8]
+TOKEN: [TEXT]
+LEXEME: ["adios"]
+LINE: [6] - COLUMN: [9]
+TOKEN: [RPAREN]
+LINE: [6] - COLUMN: [16]
+TOKEN: [FINAL_SENTENCE]
+LINE: [6] - COLUMN: [17]
+TOKEN: [RBRACKET]
+LINE: [7] - COLUMN: [1]
+TOKEN: [INST_ELSE]
+LINE: [7] - COLUMN: [3]
+TOKEN: [LBRACKET]
+LINE: [7] - COLUMN: [8]
+TOKEN: [INST_OUTPUT]
+LINE: [8] - COLUMN: [2]
+TOKEN: [LPAREN]
+LINE: [8] - COLUMN: [8]
+TOKEN: [TEXT]
+LEXEME: ["3"]
+LINE: [8] - COLUMN: [9]
+TOKEN: [RPAREN]
+LINE: [8] - COLUMN: [12]
+TOKEN: [FINAL_SENTENCE]
+LINE: [8] - COLUMN: [13]
+TOKEN: [RBRACKET]
+LINE: [9] - COLUMN: [1]
+TOKEN: [RBRACKET]
+LINE: [13] - COLUMN: [0]
+TOKEN: [INST_CALL_MAIN]
+LINE: [15] - COLUMN: [0]
+TOKEN: [LPAREN]
+LINE: [15] - COLUMN: [9]
 TOKEN: [ID]
 LEXEME: [main]
-LINE: [7] - COLUMN: [10]
+LINE: [15] - COLUMN: [10]
 TOKEN: [RPAREN]
-LINE: [7] - COLUMN: [14]
+LINE: [15] - COLUMN: [14]
 TOKEN: [FINAL_SENTENCE]
-LINE: [7] - COLUMN: [15]
+LINE: [15] - COLUMN: [15]
 ========================================================

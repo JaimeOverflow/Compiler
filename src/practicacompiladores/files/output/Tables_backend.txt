@@ -1,0 +1,22 @@
+=====================
+TABLES MANAGER
+=====================
+Variables:
+ID: 0 => VariableBackend{name=#temporalVariable, idProcedure=0, size=2, offset=-2, basicSubjacentType=ts_boolean}
+ID: 1 => VariableBackend{name=#temporalVariable, idProcedure=0, size=8, offset=-10, basicSubjacentType=ts_string}
+ID: 2 => VariableBackend{name=#temporalVariable, idProcedure=0, size=2, offset=-12, basicSubjacentType=ts_boolean}
+ID: 3 => VariableBackend{name=#temporalVariable, idProcedure=0, size=10, offset=-22, basicSubjacentType=ts_string}
+ID: 4 => VariableBackend{name=#temporalVariable, idProcedure=0, size=2, offset=-24, basicSubjacentType=ts_string}
+
+Procedures:
+ID: 0 => ProcedureBackend{name=#main, depth=0, initalLabel=PROCEDURE_MAIN, numParams=0, sizeLocalVariables=-24, sizeTemporalArgs=0, size=0, basicSubjacentType=ts_none}
+
+Labels:
+ID: 0 => LabelBackend{label=LABEL_0}
+ID: 1 => LabelBackend{label=LABEL_1}
+ID: 2 => LabelBackend{label=LABEL_2}
+ID: 3 => LabelBackend{label=LABEL_3}
+ID: 4 => LabelBackend{label=LABEL_4}
+ID: 5 => LabelBackend{label=LABEL_5}
+ID: 6 => LabelBackend{label=LABEL_6}
+ID: 7 => LabelBackend{label=LABEL_7}

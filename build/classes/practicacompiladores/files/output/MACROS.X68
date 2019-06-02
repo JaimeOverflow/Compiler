@@ -1,6 +1,6 @@
 *-----------------------------------------------------------
 * Title      : Practice compilers II.
-* Written by : Andrés Ramos Seguí, Alex Mateo Fiol, Jaime Crespí Valero.
+* Written by : Andrés Ramos Segui, Alex Mateo Fiol, Jaime Crespi Valero.
 * Date       : 17/06/2019
 * Description: Assembler code for compilers II practice.
 *-----------------------------------------------------------
@@ -267,11 +267,11 @@ NEXT_CHAR\@
 FINAL_RETURN_STRING\@
     ENDM 
 *-----------------------------------------------------------
-OP_SUMA_VAR_VAR 	MACRO
-* Macro to add.                          
-* Parameters: \1: Param1 desti                        
-*             \2: Param2 op1
-*             \3: Param3 op2
+ARITH_OPERATION_SUM 	MACRO
+* Macro to add.
+* Parameters: \1: Param1 destination
+*             \2: Param2 source1
+*             \3: Param3 source2
 * Modifies  : D0
 *-----------------------------------------------------------
     CLR.L D0
@@ -286,11 +286,11 @@ OP_SUMA_VAR_VAR 	MACRO
     
     ENDM
 *-----------------------------------------------------------
-OP_RESTA_VAR_VAR  	MACRO
+ARITH_OPERATION_SUB  	MACRO
 * Macro to add.                          
-* Parameters: \1: Param1 desti                        
-*             \2: Param2 op1
-*             \3: Param3 op2
+* Parameters: \1: Param1 destination
+*             \2: Param2 source1
+*             \3: Param3 source2
 * Modifies  : D0
 *-----------------------------------------------------------
     CLR.L D0
@@ -305,11 +305,11 @@ OP_RESTA_VAR_VAR  	MACRO
     
     ENDM
 *-----------------------------------------------------------
-OP_MULTI_VAR_VAR  	MACRO
+ARITH_OPERATION_MULT  	MACRO
 * Macro to add.                          
-* Parameters: \1: Param1 desti                        
-*             \2: Param2 op1
-*             \3: Param3 op2
+* Parameters: \1: Param1 destination
+*             \2: Param2 source1
+*             \3: Param3 source2
 * Modifies  : D0
 *-----------------------------------------------------------
     CLR.L D0
@@ -324,11 +324,11 @@ OP_MULTI_VAR_VAR  	MACRO
     
     ENDM
 *-----------------------------------------------------------
-OP_DIV_VAR_VAR  	MACRO
-* Macro to add.                          
-* Parameters: \1: Param1 desti                        
-*             \2: Param2 op1
-*             \3: Param3 op2
+ARITH_OPERATION_DIV  	MACRO
+* Macro to add.
+* Parameters: \1: Param1 destination
+*             \2: Param2 source1
+*             \3: Param3 source2
 * Modifies  : D0
 *-----------------------------------------------------------
     CLR.L D0

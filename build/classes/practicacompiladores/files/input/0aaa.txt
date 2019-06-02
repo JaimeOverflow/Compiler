@@ -1,8 +1,16 @@
 
 
 function none main() {
-	n1 : boolean = true.
-	output(n1).
+	if (true) {
+		output("hola").
+	} elif (true) {
+		output("adios").
+	} else {
+		output("3").
+	}
+
+
+
 }
 
 call_main(main).
