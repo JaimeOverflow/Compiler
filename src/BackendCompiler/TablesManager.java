@@ -5,7 +5,6 @@
  */
 package BackendCompiler;
 
-import SymbolsTable.TypeDescription;
 import SymbolsTable.TypeDescription.BASIC_SUBJACENT_TYPE;
 import java.util.ArrayList;
 
@@ -27,6 +26,16 @@ public class TablesManager {
     
     public int addVariable(String name, int idProcedure, int size, int isArgument, BASIC_SUBJACENT_TYPE basicSubjacentType) {
         name = "#" + name;
+        variablesTable.add(
+                new VariableBackend(name, idProcedure, size, isArgument, basicSubjacentType)
+        );
+        int idVariable = variablesTable.size() - 1;
+
+        return idVariable;
+    }
+    
+    public int addTemporalVariable(int idProcedure, int size, int isArgument, BASIC_SUBJACENT_TYPE basicSubjacentType) {
+        String name = "#temporalVariable";
         variablesTable.add(
                 new VariableBackend(name, idProcedure, size, isArgument, basicSubjacentType)
         );

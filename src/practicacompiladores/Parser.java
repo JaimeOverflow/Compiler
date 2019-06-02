@@ -895,13 +895,6 @@ class CUP$Parser$actions {
                 // ===========================================================
                 symbolsTable.add(id_variable, typeDescription);
 
-                // ================ INTERMEDIATE CODE ======================
-                //variablesTable.addVariable(id_variable);
-                //Quadruple quadruple = new Quadruple(OP_CODE.assignRef, decls.idVariable, "", id_variable);
-                //quadruples.add(quadruple);
-                //symbolDecls.idVariable = id_variable;
-                // =========================================================
-
                 // ==================== INTERMEDIATE CODE ====================
                     backendManager.generateC3DInst(
                         OpCode.assign
@@ -1039,14 +1032,6 @@ class CUP$Parser$actions {
 
                 SymbolDecls symbolDecls = new SymbolDecls(typeDescriptionForNewVariables);
                 
-                // ================ INTERMEDIATE CODE ======================
-                //variablesTable.addVariable(id_variable);
-                //Quadruple quadruple = new Quadruple(OP_CODE.assignRef, symbol_value.idVariable, "", id_variable);
-                //quadruples.add(quadruple);
-
-                //symbolDecls.idVariable = symbolValue.idVariable;
-                // =======================================================
-
                 // ===========================================================
                     symbolDecls.idVariable = symbolValue.idVariable;
                     backendManager.generateC3DInst(
@@ -1275,19 +1260,11 @@ class CUP$Parser$actions {
                             symbolOpArithmetic.valueType = newValue;
 
                         }
-                        /*
-                        String uuidVariable = variablesTable.generateVariable();
-
-                        Quadruple quadruple = new Quadruple(opCode, symbolOpArithmeticVal.idVariable, symbolOpArithValue.idVariable, uuidVariable);
-                        quadruples.add(quadruple);
-
-                        symbolOpArithmetic.idVariable = uuidVariable;
-                        */
 
                         // ==================== INTERMEDIATE CODE ====================
                             TypeDescription typeInt = symbolsTable.query("int");
                             int isArgument = 0; // Is not an argument
-                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
+                            int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
                             symbolOpArithmetic.idVariable = idVar + "";
 
                             backendManager.generateC3DInst(
@@ -1369,18 +1346,11 @@ class CUP$Parser$actions {
                             }
                             symbolOpArithmetic.valueType = newValue;
                         }
-                        /*
-                        String uuidVariable = variablesTable.generateVariable();
 
-                        Quadruple quadruple = new Quadruple(opCode, symbolOpArithValue1.idVariable, symbolOpArithValue2.idVariable, uuidVariable);
-                        quadruples.add(quadruple);
-
-                        symbolOpArithmetic.idVariable = uuidVariable;
-                        */
                         // ==================== INTERMEDIATE CODE ====================
                             TypeDescription typeInt = symbolsTable.query("int");
                             int isArgument = 0; // Is not an argument
-                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
+                            int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
                             symbolOpArithmetic.idVariable = idVar + "";
 
                             backendManager.generateC3DInst(
@@ -1460,7 +1430,7 @@ class CUP$Parser$actions {
                         // ==================== INTERMEDIATE CODE ====================
                             TypeDescription typeInt = symbolsTable.query("int");
                             int isArgument = 0; // Is not an argument
-                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
+                            int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
                             symbolOpArithValue.idVariable = idVar + "";
 
                             backendManager.generateC3DInst(
@@ -1672,19 +1642,13 @@ class CUP$Parser$actions {
                     if (symbolSign != null) {
                         value = (symbolSign.hasSign && symbolSign.isNegative) ? -value : value;
                     }
-                    /*
-                    String uuidVariable = variablesTable.generateVariable();
-
-                    Quadruple quadruple = new Quadruple(OP_CODE.assignVal, String.valueOf(value), "", uuidVariable);
-                    quadruples.add(quadruple);
-                    */
 
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_integer, value);
                     
                     // ==================== INTERMEDIATE CODE ====================
                     TypeDescription typeInt = symbolsTable.query("int");
                     int isArgument = 0; // Is not an argument
-                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
+                    int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), typeInt.size, 0, typeInt.basicSubjacentType);
                     symbolValue.idVariable = idVar + "";
 
                     backendManager.generateC3DInst(
@@ -1716,11 +1680,6 @@ class CUP$Parser$actions {
                     digraph.addNode(nodeGraph);
                     // =======================================================
                     String value = new String(text_value.replace("\"", "")); // Delete double quote from lexeme
-                    /*
-                    String uuidVariable = variablesTable.generateVariable();
-                    Quadruple quadruple = new Quadruple(OP_CODE.assignVal, value, "", uuidVariable);
-                    quadruples.add(quadruple);
-                    */
 
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_string, value);
                     
@@ -1728,7 +1687,7 @@ class CUP$Parser$actions {
                     TypeDescription typeString = symbolsTable.query("string");
                     int isArgument = 0; // Is not an argument
                     int stringSize = value.length() * 2;
-                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), stringSize, 0, typeString.basicSubjacentType);
+                    int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), stringSize, 0, typeString.basicSubjacentType);
                     symbolValue.idVariable = idVar + "";
                     symbolValue.isString = true;
                     symbolValue.stringSize = stringSize;
@@ -1762,17 +1721,13 @@ class CUP$Parser$actions {
                     digraph.addNode(nodeGraph);
                     // =======================================================
                     Boolean value = new Boolean(bool_value);
-                    /*
-                    String uuidVariable = variablesTable.generateVariable();
-                    Quadruple quadruple = new Quadruple(OP_CODE.assignVal, Boolean.toString(value) , "", uuidVariable);
-                    quadruples.add(quadruple);
-                    */
+
                     SymbolValue symbolValue = new SymbolValue(BASIC_SUBJACENT_TYPE.ts_boolean, value);
                     
                     // ==================== INTERMEDIATE CODE ====================
                     TypeDescription typeBoolean = symbolsTable.query("boolean");
                     int isArgument = 0; // Is not an argument
-                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeBoolean.size, 0, typeBoolean.basicSubjacentType);
+                    int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), typeBoolean.size, 0, typeBoolean.basicSubjacentType);
                     symbolValue.idVariable = idVar + "";
 
                     backendManager.generateC3DInst(
@@ -1805,7 +1760,7 @@ class CUP$Parser$actions {
                     
                     // ================ INTERMEDIATE CODE ======================
                         int isArgument = 0; // Is not an argument
-                        int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeDescriptionInt.size, isArgument, typeDescriptionInt.basicSubjacentType);
+                        int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), typeDescriptionInt.size, isArgument, typeDescriptionInt.basicSubjacentType);
                         symbolValue.idVariable = idVar + "";
 
                         backendManager.generateC3DInst(
@@ -1880,9 +1835,10 @@ class CUP$Parser$actions {
                     TypeDescription typeDescriptionFunction = symbolsTable.query(symbolCall.idFunction);
                     TypeDescription typeDescriptionType = symbolsTable.query(typeDescriptionFunction.nameType);
                     SymbolValue symbolValue = new SymbolValue(CONTENT_DESCRIPTION.dfunc, typeDescriptionFunction.nameType);
+
                     // ================ INTERMEDIATE CODE ======================
                     int isArgument = 0; // Is not an argument
-                    int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeDescriptionType.size, isArgument, typeDescriptionType.basicSubjacentType);
+                    int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), typeDescriptionType.size, isArgument, typeDescriptionType.basicSubjacentType);
                     symbolValue.idVariable = idVar + "";
 
                     backendManager.generateC3DInst(
@@ -1936,8 +1892,6 @@ class CUP$Parser$actions {
                 }
                 // ====================================================================================
 
-                //Quadruple quadruple = new Quadruple(OP_CODE.output, "", "", symbolValue.idVariable);
-                //quadruples.add(quadruple);
                 // ================ INTERMEDIATE CODE ======================
                 backendManager.generateC3DInst(
                         OpCode.standardOutput
@@ -2063,18 +2017,7 @@ class CUP$Parser$actions {
                                 opCodeConditional = OpCode.condTrue;
                             break;
                         }
-                        /*
-                        Quadruple quadruple = new Quadruple(opCodeConditional, symbolOpBooleanVal1.idVariable, "" , symbolOpBooleanVal1.idLabel);
-                        quadruples.add(symbolOpBooleanVal1.indexQuadruples, quadruple);
 
-                        Quadruple quadruple2 = new Quadruple(opCodeVariable, symbolOpBoolVal2.idVariable, "" , symbolOpBooleanVal1.idVariable);
-                        quadruples.add(quadruple2);
-
-                        symbolOpBoolean.idLabel = symbolOpBooleanVal1.idLabel;
-                        symbolOpBoolean.idVariable = symbolOpBooleanVal1.idVariable;
-                        symbolOpBoolean.indexQuadruples = quadruples.size();
-                        symbolOpBoolean.isSingleBoolean = false;
-                        */
                         // ==================== INTERMEDIATE CODE ====================
                             backendManager.generateC3DInst(
                                 opCodeConditional
@@ -2128,14 +2071,7 @@ class CUP$Parser$actions {
                             symbolOpBoolean.isConstant = true;
                             symbolOpBoolean.valueType = symbolOpBoolValue.valueType;
                         }
-                        /*
-                        String uuidLabel = UUID.randomUUID().toString();
 
-                        symbolOpBoolean.idVariable = symbolOpBoolValue.idVariable;
-                        symbolOpBoolean.idLabel = uuidLabel;
-                        symbolOpBoolean.indexQuadruples = quadruples.size();
-                        symbolOpBoolean.isSingleBoolean = true;
-                        */
                         // ==================== INTERMEDIATE CODE ====================
                             int idLabel = backendManager.tablesManager.addLabel();
                             symbolOpBoolean.idVariable = symbolOpBoolValue.idVariable;
@@ -2166,18 +2102,11 @@ class CUP$Parser$actions {
                         Boolean boolVal = new Boolean(bool_val);
                          
                         SymbolOpBoolValue symbolOpBoolValue = new SymbolOpBoolValue(boolVal);
-                        /*
-                        String uuidVariable = variablesTable.generateVariable();
 
-                        Quadruple quadruple = new Quadruple(OP_CODE.assignVal, Boolean.toString(boolVal), "", uuidVariable);
-                        quadruples.add(quadruple);
-
-                        symbolOpBoolValue.idVariable = uuidVariable;
-                        */
                         // ==================== INTERMEDIATE CODE ====================
                             TypeDescription typeBoolean = symbolsTable.query("boolean");
                             int isArgument = 0; // Is not an argument
-                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeBoolean.size, 0, typeBoolean.basicSubjacentType);
+                            int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), typeBoolean.size, 0, typeBoolean.basicSubjacentType);
                             symbolOpBoolValue.idVariable = idVar + "";
                             backendManager.generateC3DInst(
                                 OpCode.assign
@@ -2507,7 +2436,7 @@ class CUP$Parser$actions {
                         // ==================== INTERMEDIATE CODE ====================
                             TypeDescription typeDescriptionBoolean = symbolsTable.query("boolean");
                             int isArgument = 0; // Is not an argument
-                            int idVar = backendManager.tablesManager.addVariable("t", backendManager.tablesManager.getActualProcedure(), typeDescriptionBoolean.size, 0, typeDescriptionBoolean.basicSubjacentType);
+                            int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), typeDescriptionBoolean.size, 0, typeDescriptionBoolean.basicSubjacentType);
                             symbolRelationalComp.idVariable = idVar + "";
 
                             backendManager.generateC3DInst(
@@ -2544,20 +2473,8 @@ class CUP$Parser$actions {
                 digraph.addNode(nodeGraph, childs);
                 // =======================================================
 
-                //String uuidTrueCondLabel = UUID.randomUUID().toString();
-                //String uuidFalseCondLabel = UUID.randomUUID().toString();
-
-                //stackTrueCond.push(uuidTrueCondLabel);
-                //stackFalseCond.push(uuidFalseCondLabel);
-
                 SymbolInitOpBool symbolInitOpBool = init_op_bool;
-                /*
-                Quadruple quadrupleTrueCond = new Quadruple(OP_CODE.condTrue, symbolInitOpBool.idVariable, "" , uuidTrueCondLabel);
-                quadruples.add(quadrupleTrueCond);
-                
-                Quadruple quadrupleFalseCond = new Quadruple(OP_CODE.condFalse, symbolInitOpBool.idVariable, "" , uuidFalseCondLabel);
-                quadruples.add(quadrupleFalseCond);
-                */
+
                 // ================ INTERMEDIATE CODE ======================
                     int idLabelTrueCond = backendManager.tablesManager.addLabel();
                     int idLabelFalseCond = backendManager.tablesManager.addLabel();
@@ -2597,11 +2514,7 @@ class CUP$Parser$actions {
                         NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_TRUE_MASK);
                         digraph.addNode(nodeGraph);
                         // =======================================================
-                        /*
-                        String trueCondLabel = stackTrueCond.pop();
-                        Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", trueCondLabel);
-                        quadruples.add(quadruple);
-                        */
+
                         // ================ INTERMEDIATE CODE ======================
                             String trueCondLabel = stackTrueCond.pop();
                             backendManager.generateC3DInst(
@@ -2629,11 +2542,7 @@ class CUP$Parser$actions {
                         NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_FALSE_MASK);
                         digraph.addNode(nodeGraph);
                         // =======================================================
-                        /*
-                        String falseCondLabel = stackFalseCond.pop();
-                        Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", falseCondLabel);
-                        quadruples.add(quadruple);
-                        */
+
                         // ================ INTERMEDIATE CODE ======================
                             String falseCondLabel = stackFalseCond.pop();
                             backendManager.generateC3DInst(
@@ -2654,15 +2563,10 @@ class CUP$Parser$actions {
             {
               SymbolJumpLabel RESULT =null;
 		
-            /*
-            String uuidLabel = UUID.randomUUID().toString();
-            Quadruple quadruple = new Quadruple(OP_CODE.jump, "", "", uuidLabel);
-            quadruples.add(quadruple);
-            RESULT = new SymbolJumpLabel(uuidLabel);
-            */
 
             // ================ INTERMEDIATE CODE ======================
                 int idLabel = backendManager.tablesManager.addLabel();
+
                 backendManager.generateC3DInst(
                     OpCode.jump
                     , null
@@ -2682,14 +2586,9 @@ class CUP$Parser$actions {
             {
               SymbolSkipLabel RESULT =null;
 		
-            /*
-            String uuidLabel = UUID.randomUUID().toString();
-            Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", uuidLabel);
-            quadruples.add(quadruple);
-            RESULT = new SymbolSkipLabel(uuidLabel);
-            */
             // ================ INTERMEDIATE CODE ======================
                 int idLabel = backendManager.tablesManager.addLabel();
+
                 backendManager.generateC3DInst(
                     OpCode.skip
                     , null
@@ -2752,10 +2651,7 @@ class CUP$Parser$actions {
                     NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_ELIF);
                     digraph.addNode(nodeGraph, childs);
                     // =======================================================
-                    /*
-                    Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", jump_label.idLabel);
-                    quadruples.add(quadruple);
-                    */
+
                     // ================ INTERMEDIATE CODE ======================
                         backendManager.generateC3DInst(
                             OpCode.skip
@@ -2808,10 +2704,7 @@ class CUP$Parser$actions {
                     NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.COND_ELSE);
                     digraph.addNode(nodeGraph, childs);
                     // =======================================================
-                    /*
-                    Quadruple quadruple = new Quadruple(OP_CODE.skip, "", "", jump_label.idLabel);
-                    quadruples.add(quadruple);
-                    */
+
                     // ================ INTERMEDIATE CODE ======================
                         backendManager.generateC3DInst(
                             OpCode.skip
@@ -3029,16 +2922,10 @@ class CUP$Parser$actions {
                 NodeGraph nodeGraph = new NodeGraph(description, NodeGraph.VARIABLES.WHILE);
                 digraph.addNode(nodeGraph, childs);
                 // =======================================================
-                /*
-                Quadruple quadrupleJump = new Quadruple(OP_CODE.jump, "", "", skip_label.idLabel);
-                quadruples.add(quadrupleJump);
 
-                String falseCondLabel = stackFalseCond.pop();
-                Quadruple quadrupleSkip = new Quadruple(OP_CODE.skip, "", "", falseCondLabel);
-                quadruples.add(quadrupleSkip);
-                */
                 // ================ INTERMEDIATE CODE ======================
                     String falseCondLabel = stackFalseCond.pop();
+
                     backendManager.generateC3DInst(
                         OpCode.jump
                         , null

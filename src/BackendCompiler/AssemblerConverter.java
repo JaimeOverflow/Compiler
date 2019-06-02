@@ -10,7 +10,6 @@ import SymbolsTable.TypeDescription;
 import SymbolsTable.TypeDescription.BASIC_SUBJACENT_TYPE;
 import Utils.FilesManager;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  *
