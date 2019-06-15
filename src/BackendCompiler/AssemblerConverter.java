@@ -207,11 +207,11 @@ public class AssemblerConverter {
                             offsetParamString = this.tablesManager.getVariable(Integer.parseInt(this.c3dList.get(j).source1.value)).offset;
                         }
                         int sizeRemaining = Math.abs(variable.size - 2048);
-                        result += "    SUB.L #2048, A7 ;nos situamos arriba\n";
-                        result += "    MOVE.L A7, A4 ;guardamos cima\n";
-                        result += "    MOVE.L A5, A7 ; nos situamos en BP actual\n";
-                        result += "    PONER_PARAM_STRING #"+offsetParamString+", #"+variable.size+", #"+sizeRemaining+"  \n";
-                        result += "    MOVE.L A4, A7 ;nos situamos en la cima\n";
+                        result += "    SUB.L #2048, A7\n";
+                        result += "    MOVE.L A7, A4\n";
+                        result += "    MOVE.L A5, A7\n";
+                        result += "    PONER_PARAM_STRING #" + offsetParamString + ", #" + variable.size + ", #" + sizeRemaining + "  \n";
+                        result += "    MOVE.L A4, A7\n";
                     }
                     if(Integer.parseInt(this.c3dList.get(j).source2.value) == 1){
                         stillHaveParametersToDealWith = false;
@@ -540,14 +540,14 @@ public class AssemblerConverter {
         
         
         int idLabel = Integer.parseInt(c3dInstruction.destination.value);
-        LabelBackend label = this.tablesManager.getLabel(idLabel);
+        LabelBackend labelBackend = this.tablesManager.getLabel(idLabel);
         
         String result = "";
         result += "\n* True condition *\n"+
         "* Intermediate code => " + c3dInstruction.toString() + "\n"+
         "    MOVE.W " + this.getOffsetFromVariable(variable) + "(A7), D0\n"+
         "    CMP.W #1, D0\n"+
-        "    BEQ " + label.label + "\n";
+        "    BEQ " + labelBackend.label + "\n";
         
         return result;
     }
@@ -658,6 +658,9 @@ public class AssemblerConverter {
         macros += getMacroRecoverIntegerFromReturn();
         macros += getMacroRecoverBooleanFromReturn();
         macros += getMacroRecoverStringFromReturn();
+        
+        // PUT STRING IN PARAMETER
+        macros += getMacroPutStringInParam();
         
         // STANDARD INPUT
         macros += getMacroStandardInput();
@@ -1013,6 +1016,44 @@ public class AssemblerConverter {
                     "    SUB.L #2, D0\n" +
                     "    CMP.L #0, D0\n" +
                     "    BNE EMPTY_STRING\\@\n" +
+                    "END_STRING\\@    \n" +
+                    "    ENDM\n";
+        return result; 
+    }
+    
+    private String getMacroPutStringInParam() {
+                String result = "*-----------------------------------------------------------\n" +
+                    "PUT_STRING_IN_PARAM  	MACRO\n" +
+                    "* Macro to add.\n" +
+                    "* Parameters: \\1: offset operator\n" +
+                    "*             \\2: size operator\n" +
+                    "*             \\3: size rest\n" +
+                    "*\n" +
+                    "* Modifies  : D0\n" +
+                    "*-----------------------------------------------------------\n" +
+                    "    MOVE.L A7, A1\n" +
+                    "    ADD.L \\1, A1\n" +
+                    "    MOVE.L A4, A7\n" +
+                    "    MOVE.L \\2, D0\n" +
+                    "    MOVE.L \\3, D1\n" +
+                    "    CMP.L #0, D0\n" +
+                    "    BEQ FILL_PARAMETER\\@\n" +
+                    "NEXT_CHAR\\@\n" +
+                    "    MOVE.W (A1)+, D2\n" +
+                    "    MOVE.W D2, (A7)+\n" +
+                    "    SUB.L #2, D0\n" +
+                    "    CMP.L #0, D0\n" +
+                    "    BNE NEXT_CHAR\\@\n" +
+                    "FILL_PARAMETER\\@\n" +
+                    "    CMP.L #0, D1\n" +
+                    "    BEQ END_STRING\\@\n" +
+                    "    CLR.L D0\n" +
+                    "    MOVE.W #8224, D0\n" +
+                    "EMPTY_STRING\\@\n" +
+                    "    MOVE.W D0, (A7)+\n" +
+                    "    SUB.L #2, D1\n" +
+                    "    CMP.L #0, D1\n" +
+                    "    BNE EMPTY_STRING\\@   \n" +
                     "END_STRING\\@    \n" +
                     "    ENDM\n";
         return result; 

@@ -10,7 +10,7 @@ package BackendCompiler;
  * @author Jaime
  */
 public class Operator {
-    
+
     public enum TypeOperator {
         label,
         variable,
@@ -41,5 +41,5 @@ public class Operator {
                 + ", value: " + this.value 
                 + "]";
     }
-    
+
 }

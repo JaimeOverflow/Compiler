@@ -229,11 +229,12 @@ ROOT    ::= INIT_TYPES FUNCTION CALL_MAIN
 
                 backendManager.tablesManager.updateOffsetOfTables();
 
-                backendManager.storeC3DInstInALogFile();
+                backendManager.storeC3DInstInALogFile("C3D_not_optimized_list.txt");
                 backendManager.storeTablesInALogFile();
 
                 backendManager.generateAssemblerCodeWithoutOptimization();
                 backendManager.generateAssemblerCodeOptimized();
+                backendManager.storeC3DInstInALogFile("C3D_optimized_list.txt");
 
                 boolean hasFinished = true;
                 RESULT = new SymbolRoot(hasFinished);
@@ -669,6 +670,16 @@ ASSIGN  ::= id:id_variable op_assign VALUE:symbol_value final_sentence
                                         //Quadruple quadruple = new Quadruple(OP_CODE.assignRef, symbolValue.idVariable, "", id_variable);
                                         //quadruples.add(quadruple);
 
+                                        // ==================== INTERMEDIATE CODE ====================
+
+                                            backendManager.generateC3DInst(
+                                                OpCode.assign
+                                                , new Operator(symbolValue.idVariable, TypeOperator.variable)
+                                                , null
+                                                , new Operator(variableTypeDescription.idBackend + "", TypeOperator.variable)
+                                            );
+                                            
+                                        // ===========================================================
                                         RESULT = new SymbolAssign();
                                     :}
         ;
@@ -1081,6 +1092,7 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
                     TypeDescription typeString = symbolsTable.query("string");
                     int isArgument = 0; // Is not an argument
                     int stringSize = value.length() * 2;
+
                     int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), stringSize, 0, typeString.basicSubjacentType);
                     symbolValue.idVariable = idVar + "";
                     symbolValue.isString = true;
@@ -1181,6 +1193,7 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
                 :}
             | CALL:call
                 {:
+
                     // ============== GENERATE NODE FOR DIGRAPH ==============
                     String description ="[VALUE => CALL]";
 
@@ -1209,7 +1222,7 @@ VALUE       ::= INIT_OP_ARITH:init_op_arith
                     );
 
                     // =========================================================
-
+                    
                     RESULT = symbolValue;
                 :}
             ;
@@ -2385,7 +2398,7 @@ HAS_PARAMS  ::= HAS_PARAMS:has_params separator id:id_variable two_points id:typ
                             CompilerException.CompilerErrorType.semantic,
                             "Error in parameters of function. Type of variable must have a correct subjacent type."
                         ); 
-                }
+                    }
                     // =======================================================================================================
                     
                     SymbolHasParams symbolHasParams = has_params;
@@ -2520,7 +2533,7 @@ RETURN ::= inst_return VALUE:val final_sentence
             :}
         ;
 
-CALL ::= inst_call lparen CALL_BODY:call_body rparen final_sentence
+CALL ::= inst_call lparen CALL_BODY:call_body rparen
         {:
             // ============== GENERATE NODE FOR DIGRAPH ==============
             String description ="[CALL => inst_call lparen CALL_BODY rparen final_sentence]";

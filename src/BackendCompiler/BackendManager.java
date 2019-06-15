@@ -14,8 +14,8 @@ import java.util.ArrayList;
  * @author Jaime
  */
 public class BackendManager {
-    private static final String FILENAME_ASSEMBLER_CODE = "Assembler_code_not_optimized";
-    private static final String FILENAME_C3D_LIST = "C3D_list.txt";
+    private static final String FILENAME_ASSEMBLER_CODE_NOT_OPTIMIZED = "Assembler_code_not_optimized";
+    private static final String FILENAME_ASSEMBLER_CODE_OPTIMIZED = "Assembler_code_optimized";
     private static final String FILENAME_TABLES_MANAGER = "Tables_backend.txt";
     
     public TablesManager tablesManager;
@@ -45,37 +45,41 @@ public class BackendManager {
         return this.c3dList.size();
     }
     
+    private void generateAssemblerCode(String filename) {
+        assemblerConverter = new AssemblerConverter(filename, c3dList, tablesManager);
+        assemblerConverter.generateAssemblerCode();
+    }
+    
     public void generateAssemblerCodeWithoutOptimization() {
         for (int i = 0; i < this.c3dList.size(); i++) {
             System.out.println(this.c3dList.get(i));
         }
         
         tablesManager.printTables();
-        assemblerConverter = new AssemblerConverter(FILENAME_ASSEMBLER_CODE, c3dList, tablesManager);
-        assemblerConverter.generateAssemblerCode();
+        this.generateAssemblerCode(FILENAME_ASSEMBLER_CODE_NOT_OPTIMIZED);
     }
     
     public void generateAssemblerCodeOptimized() {
         this.codeOptimizer.setC3DList(this.c3dList);
         this.c3dList = this.codeOptimizer.getC3DOptimized();
-        
+        this.generateAssemblerCode(FILENAME_ASSEMBLER_CODE_OPTIMIZED);
     }
     
     public void storeTablesInALogFile() {
         this.tablesManager.storeTablesInLogFile(FILENAME_TABLES_MANAGER);
     }
     
-    public void storeC3DInstInALogFile() {
+    public void storeC3DInstInALogFile(String filename) {
         String result = 
                 "==========================================\n"+
                 " Three directions code instruction list\n"+
                 "==========================================\n";
         
         for (int i = 0; i < this.c3dList.size(); i++) {
-            result += this.c3dList.get(i)+"\n";
+            result += this.c3dList.get(i)+"\n\n";
         }
         
-        this.filesManager.writeFile(FILENAME_C3D_LIST, result);
+        this.filesManager.writeFile(filename, result);
         
     }
     

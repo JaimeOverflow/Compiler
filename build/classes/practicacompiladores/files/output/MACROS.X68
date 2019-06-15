@@ -173,6 +173,40 @@ EMPTY_STRING\@
 END_STRING\@    
     ENDM
 *-----------------------------------------------------------
+PUT_STRING_IN_PARAM  	MACRO
+* Macro to add.
+* Parameters: \1: offset operator
+*             \2: size operator
+*             \3: size rest
+*
+* Modifies  : D0
+*-----------------------------------------------------------
+    MOVE.L A7, A1
+    ADD.L \1, A1
+    MOVE.L A4, A7
+    MOVE.L \2, D0
+    MOVE.L \3, D1
+    CMP.L #0, D0
+    BEQ FILL_PARAMETER\@
+NEXT_CHAR\@
+    MOVE.W (A1)+, D2
+    MOVE.W D2, (A7)+
+    SUB.L #2, D0
+    CMP.L #0, D0
+    BNE NEXT_CHAR\@
+FILL_PARAMETER\@
+    CMP.L #0, D1
+    BEQ END_STRING\@
+    CLR.L D0
+    MOVE.W #8224, D0
+EMPTY_STRING\@
+    MOVE.W D0, (A7)+
+    SUB.L #2, D1
+    CMP.L #0, D1
+    BNE EMPTY_STRING\@   
+END_STRING\@    
+    ENDM
+*-----------------------------------------------------------
 STANDARD_INPUT  	MACRO
 * Macro to add.                          
 * Parameters: \1 ; offset variable

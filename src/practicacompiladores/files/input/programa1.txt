@@ -1,31 +1,26 @@
-// Constant
-hasMeat const : boolean = false.
-
-// Function without parameters and return type
-function none main() {
-
-	fruits, vegetables : int = 10.
-
-	favoriteFruit : string = "Apple".
-
-	// Conditional if + logic op + relational op
-	if (hasMeat && {vegetables == 0}) { 
-		output("We have to eat meat.").
-	
-	} elif ({favoriteFruit == "Apple"} || {fruits > 10}) {
-		output("We have to eat fruits").
-
-	} else {
-
-		// Loop while
-		while ({fruits > 0}) {
-
-			// Assignation + Arithmetic op
-			vegetables = ((10 * fruits) + vegetables). 
-			fruits = (fruits - 1).
-		}
-	}
+// Function without parameters
+function int getInputNum() {
+	num : int = input(). // Standard input
+	return num.
 }
 
-// Call a function
-call(main)
+// Function with parameters and return and integer
+function int getSquare(num : int) {
+
+	result : int = (num * num). // Arithmetic operation
+
+	return result.
+}
+
+// Main function, without parameters and return value.
+function none main() {
+	output("Put a number: "). // Standard output
+
+	numFact : int = call(getInputNum). // Call function without parameters
+	result : int = call(getSquare, numFact). // Call function with parameters
+
+	output("Square: ").
+	output(result).
+}
+
+call_main(main).

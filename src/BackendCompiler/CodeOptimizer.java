@@ -66,7 +66,8 @@ public class CodeOptimizer {
         
         Quadruple nextC3DInst = this.c3dList.get(indexC3DInst + counterNextInst);
         
-        while (nextC3DInst.opCode == OpCode.assign || nextC3DInst.opCode == OpCode.skip){
+        while (nextC3DInst.opCode == OpCode.assign){
+
             if ((c3dInst.source1.typeOperator == TypeOperator.int_value
                 || c3dInst.source1.typeOperator == TypeOperator.bool_value
                 || c3dInst.source1.typeOperator == TypeOperator.string_value)

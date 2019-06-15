@@ -1,0 +1,23 @@
+==========================================
+ Three directions code instruction list
+==========================================
+[procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+
+[procedureName, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+
+[procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+
+[assign, [OPERATOR. Type operator: string_value, value: "asd"], null, [OPERATOR. Type operator: variable, value: 0]]
+
+[assign, [OPERATOR. Type operator: variable, value: 0], null, [OPERATOR. Type operator: variable, value: 1]]
+
+[assign, [OPERATOR. Type operator: string_value, value: "hola, com anam?"], null, [OPERATOR. Type operator: variable, value: 2]]
+
+[assign, [OPERATOR. Type operator: variable, value: 2], null, [OPERATOR. Type operator: variable, value: 3]]
+
+[assign, [OPERATOR. Type operator: variable, value: 1], null, [OPERATOR. Type operator: variable, value: 3]]
+
+[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 1]]
+
+[procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+

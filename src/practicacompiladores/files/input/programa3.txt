@@ -1,3 +1,20 @@
-b : boolean = (true && false).
+function none main() {
+	num1 : int = 10.
+	num2 : int = 5.
+
+	isBigger : boolean = true.
+
+	// Conditional if
+	if ({num1 > num2} && isBigger) { // Logical operator
+		output("Num1 is bigger").
+
+	} elif ({num1 > num2} || isBigger) { // Logical operator
+			output("Num1 must be bigger").
+	} else {
+			output("Num1 is smaller than num2").
+	}
 
 
+}
+
+call_main(main).

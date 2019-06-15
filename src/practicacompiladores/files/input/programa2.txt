@@ -1,33 +1,19 @@
-WIDTH  const : int = 1000.
+function int iterativeFact(num : int, incr : int) { 
+	result : int = 1.
 
-// Negate a number
-HEIGHT const : int = -500.
+	while ({num != 1}) { // Relational operation
+		result = ((result * num) * incr). // Multiple arithmetic operations
+		num = (num - 1).
+	}
 
-// Operations with constants
-BOARD  const : int = (WIDTH * HEIGHT).
-
-function int getMaxValue() {return 3000.}
-
-function string getWeather(date : string, hour : int, minute : int, inCelsius : boolean){
-	weather : string = "sun".
-
-	time : int = (hour * minute).
-
-	return weather.
+	return result.
 }
 
-switch (BOARD) {
-	case (WIDTH): 
-		maxValue : int = call(getMaxValue).  
-		break.
+function none main() {
+	result : int = call(iterativeFact, 5, 2).
 
-	case (50): 
-		// Call function with parameters
-		weather : string = call(getWeather, "05/02/2019", 23, WIDTH, true).
-
-		break.
-
-	default:
-		output("default").
-		break.
+	output("Result factorial: ").
+	output(result).
 }
+
+call_main(main).
