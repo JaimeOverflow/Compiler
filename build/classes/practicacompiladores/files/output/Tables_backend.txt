@@ -2,12 +2,21 @@
 TABLES MANAGER
 =====================
 Variables:
-ID: 0 => VariableBackend{name=#temporalVariable, idProcedure=0, size=6, offset=-6, basicSubjacentType=ts_string}
-ID: 1 => VariableBackend{name=#string1, idProcedure=0, size=6, offset=-12, basicSubjacentType=ts_string}
-ID: 2 => VariableBackend{name=#temporalVariable, idProcedure=0, size=30, offset=-42, basicSubjacentType=ts_string}
-ID: 3 => VariableBackend{name=#string2, idProcedure=0, size=30, offset=-72, basicSubjacentType=ts_string}
+ID: 0 => VariableBackend{name=#temporalVariable, idProcedure=0, size=4, offset=-4, basicSubjacentType=ts_integer}
+ID: 1 => VariableBackend{name=#num, idProcedure=0, size=4, offset=-8, basicSubjacentType=ts_integer}
+ID: 2 => VariableBackend{name=#num, idProcedure=1, size=4, offset=4, basicSubjacentType=ts_integer}
+ID: 3 => VariableBackend{name=#temporalVariable, idProcedure=1, size=4, offset=-4, basicSubjacentType=ts_integer}
+ID: 4 => VariableBackend{name=#result, idProcedure=1, size=4, offset=-8, basicSubjacentType=ts_integer}
+ID: 5 => VariableBackend{name=#temporalVariable, idProcedure=2, size=28, offset=-28, basicSubjacentType=ts_string}
+ID: 6 => VariableBackend{name=#temporalVariable, idProcedure=2, size=4, offset=-32, basicSubjacentType=ts_integer}
+ID: 7 => VariableBackend{name=#numFact, idProcedure=2, size=4, offset=-36, basicSubjacentType=ts_integer}
+ID: 8 => VariableBackend{name=#temporalVariable, idProcedure=2, size=4, offset=-40, basicSubjacentType=ts_integer}
+ID: 9 => VariableBackend{name=#result, idProcedure=2, size=4, offset=-44, basicSubjacentType=ts_integer}
+ID: 10 => VariableBackend{name=#temporalVariable, idProcedure=2, size=16, offset=-60, basicSubjacentType=ts_string}
 
 Procedures:
-ID: 0 => ProcedureBackend{name=#main, depth=0, initalLabel=PROCEDURE_MAIN, numParams=0, sizeLocalVariables=-72, sizeTemporalArgs=0, size=0, basicSubjacentType=ts_none}
+ID: 0 => ProcedureBackend{name=#getInputNum, depth=0, initalLabel=PROCEDURE_GETINPUTNUM, numParams=0, sizeLocalVariables=-8, sizeTemporalArgs=0, size=4, basicSubjacentType=ts_integer}
+ID: 1 => ProcedureBackend{name=#getSquare, depth=0, initalLabel=PROCEDURE_GETSQUARE, numParams=1, sizeLocalVariables=-8, sizeTemporalArgs=4, size=4, basicSubjacentType=ts_integer}
+ID: 2 => ProcedureBackend{name=#main, depth=0, initalLabel=PROCEDURE_MAIN, numParams=0, sizeLocalVariables=-60, sizeTemporalArgs=0, size=0, basicSubjacentType=ts_none}
 
 Labels:

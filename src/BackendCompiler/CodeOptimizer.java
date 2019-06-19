@@ -50,10 +50,6 @@ public class CodeOptimizer {
             }
         }
         
-        for (int i = 0; i < this.c3dList.size(); i++) {
-            System.out.println(this.c3dList.get(i));
-        }
-
         return this.c3dList;
     }
     

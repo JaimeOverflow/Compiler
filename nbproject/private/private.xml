@@ -3,19 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/SymbolsTable/TypeDescription.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/VariableBackend.java</file>
             <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/ProcedureBackend.java</file>
-            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/practicacompiladores/Main.java</file>
-            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/Quadruple.java</file>
-            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/TablesManager.java</file>
-            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/SymbolsTable/SymbolsTable.java</file>
-            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/Symbols/SymbolValue.java</file>
-            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/SymbolsTable/Description.java</file>
             <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/practicacompiladores/Parser.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/practicacompiladores/Main.java</file>
             <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/BackendManager.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/Operator.java</file>
             <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/CodeOptimizer.java</file>
             <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/AssemblerConverter.java</file>
             <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/LabelBackend.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/TablesManager.java</file>
+            <file>file:/C:/Users/Jaime/Documents/NetBeansProjects/PracticeCompilers/src/BackendCompiler/Quadruple.java</file>
         </group>
     </open-files>
 </project-private>

@@ -1,6 +1,7 @@
-WIDTH  const : int = 1000.
-height : int = 500.
+function none main() {
+	
+	string1 : string = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".
+	output(string1).
+}
 
-// SEMANTIC ERROR: Declaration of a constant variable without constant values.
-BOARD  const : string = (WIDTH * height).
-
+call_main(main).

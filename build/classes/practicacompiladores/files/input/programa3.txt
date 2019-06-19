@@ -14,7 +14,8 @@ function none main() {
 			output("Num1 is smaller than num2").
 	}
 
-
+	num : int = (1 + 2 + 5).
+	output(num).
 }
 
 call_main(main).

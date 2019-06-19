@@ -79,10 +79,7 @@ public class TablesManager {
                 this.variablesTable.get(i).offset = this.proceduresTable.get(idProcedure).sizeParameters;
             }
         }
-        // TODO: DELETE THIS
-        //for (int i = 0; i < this.proceduresTable.size(); i++) {
-            //this.proceduresTable.get(i).sizeLocalVariables = (this.proceduresTable.get(i).sizeParameters) - (this.proceduresTable.get(i).sizeLocalVariables);
-        //}      
+      
     }
     
     public void updateNumParametersInProcedure(int idProcedure, int numParameters) {

@@ -1,16 +1,7 @@
-
-comparation : int = 10.
-
-for (i : int = 0 . ({i < 100}) . i = (i + 1).) {
-
+function none main() {
 	
-	// SYNTACTIC ERROR: The keyword const must be before the two points (fruit const : string = "no fruit").
-	fruit : const string = "no fruit".
-	output ("Put your favortie fruit: "). // Standard output
-	fruit = input(). // Standard input
-
-	// Comparations
-	output(({"hello" == "bye"})).
-	output(({false == true})).
-	output(({5 < comparation})).
+	num : int = (1 / 0).
+	output(num).
 }
+
+call_main(main).

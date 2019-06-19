@@ -628,7 +628,6 @@ class CUP$Parser$actions {
 		
                     TypeDescription typeDescription = symbolsTable.query(id_main_function);
                     int idProcedure = typeDescription.idBackend;
-                    System.out.println("FINALE: " + idProcedure);
 
                     // ==================== INTERMEDIATE CODE ====================
                         backendManager.generateC3DInst(
@@ -1255,8 +1254,12 @@ class CUP$Parser$actions {
                                         break;
                                 case "*": newValue = value1 * value2;
                                         break;
-                                case "/": newValue = value1 / value2;
-                                        break;
+                                case "/": 
+                                    if (value2 == 0) {
+                                        throw new DivisionByZeroException("You can't divide by zero. Your operation " + value1 + "/" + value2 + " is invalid");
+                                    }
+                                    newValue = value1 / value2;
+                                    break;
                             }
 
                             symbolOpArithmetic.valueType = newValue;
@@ -1342,8 +1345,12 @@ class CUP$Parser$actions {
                                         break;
                                 case "*": newValue = value1 * value2;
                                         break;
-                                case "/": newValue = value1 / value2;
-                                        break;
+                                case "/":
+                                    if (value2 == 0) {
+                                        throw new DivisionByZeroException("You can't divide by zero. Your operation " + value1 + "/" + value2 + " is invalid");
+                                    }
+                                    newValue = value1 / value2;
+                                    break;
 
                             }
                             symbolOpArithmetic.valueType = newValue;
@@ -1689,6 +1696,13 @@ class CUP$Parser$actions {
                     TypeDescription typeString = symbolsTable.query("string");
                     int isArgument = 0; // Is not an argument
                     int stringSize = value.length() * 2;
+
+                    if (value.length() > 255) {
+                        throw new StringSizeOverflowException(
+                            "Your string is too large. It has " + value.length() + " characters and must have lower than 255"
+                            );
+
+                    }
 
                     int idVar = backendManager.tablesManager.addTemporalVariable(backendManager.tablesManager.getActualProcedure(), stringSize, 0, typeString.basicSubjacentType);
                     symbolValue.idVariable = idVar + "";

@@ -1,23 +1,59 @@
 ==========================================
  Three directions code instruction list
 ==========================================
-[procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+[procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 2]]
 
 [procedureName, null, null, [OPERATOR. Type operator: procedure, value: 0]]
 
 [procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 0]]
 
-[assign, [OPERATOR. Type operator: string_value, value: "asd"], null, [OPERATOR. Type operator: variable, value: 0]]
+[standardInput, null, null, [OPERATOR. Type operator: variable, value: 0]]
 
 [assign, [OPERATOR. Type operator: variable, value: 0], null, [OPERATOR. Type operator: variable, value: 1]]
 
-[assign, [OPERATOR. Type operator: string_value, value: "hola, com anam?"], null, [OPERATOR. Type operator: variable, value: 2]]
-
-[assign, [OPERATOR. Type operator: variable, value: 2], null, [OPERATOR. Type operator: variable, value: 3]]
-
-[assign, [OPERATOR. Type operator: variable, value: 1], null, [OPERATOR. Type operator: variable, value: 3]]
-
-[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 1]]
+[procedureReturn, [OPERATOR. Type operator: procedure, value: 0], null, [OPERATOR. Type operator: variable, value: 1]]
 
 [procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+
+[procedureName, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+
+[procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+
+[mult, [OPERATOR. Type operator: variable, value: 2], [OPERATOR. Type operator: variable, value: 2], [OPERATOR. Type operator: variable, value: 3]]
+
+[assign, [OPERATOR. Type operator: variable, value: 3], null, [OPERATOR. Type operator: variable, value: 4]]
+
+[procedureReturn, [OPERATOR. Type operator: procedure, value: 1], null, [OPERATOR. Type operator: variable, value: 4]]
+
+[procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+
+[procedureName, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+
+[procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+
+[assign, [OPERATOR. Type operator: string_value, value: "Put a number: "], null, [OPERATOR. Type operator: variable, value: 5]]
+
+[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 5]]
+
+[procedureCall, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+
+[assign, [OPERATOR. Type operator: procedure, value: 0], null, [OPERATOR. Type operator: variable, value: 6]]
+
+[assign, [OPERATOR. Type operator: variable, value: 6], null, [OPERATOR. Type operator: variable, value: 7]]
+
+[procedureParam, [OPERATOR. Type operator: variable, value: 7], [OPERATOR. Type operator: numParam, value: 1], [OPERATOR. Type operator: procedure, value: 1]]
+
+[procedureCall, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+
+[assign, [OPERATOR. Type operator: procedure, value: 1], null, [OPERATOR. Type operator: variable, value: 8]]
+
+[assign, [OPERATOR. Type operator: variable, value: 8], null, [OPERATOR. Type operator: variable, value: 9]]
+
+[assign, [OPERATOR. Type operator: string_value, value: "Square: "], null, [OPERATOR. Type operator: variable, value: 10]]
+
+[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 10]]
+
+[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 9]]
+
+[procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 2]]
 

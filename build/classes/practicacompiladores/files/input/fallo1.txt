@@ -1,27 +1,10 @@
-hasMeat const : boolean = false.
-
-
 function none main() {
-
-	fruits, vegetables : int = 10.
-
-	favoriteFruit : string = "Apple".
-
-	// SYMBOLS TABLE ERROR: Two variables with same ID in the same scope.
-	favoriteFruit : int = 0.
-
-	if (hasMeat && {vegetables == 0}) { 
-		output("We have to eat meat.").
 	
-	} elif ({favoriteFruit == "Apple"} || {fruits > 10}) {
-		output("We have to eat fruits").
-	} else {
-		while ({fruits > 0}) {
-			vegetables = ((10 * fruits) + vegetables). 
-			fruits = (fruits - 1).
-		}
-	}
+	string1 : string = "asd".
+	string2 : string = "hola, com anam?".
+
+	string1 = string2.
+	output(string1).
 }
 
-// Call a function
-call(main)
+call_main(main).

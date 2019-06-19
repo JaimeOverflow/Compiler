@@ -6,6 +6,7 @@
 package BackendCompiler;
 
 import BackendCompiler.Quadruple.OpCode;
+import Exceptions.AssignationSizeOverflowException;
 import Utils.FilesManager;
 import java.util.ArrayList;
 
@@ -38,28 +39,23 @@ public class BackendManager {
     
     public void generateC3DInst(int index, OpCode opCode, Operator source1, Operator source2, Operator destination) {
         Quadruple quadruple = new Quadruple(opCode, source1, source2, destination);
-        c3dList.add(index, quadruple);        
+        c3dList.add(index, quadruple);     
     }
     
     public int getSizeOfC3DList() {
         return this.c3dList.size();
     }
     
-    private void generateAssemblerCode(String filename) {
+    private void generateAssemblerCode(String filename) throws AssignationSizeOverflowException {
         assemblerConverter = new AssemblerConverter(filename, c3dList, tablesManager);
         assemblerConverter.generateAssemblerCode();
     }
     
-    public void generateAssemblerCodeWithoutOptimization() {
-        for (int i = 0; i < this.c3dList.size(); i++) {
-            System.out.println(this.c3dList.get(i));
-        }
-        
-        tablesManager.printTables();
+    public void generateAssemblerCodeWithoutOptimization() throws AssignationSizeOverflowException {
         this.generateAssemblerCode(FILENAME_ASSEMBLER_CODE_NOT_OPTIMIZED);
     }
     
-    public void generateAssemblerCodeOptimized() {
+    public void generateAssemblerCodeOptimized() throws AssignationSizeOverflowException {
         this.codeOptimizer.setC3DList(this.c3dList);
         this.c3dList = this.codeOptimizer.getC3DOptimized();
         this.generateAssemblerCode(FILENAME_ASSEMBLER_CODE_OPTIMIZED);

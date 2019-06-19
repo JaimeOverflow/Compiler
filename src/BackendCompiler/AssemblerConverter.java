@@ -6,6 +6,7 @@
 package BackendCompiler;
 
 import BackendCompiler.Quadruple.OpCode;
+import Exceptions.AssignationSizeOverflowException;
 import SymbolsTable.TypeDescription;
 import SymbolsTable.TypeDescription.BASIC_SUBJACENT_TYPE;
 import Utils.FilesManager;
@@ -28,7 +29,6 @@ public class AssemblerConverter {
     public AssemblerConverter(String filename, ArrayList<Quadruple> c3dList, TablesManager tablesManager) {
         if (!filename.contains(".X68")) {
             filename = filename.concat(".X68");
-            System.out.println(filename);
         }
         
         this.filename = filename;
@@ -53,7 +53,7 @@ public class AssemblerConverter {
         return variableBackend.offset;
     }
 
-    public void generateAssemblerCode() {
+    public void generateAssemblerCode() throws AssignationSizeOverflowException {
         
         generateMacros();
         
@@ -309,7 +309,7 @@ public class AssemblerConverter {
         
     }
 
-    private String getAssignation(Quadruple c3dInstruction){
+    private String getAssignation(Quadruple c3dInstruction) throws AssignationSizeOverflowException{
         String valueC3DInstruction = c3dInstruction.source1.value;
         
         int variableSource1Value;
@@ -342,6 +342,17 @@ public class AssemblerConverter {
                                 "\n";
                         break;   
                     case ts_string:
+                        
+                        if (variableBackendDestination.size < variableBackendSource1.size) {
+
+                            throw new AssignationSizeOverflowException(
+                                    "Error al intentar asignar un string de mayor tamaño a uno de menor tamaño.\n"
+                                    + "La variable fuente es " + variableBackendSource1.name + ", con tamaño " + variableBackendSource1.size + " (en bytes).\n"
+                                    + "La variable destino es " + variableBackendDestination.name + ", con tamaño " + variableBackendDestination.size + " (en bytes)."
+
+                            );
+
+                        }
                         
                         int differenceStringSize = Math.abs(variableBackendSource1.size - variableBackendDestination.size);
                         int offsetSource1 = IdentifyStringArg(variableSource1Value);
@@ -462,8 +473,8 @@ public class AssemblerConverter {
                 break;
             default:
         }
-        result += "\n* PRINT BUFFER *\n"+
-        "    PRINT_BUFFER #buffer, #0 \n";
+        result += "\n* PRINT NEW LINE *\n"+
+        "    PRINT_NEW_LINE #buffer \n";
         return result;
     }
  
@@ -903,12 +914,12 @@ public class AssemblerConverter {
     private String getMacroPrintNewLine() {
         String result = "";
         result += "; -----------------------------------------------------------------------------\n" +
-            "PRINT_BUFFER      MACRO\n" +
+            "PRINT_NEW_LINE      MACRO\n" +
             "; Input    - \\1  : size string\n" +
             "; -----------------------------------------------------------------------------\n" +
             "    MOVE.W  #0, D0\n" +
             "    MOVE.L \\1, A1\n" +
-            "    MOVE.L \\2, D1\n" +
+            "    MOVE.L #0, D1\n" +
             "    TRAP      #15\n" +
             "    ENDM\n";
         return result;
