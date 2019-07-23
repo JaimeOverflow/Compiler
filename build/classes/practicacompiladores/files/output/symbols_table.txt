@@ -78,15 +78,15 @@ EXPANSION TABLE
 ********************************************************
 ********************************************************
 Method: add.
-Info: Add a new variable 'getInputNum'.
+Info: Add a new variable 'main'.
 ===========================================
                 <SymbolsTable>             
 ===========================================
 DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
 Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
 Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
 Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
 Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
 ===========================================
 ACTUAL SCOPE LEVEL: 0
@@ -105,11 +105,245 @@ Info: Get in a new block and therefore increase the scope.
                 <SymbolsTable>             
 ===========================================
 DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
 Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
 Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
 Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
 Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+===========================================
+ACTUAL SCOPE LEVEL: 1
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: add.
+Info: Add a new variable 'num1'.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+===========================================
+ACTUAL SCOPE LEVEL: 1
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: add.
+Info: Add a new variable 'num2'.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: num2, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+===========================================
+ACTUAL SCOPE LEVEL: 1
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: add.
+Info: Add a new variable 'isBigger'.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: isBigger, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: boolean}
+Description Item, ID: num2, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+===========================================
+ACTUAL SCOPE LEVEL: 1
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: getinBlock.
+Info: Get in a new block and therefore increase the scope.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: isBigger, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: boolean}
+Description Item, ID: num2, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+===========================================
+ACTUAL SCOPE LEVEL: 2
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+scope: 2, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: getoutBlock.
+Info: Get out of last block and update variables and scope.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: isBigger, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: boolean}
+Description Item, ID: num2, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+===========================================
+ACTUAL SCOPE LEVEL: 1
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: getinBlock.
+Info: Get in a new block and therefore increase the scope.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: isBigger, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: boolean}
+Description Item, ID: num2, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+===========================================
+ACTUAL SCOPE LEVEL: 2
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+scope: 2, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: getoutBlock.
+Info: Get out of last block and update variables and scope.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: isBigger, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: boolean}
+Description Item, ID: num2, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+===========================================
+ACTUAL SCOPE LEVEL: 1
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: getinBlock.
+Info: Get in a new block and therefore increase the scope.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: isBigger, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: boolean}
+Description Item, ID: num2, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+===========================================
+ACTUAL SCOPE LEVEL: 2
+Scope table
+scope: 0, pointer: 0
+scope: 1, pointer: 0
+scope: 2, pointer: 0
+===========================================
+EXPANSION TABLE
+===========================================
+               </SymbolsTable>             
+===========================================
+********************************************************
+********************************************************
+Method: getoutBlock.
+Info: Get out of last block and update variables and scope.
+===========================================
+                <SymbolsTable>             
+===========================================
+DESCRIPTION TABLE
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: isBigger, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: boolean}
+Description Item, ID: num2, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
 ===========================================
 ACTUAL SCOPE LEVEL: 1
 Scope table
@@ -128,12 +362,15 @@ Info: Add a new variable 'num'.
                 <SymbolsTable>             
 ===========================================
 DESCRIPTION TABLE
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
 Description Item, ID: num, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
 Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: num2, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
+Description Item, ID: num1, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
 Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
+Description Item, ID: isBigger, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: boolean}
 ===========================================
 ACTUAL SCOPE LEVEL: 1
 Scope table
@@ -152,270 +389,17 @@ Info: Get out of last block and update variables and scope.
                 <SymbolsTable>             
 ===========================================
 DESCRIPTION TABLE
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
+Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
 Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
+Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
 Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
+Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
 ===========================================
 ACTUAL SCOPE LEVEL: 0
 Scope table
 scope: 0, pointer: 0
 ===========================================
 EXPANSION TABLE
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: add.
-Info: Add a new variable 'getSquare'.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getSquare, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-===========================================
-ACTUAL SCOPE LEVEL: 0
-Scope table
-scope: 0, pointer: 0
-===========================================
-EXPANSION TABLE
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: addParam.
-Info: Add a new parameter 'num' from function  'getSquare'.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getSquare, scope level: 0, first: 0, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-===========================================
-ACTUAL SCOPE LEVEL: 0
-Scope table
-scope: 0, pointer: 1
-===========================================
-EXPANSION TABLE
-Expansion Item, ID: getSquare, scope level: -1, next: -1, idc: num, Type description: {TypeDescription Item, content description: darg, name of type: int}
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: getinBlock.
-Info: Get in a new block and therefore increase the scope.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getSquare, scope level: 0, first: 0, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-===========================================
-ACTUAL SCOPE LEVEL: 1
-Scope table
-scope: 0, pointer: 1
-scope: 1, pointer: 1
-===========================================
-EXPANSION TABLE
-Expansion Item, ID: getSquare, scope level: -1, next: -1, idc: num, Type description: {TypeDescription Item, content description: darg, name of type: int}
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: add.
-Info: Add a new variable 'result'.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: result, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getSquare, scope level: 0, first: 0, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-===========================================
-ACTUAL SCOPE LEVEL: 1
-Scope table
-scope: 0, pointer: 1
-scope: 1, pointer: 1
-===========================================
-EXPANSION TABLE
-Expansion Item, ID: getSquare, scope level: -1, next: -1, idc: num, Type description: {TypeDescription Item, content description: darg, name of type: int}
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: getoutBlock.
-Info: Get out of last block and update variables and scope.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getSquare, scope level: 0, first: 0, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-===========================================
-ACTUAL SCOPE LEVEL: 0
-Scope table
-scope: 0, pointer: 1
-===========================================
-EXPANSION TABLE
-Expansion Item, ID: getSquare, scope level: -1, next: -1, idc: num, Type description: {TypeDescription Item, content description: darg, name of type: int}
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: add.
-Info: Add a new variable 'main'.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getSquare, scope level: 0, first: 0, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-===========================================
-ACTUAL SCOPE LEVEL: 0
-Scope table
-scope: 0, pointer: 1
-===========================================
-EXPANSION TABLE
-Expansion Item, ID: getSquare, scope level: -1, next: -1, idc: num, Type description: {TypeDescription Item, content description: darg, name of type: int}
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: getinBlock.
-Info: Get in a new block and therefore increase the scope.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getSquare, scope level: 0, first: 0, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-===========================================
-ACTUAL SCOPE LEVEL: 1
-Scope table
-scope: 0, pointer: 1
-scope: 1, pointer: 1
-===========================================
-EXPANSION TABLE
-Expansion Item, ID: getSquare, scope level: -1, next: -1, idc: num, Type description: {TypeDescription Item, content description: darg, name of type: int}
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: add.
-Info: Add a new variable 'numFact'.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: numFact, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getSquare, scope level: 0, first: 0, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-===========================================
-ACTUAL SCOPE LEVEL: 1
-Scope table
-scope: 0, pointer: 1
-scope: 1, pointer: 1
-===========================================
-EXPANSION TABLE
-Expansion Item, ID: getSquare, scope level: -1, next: -1, idc: num, Type description: {TypeDescription Item, content description: darg, name of type: int}
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: add.
-Info: Add a new variable 'result'.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
-Description Item, ID: getSquare, scope level: 0, first: 0, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: numFact, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-Description Item, ID: result, scope level: 1, first: -1, Type description: {TypeDescription Item, content description: dvar, name of type: int}
-===========================================
-ACTUAL SCOPE LEVEL: 1
-Scope table
-scope: 0, pointer: 1
-scope: 1, pointer: 1
-===========================================
-EXPANSION TABLE
-Expansion Item, ID: getSquare, scope level: -1, next: -1, idc: num, Type description: {TypeDescription Item, content description: darg, name of type: int}
-===========================================
-               </SymbolsTable>             
-===========================================
-********************************************************
-********************************************************
-Method: getoutBlock.
-Info: Get out of last block and update variables and scope.
-===========================================
-                <SymbolsTable>             
-===========================================
-DESCRIPTION TABLE
-Description Item, ID: main, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: none}
-Description Item, ID: getSquare, scope level: 0, first: 0, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: string, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_string, size: 0, lower limit: 0, higher limit: 1024}
-Description Item, ID: int, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_integer, size: 4, lower limit: -2147483648, higher limit: 2147483647}
-Description Item, ID: none, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_none, size: 0, lower limit: 0, higher limit: 0}
-Description Item, ID: getInputNum, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dfunc, name of type: int}
-Description Item, ID: boolean, scope level: 0, first: -1, Type description: {TypeDescription Item, content description: dtype, basic subjacent type: ts_boolean, size: 2, lower limit: 0, higher limit: 1}
-===========================================
-ACTUAL SCOPE LEVEL: 0
-Scope table
-scope: 0, pointer: 1
-===========================================
-EXPANSION TABLE
-Expansion Item, ID: getSquare, scope level: -1, next: -1, idc: num, Type description: {TypeDescription Item, content description: darg, name of type: int}
 ===========================================
                </SymbolsTable>             
 ===========================================

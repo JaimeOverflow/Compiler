@@ -58,6 +58,7 @@ public class BackendManager {
     public void generateAssemblerCodeOptimized() throws AssignationSizeOverflowException {
         this.codeOptimizer.setC3DList(this.c3dList);
         this.c3dList = this.codeOptimizer.getC3DOptimized();
+
         this.generateAssemblerCode(FILENAME_ASSEMBLER_CODE_OPTIMIZED);
     }
     

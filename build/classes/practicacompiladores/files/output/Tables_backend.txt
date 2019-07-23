@@ -3,20 +3,32 @@ TABLES MANAGER
 =====================
 Variables:
 ID: 0 => VariableBackend{name=#temporalVariable, idProcedure=0, size=4, offset=-4, basicSubjacentType=ts_integer}
-ID: 1 => VariableBackend{name=#num, idProcedure=0, size=4, offset=-8, basicSubjacentType=ts_integer}
-ID: 2 => VariableBackend{name=#num, idProcedure=1, size=4, offset=4, basicSubjacentType=ts_integer}
-ID: 3 => VariableBackend{name=#temporalVariable, idProcedure=1, size=4, offset=-4, basicSubjacentType=ts_integer}
-ID: 4 => VariableBackend{name=#result, idProcedure=1, size=4, offset=-8, basicSubjacentType=ts_integer}
-ID: 5 => VariableBackend{name=#temporalVariable, idProcedure=2, size=28, offset=-28, basicSubjacentType=ts_string}
-ID: 6 => VariableBackend{name=#temporalVariable, idProcedure=2, size=4, offset=-32, basicSubjacentType=ts_integer}
-ID: 7 => VariableBackend{name=#numFact, idProcedure=2, size=4, offset=-36, basicSubjacentType=ts_integer}
-ID: 8 => VariableBackend{name=#temporalVariable, idProcedure=2, size=4, offset=-40, basicSubjacentType=ts_integer}
-ID: 9 => VariableBackend{name=#result, idProcedure=2, size=4, offset=-44, basicSubjacentType=ts_integer}
-ID: 10 => VariableBackend{name=#temporalVariable, idProcedure=2, size=16, offset=-60, basicSubjacentType=ts_string}
+ID: 1 => VariableBackend{name=#num1, idProcedure=0, size=4, offset=-8, basicSubjacentType=ts_integer}
+ID: 2 => VariableBackend{name=#temporalVariable, idProcedure=0, size=4, offset=-12, basicSubjacentType=ts_integer}
+ID: 3 => VariableBackend{name=#num2, idProcedure=0, size=4, offset=-16, basicSubjacentType=ts_integer}
+ID: 4 => VariableBackend{name=#temporalVariable, idProcedure=0, size=2, offset=-18, basicSubjacentType=ts_boolean}
+ID: 5 => VariableBackend{name=#isBigger, idProcedure=0, size=2, offset=-20, basicSubjacentType=ts_boolean}
+ID: 6 => VariableBackend{name=#temporalVariable, idProcedure=0, size=2, offset=-22, basicSubjacentType=ts_boolean}
+ID: 7 => VariableBackend{name=#temporalVariable, idProcedure=0, size=28, offset=-50, basicSubjacentType=ts_string}
+ID: 8 => VariableBackend{name=#temporalVariable, idProcedure=0, size=2, offset=-52, basicSubjacentType=ts_boolean}
+ID: 9 => VariableBackend{name=#temporalVariable, idProcedure=0, size=38, offset=-90, basicSubjacentType=ts_string}
+ID: 10 => VariableBackend{name=#temporalVariable, idProcedure=0, size=50, offset=-140, basicSubjacentType=ts_string}
+ID: 11 => VariableBackend{name=#temporalVariable, idProcedure=0, size=4, offset=-144, basicSubjacentType=ts_integer}
+ID: 12 => VariableBackend{name=#temporalVariable, idProcedure=0, size=4, offset=-148, basicSubjacentType=ts_integer}
+ID: 13 => VariableBackend{name=#temporalVariable, idProcedure=0, size=4, offset=-152, basicSubjacentType=ts_integer}
+ID: 14 => VariableBackend{name=#temporalVariable, idProcedure=0, size=4, offset=-156, basicSubjacentType=ts_integer}
+ID: 15 => VariableBackend{name=#temporalVariable, idProcedure=0, size=4, offset=-160, basicSubjacentType=ts_integer}
+ID: 16 => VariableBackend{name=#num, idProcedure=0, size=4, offset=-164, basicSubjacentType=ts_integer}
 
 Procedures:
-ID: 0 => ProcedureBackend{name=#getInputNum, depth=0, initalLabel=PROCEDURE_GETINPUTNUM, numParams=0, sizeLocalVariables=-8, sizeTemporalArgs=0, size=4, basicSubjacentType=ts_integer}
-ID: 1 => ProcedureBackend{name=#getSquare, depth=0, initalLabel=PROCEDURE_GETSQUARE, numParams=1, sizeLocalVariables=-8, sizeTemporalArgs=4, size=4, basicSubjacentType=ts_integer}
-ID: 2 => ProcedureBackend{name=#main, depth=0, initalLabel=PROCEDURE_MAIN, numParams=0, sizeLocalVariables=-60, sizeTemporalArgs=0, size=0, basicSubjacentType=ts_none}
+ID: 0 => ProcedureBackend{name=#main, depth=0, initalLabel=PROCEDURE_MAIN, numParams=0, sizeLocalVariables=-164, sizeTemporalArgs=0, size=0, basicSubjacentType=ts_none}
 
 Labels:
+ID: 0 => LabelBackend{label=LABEL_0}
+ID: 1 => LabelBackend{label=LABEL_1}
+ID: 2 => LabelBackend{label=LABEL_2}
+ID: 3 => LabelBackend{label=LABEL_3}
+ID: 4 => LabelBackend{label=LABEL_4}
+ID: 5 => LabelBackend{label=LABEL_5}
+ID: 6 => LabelBackend{label=LABEL_6}
+ID: 7 => LabelBackend{label=LABEL_7}

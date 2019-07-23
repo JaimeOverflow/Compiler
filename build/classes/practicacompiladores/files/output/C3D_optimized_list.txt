@@ -1,59 +1,75 @@
 ==========================================
  Three directions code instruction list
 ==========================================
-[procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+[procedureCallMain, null, null, [OPERATOR. Type operator: procedure, value: 0]]
 
 [procedureName, null, null, [OPERATOR. Type operator: procedure, value: 0]]
 
 [procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 0]]
 
-[standardInput, null, null, [OPERATOR. Type operator: variable, value: 0]]
+[assign, [OPERATOR. Type operator: int_value, value: 10], null, [OPERATOR. Type operator: variable, value: 1]]
 
-[assign, [OPERATOR. Type operator: variable, value: 0], null, [OPERATOR. Type operator: variable, value: 1]]
+[assign, [OPERATOR. Type operator: int_value, value: 5], null, [OPERATOR. Type operator: variable, value: 3]]
 
-[procedureReturn, [OPERATOR. Type operator: procedure, value: 0], null, [OPERATOR. Type operator: variable, value: 1]]
+[assign, [OPERATOR. Type operator: bool_value, value: true], null, [OPERATOR. Type operator: variable, value: 5]]
 
-[procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+[greater, [OPERATOR. Type operator: int_value, value: 1], [OPERATOR. Type operator: int_value, value: 3], [OPERATOR. Type operator: variable, value: 6]]
 
-[procedureName, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+[condFalse, [OPERATOR. Type operator: variable, value: 6], null, [OPERATOR. Type operator: label, value: 0]]
 
-[procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+[and, [OPERATOR. Type operator: variable, value: 5], null, [OPERATOR. Type operator: variable, value: 6]]
 
-[mult, [OPERATOR. Type operator: variable, value: 2], [OPERATOR. Type operator: variable, value: 2], [OPERATOR. Type operator: variable, value: 3]]
+[skip, null, null, [OPERATOR. Type operator: label, value: 0]]
 
-[assign, [OPERATOR. Type operator: variable, value: 3], null, [OPERATOR. Type operator: variable, value: 4]]
+[condTrue, [OPERATOR. Type operator: variable, value: 6], null, [OPERATOR. Type operator: label, value: 1]]
 
-[procedureReturn, [OPERATOR. Type operator: procedure, value: 1], null, [OPERATOR. Type operator: variable, value: 4]]
+[condFalse, [OPERATOR. Type operator: variable, value: 6], null, [OPERATOR. Type operator: label, value: 2]]
 
-[procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+[skip, null, null, [OPERATOR. Type operator: label, value: 1]]
 
-[procedureName, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+[assign, [OPERATOR. Type operator: string_value, value: "Num1 is bigger"], null, [OPERATOR. Type operator: variable, value: 7]]
 
-[procedurePreamble, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 7]]
 
-[assign, [OPERATOR. Type operator: string_value, value: "Put a number: "], null, [OPERATOR. Type operator: variable, value: 5]]
+[jump, null, null, [OPERATOR. Type operator: label, value: 7]]
 
-[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 5]]
+[skip, null, null, [OPERATOR. Type operator: label, value: 2]]
 
-[procedureCall, null, null, [OPERATOR. Type operator: procedure, value: 0]]
+[greater, [OPERATOR. Type operator: int_value, value: 1], [OPERATOR. Type operator: int_value, value: 3], [OPERATOR. Type operator: variable, value: 8]]
 
-[assign, [OPERATOR. Type operator: procedure, value: 0], null, [OPERATOR. Type operator: variable, value: 6]]
+[condTrue, [OPERATOR. Type operator: variable, value: 8], null, [OPERATOR. Type operator: label, value: 4]]
 
-[assign, [OPERATOR. Type operator: variable, value: 6], null, [OPERATOR. Type operator: variable, value: 7]]
+[or, [OPERATOR. Type operator: variable, value: 5], null, [OPERATOR. Type operator: variable, value: 8]]
 
-[procedureParam, [OPERATOR. Type operator: variable, value: 7], [OPERATOR. Type operator: numParam, value: 1], [OPERATOR. Type operator: procedure, value: 1]]
+[skip, null, null, [OPERATOR. Type operator: label, value: 4]]
 
-[procedureCall, null, null, [OPERATOR. Type operator: procedure, value: 1]]
+[condTrue, [OPERATOR. Type operator: variable, value: 8], null, [OPERATOR. Type operator: label, value: 5]]
 
-[assign, [OPERATOR. Type operator: procedure, value: 1], null, [OPERATOR. Type operator: variable, value: 8]]
+[condFalse, [OPERATOR. Type operator: variable, value: 8], null, [OPERATOR. Type operator: label, value: 6]]
 
-[assign, [OPERATOR. Type operator: variable, value: 8], null, [OPERATOR. Type operator: variable, value: 9]]
+[skip, null, null, [OPERATOR. Type operator: label, value: 5]]
 
-[assign, [OPERATOR. Type operator: string_value, value: "Square: "], null, [OPERATOR. Type operator: variable, value: 10]]
-
-[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 10]]
+[assign, [OPERATOR. Type operator: string_value, value: "Num1 must be bigger"], null, [OPERATOR. Type operator: variable, value: 9]]
 
 [standardOutput, null, null, [OPERATOR. Type operator: variable, value: 9]]
 
-[procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 2]]
+[skip, null, null, [OPERATOR. Type operator: label, value: 3]]
+
+[jump, null, null, [OPERATOR. Type operator: label, value: 7]]
+
+[skip, null, null, [OPERATOR. Type operator: label, value: 6]]
+
+[assign, [OPERATOR. Type operator: string_value, value: "Num1 is smaller than num2"], null, [OPERATOR. Type operator: variable, value: 10]]
+
+[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 10]]
+
+[skip, null, null, [OPERATOR. Type operator: label, value: 7]]
+
+[assign, [OPERATOR. Type operator: int_value, value: 8], null, [OPERATOR. Type operator: variable, value: 15]]
+
+[assign, [OPERATOR. Type operator: variable, value: 15], null, [OPERATOR. Type operator: variable, value: 16]]
+
+[standardOutput, null, null, [OPERATOR. Type operator: variable, value: 16]]
+
+[procedureEnd, null, null, [OPERATOR. Type operator: procedure, value: 0]]
 

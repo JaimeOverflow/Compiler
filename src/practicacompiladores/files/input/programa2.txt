@@ -1,4 +1,19 @@
 
+function int recursiveFact(num: int) {
+	result : int = 0.
+
+	if({num == 1}) {
+		result = 1.
+	} else {
+
+		decrement : int = (num - 1).
+		factResult : int = call(recursiveFact, decrement).
+		
+		result = (num * factResult).
+	}
+
+	return result.
+}
 
 
 function int iterativeFact(num : int, incr : int) { 
@@ -12,8 +27,10 @@ function int iterativeFact(num : int, incr : int) {
 	return result.
 }
 
+
 function none main() {
-	result : int = call(iterativeFact, 5, 1).
+	//result : int = call(iterativeFact, 5, 1).
+	result : int = call(recursiveFact, 6).
 
 	output("Result factorial: ").
 	output(result).
